@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User, Post, Follow, Like, Reply
 
+# Model serializer converts data to JSON. Auto generate fields corresponding to model, generate validators
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
