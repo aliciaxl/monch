@@ -38,7 +38,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def replies(self, request, pk=None):
         user = self.get_object()
         replies = Post.objects.filter(user=user, parent_post__isnull=False).order_by('-created_at')
-        serializer = ReplySerializer(replies, many=True)
+        serializer = PostSerializer(replies, many=True)
         return Response(serializer.data)
     
 class PostViewSet(viewsets.ModelViewSet):
