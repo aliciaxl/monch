@@ -56,7 +56,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def replies(self, request, pk=None):
         post = self.get_object()
         replies = post.replies.all().order_by('created_at')
-        serializer = ReplySerializer(replies, many=True)
+        serializer = PostSerializer(replies, many=True)
         return Response(serializer.data)
     
     @action(detail=True, methods=['get'])
