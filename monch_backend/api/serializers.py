@@ -1,18 +1,26 @@
 from rest_framework import serializers
-from .models import User, Post, Follow, Like, Reply
+from .models import User, Post, Follow, Like
 
 # Model serializer converts data to JSON. Auto generate fields corresponding to model, generate validators
 class UserSerializer(serializers.ModelSerializer):
+    posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'display_name', 'bio', 'avatar_url']
+        fields = ['id', 'username', 'display_name', 'bio', 'avatar_url', 'posts']
     
 class PostSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True) #nested user info
+    user = serializers.StringRelatedField(read_only=True) #nested user info
+    parent_post = serializers.PrimaryKeyRelatedField(read_only=True)
+    replies = serializers.SerializerMethodField()
     
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'replies']
+
+    def get_replies(self, obj):
+        replies = obj.replies.all().order_by('created_at')  # thanks to related_name='replies'
+        return PostSerializer(replies, many=True, context=self.context).data
 
 class FollowSerializer(serializers.ModelSerializer):
     follower = UserSerializer(read_only=True)
@@ -20,20 +28,12 @@ class FollowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Follow
-        fields = '__all__'
+        fields = ['id', 'follower', 'following']
 
 class LikeSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    post = PostSerializer(read_only=True)
-
-    class Meta:
-        model = Like
-        fields = '__all__'
-
-class ReplySerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     post = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
-        model = Reply
-        fields = '__all__'
+        model = Like
+        fields = ['id', 'user', 'post']

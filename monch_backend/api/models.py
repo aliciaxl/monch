@@ -18,6 +18,7 @@ class Follow(models.Model):
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     content = models.CharField(max_length=500)
+    parent_post = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Like(models.Model):
@@ -26,9 +27,3 @@ class Like(models.Model):
 
     class Meta:
         unique_together = ('user', 'post')
-
-class Reply(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='replies')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='replies')
-    content = models.CharField(max_length=500)
-    created_at = models.DateTimeField(auto_now_add=True)
