@@ -1,12 +1,12 @@
-import './App.css'
-import Login from './pages/Login.jsx'
+import "./App.css";
+import Login from "./pages/Login.jsx";
 
 function App() {
   return (
     <>
       <Login />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
