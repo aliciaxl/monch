@@ -2,14 +2,17 @@
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import UserViewSet, PostViewSet, FollowViewSet, LikeViewSet
+from .views import user_views, post_views, follow_views, like_views, auth_views
 
 router = DefaultRouter()
-router.register(r'users', UserViewSet)
-router.register(r'posts', PostViewSet)
-router.register(r'follows', FollowViewSet)
-router.register(r'likes', LikeViewSet)
+router.register(r'users', user_views.UserViewSet)
+router.register(r'posts', post_views.PostViewSet)
+router.register(r'follow', follow_views.FollowViewSet)
+router.register(r'like', like_views.LikeViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('login/', auth_views.login_view, name='login'),
+    path('logout/', auth_views.logout_view, name='logout'),
 ]
+
+urlpatterns += router.urls
