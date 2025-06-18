@@ -1,20 +1,47 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [accessToken, setAccessToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
+
+  const navigate = useNavigate();
 
   const isFormFilled = username.trim() !== '' && password.trim() !== '';
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
 
-  };
+  const login = async (username, password) => {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/token/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password }),
+        });
 
-  const loginAsGuest = (e) => {
-    e.preventDefault();
+        if (!response.ok) throw new Error('Invalid credentials');
 
-  };
+        const data = await response.json();
+
+        setAccessToken(data.access);
+        setRefreshToken(data.refresh);
+
+        navigate('/home');
+    } catch (error) {
+        alert(error.message);
+    }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        login(username, password);
+    };
+
+    const loginAsGuest = (e) => {
+        e.preventDefault();
+        login('admin', 'strongPassword');
+    };
 
   return (
     <>
