@@ -8,7 +8,7 @@ from ..serializers import UserSerializer, PostSerializer
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(detail=True, methods=['get'], url_path='followers')
     def followers(self, request, pk=None):
