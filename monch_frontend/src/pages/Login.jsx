@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SignUpModal from './SignUpModal';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [accessToken, setAccessToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const navigate = useNavigate();
 
   const isFormFilled = username.trim() !== '' && password.trim() !== '';
-
 
   const login = async (username, password) => {
     try {
@@ -43,9 +44,14 @@ export default function Login() {
         login('admin', 'strongPassword');
     };
 
+    const signUp = (e) => {
+        e.preventDefault();
+    }
+
   return (
     <>
         <div className="w-96">
+            <h1 className="title mb-20">MONCH</h1>
             <h2 className="font-bold text-base p-2">Log in</h2>
             <form onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-2 p-2">
@@ -84,7 +90,7 @@ export default function Login() {
                 </div>
             </form>
             <form onSubmit={loginAsGuest}>
-                <div className="flex flex-col gap-2 p-2">
+                <div className="flex flex-col px-2">
                     <button 
                         type="submit" 
                         className="group relative flex items-center justify-center text-[15px] bg-white text-black font-semibold p-4 rounded-xl cursor-pointer">
@@ -93,6 +99,17 @@ export default function Login() {
                     </button>
                 </div>
             </form>
+            <form onSubmit={signUp}>
+                <div className="flex flex-col mt-2 px-2">
+                    <button 
+                        onClick={() => setShowModal(true)}
+                        type="button" 
+                        className="group relative flex items-center justify-center text-[15px] bg-indigo-500 text-white font-semibold p-4 rounded-xl cursor-pointer">
+                        <span>Sign up</span>
+                    </button>
+                </div>
+            </form>
+            {showModal && <SignUpModal isOpen={showModal} onClose={() => setShowModal(false)} />}
         </div>
     </>
   );

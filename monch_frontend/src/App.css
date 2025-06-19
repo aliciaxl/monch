@@ -5,17 +5,15 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+@font-face {
+    font-family: 'Vanished';
+    src: url('../public/fonts/Vanished.ttf') format('truetype');
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+
+.title {
+    font-family: 'Vanished';
+    font-size: 28px;
+    font-weight: 400;
 }
 
 @keyframes logo-spin {
@@ -39,4 +37,17 @@
 
 .read-the-docs {
   color: #888;
+}
+
+@keyframes wiggleZoom {
+  0%, 100% {
+    transform: rotate(-5deg) scale(1);
+  }
+  50% {
+    transform: rotate(5deg) scale(1.2);
+  }
+}
+
+.wiggle-zoom:hover {
+  animation: wiggleZoom 0.5s ease-in-out;
 }

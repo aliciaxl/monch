@@ -1,5 +1,5 @@
 # your_app/views/user_views.py
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from ..models import User, Post
@@ -37,3 +37,12 @@ class UserViewSet(viewsets.ModelViewSet):
         replies = Post.objects.filter(user=user, parent_post__isnull=False).order_by('-created_at')
         serializer = PostSerializer(replies, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'], url_path='check-username')
+    def check_username(self, request):
+        username = request.query_params.get('username', '').strip()
+        if not username:
+            return Response({"detail": "Username query parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        exists = User.objects.filter(username=username).exists()
+        return Response({"username": username, "available": not exists})
