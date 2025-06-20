@@ -2,11 +2,8 @@
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import user_views, post_views, follow_views, like_views, auth_views
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from .views import user_views, post_views, follow_views, like_views, auth_views, me_view
+
 
 router = DefaultRouter()
 router.register(r'users', user_views.UserViewSet)
@@ -15,9 +12,8 @@ router.register(r'follows', follow_views.FollowViewSet)
 router.register(r'likes', like_views.LikeViewSet)
 
 urlpatterns = [
-    path('login/', auth_views.login_view, name='login'),
-    path('logout/', auth_views.logout_view, name='logout'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('me/', me_view.MeView.as_view()),
     path('', include(router.urls)),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-]
+    ]

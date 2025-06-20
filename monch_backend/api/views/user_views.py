@@ -4,6 +4,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from ..models import User, Post
 from ..serializers import UserSerializer, PostSerializer
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -46,3 +50,28 @@ class UserViewSet(viewsets.ModelViewSet):
 
         exists = User.objects.filter(username=username).exists()
         return Response({"username": username, "available": not exists})
+    
+    User = get_user_model()
+    
+    @action(detail=False, methods=['post'], url_path='register', permission_classes=[])
+    def register(self, request):
+        data = request.data
+        username = data.get('username')
+        password = data.get('password')
+        display_name = data.get('displayName')
+
+        if not username or not password:
+            return Response({'detail': 'Username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(username=username).exists():
+            return Response({'detail': 'Username already taken.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create(
+            username=username,
+            password=make_password(password),
+            display_name=display_name or ''
+        )
+        user.save()
+
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

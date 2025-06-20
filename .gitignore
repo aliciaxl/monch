@@ -1,1 +1,16 @@
+
+# Django
+*.pyc
+__pycache__/
+*.sqlite3
+.env
+.env.local
+
+# React
 **/node_modules/
+build/
+.env
+.env.*
+
+
+**/settings.py

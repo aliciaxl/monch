@@ -1,27 +1,43 @@
-from django.contrib.auth import login, logout
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+from django.http import JsonResponse
 
-def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('home')
+class LoginView(APIView):
+    permission_classes = [AllowAny]
 
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            messages.success(request, 'Login successful')
-            return redirect('home')
-        else:
-            messages.error(request, 'Invalid credentials')
-    else:
-        form = AuthenticationForm()
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
 
-    return render(request, 'login.html', {'form': form})
+        user = authenticate(request, username=username, password=password)
 
-def logout_view(request):
-    logout(request)
-    messages.info(request, 'Logged out successfully')
-    return redirect('login')
+        if user is None:
+            return Response({'detail': 'Invalid credentials'}, status=401)
+
+        refresh = RefreshToken.for_user(user)
+        res = JsonResponse({'detail': 'Login successful'})
+        res.set_cookie(
+            key='access_token',
+            value=str(refresh.access_token),
+            httponly=True,
+            secure=False,  # True in production
+            samesite='Lax',
+        )
+        res.set_cookie(
+            key='refresh_token',
+            value=str(refresh),
+            httponly=True,
+            secure=False,
+            samesite='Lax',
+        )
+        return res
+
+class LogoutView(APIView):
+    def post(self, request):
+        res = JsonResponse({'detail': 'Logged out'})
+        res.delete_cookie('access_token')
+        res.delete_cookie('refresh_token')
+        return res
