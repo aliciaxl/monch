@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SignUpModal from './SignUpModal';
 
-export default function Login() {
+export default function Login({ user, setUser }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [accessToken, setAccessToken] = useState(null);
-  const [refreshToken, setRefreshToken] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const navigate = useNavigate();
@@ -14,20 +12,21 @@ export default function Login() {
   const isFormFilled = username.trim() !== '' && password.trim() !== '';
 
   const login = async (username, password) => {
+
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/token/', {
+        const response = await fetch('http://127.0.0.1:8000/api/login/', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username, password: password }),
+        body: JSON.stringify({ username, password }),
         });
 
-        if (!response.ok) throw new Error('Invalid credentials');
+        if (!response.ok) {
+            throw new Error('Invalid credentials');
+        }
 
         const data = await response.json();
-
-        setAccessToken(data.access);
-        setRefreshToken(data.refresh);
-
+        setUser(username);
         navigate('/home');
     } catch (error) {
         alert(error.message);
@@ -52,7 +51,7 @@ export default function Login() {
     <>
         <div className="w-96">
             <h1 className="title mb-20">MONCH</h1>
-            <h2 className="font-bold text-base p-2">Log in</h2>
+            <h2 className="font-bold text-base p-2 pb-4">Log in</h2>
             <form onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-2 p-2">
                     <input 

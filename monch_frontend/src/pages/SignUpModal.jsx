@@ -23,6 +23,11 @@ export default function SignUpModal({ isOpen, onClose }) {
       ...prev,
       [name]: value,
     }));
+
+    if (name === 'username') {
+    // Clear previous username availability status as user edits
+    setUsernameAvailable(null);
+  }
   };
 
   const checkUsername = async (username) => {
@@ -48,14 +53,14 @@ export default function SignUpModal({ isOpen, onClose }) {
     }
 
     try {
-    const response = await fetch('http://127.0.0.1:8000/api/register/', {
+    const response = await fetch('http://127.0.0.1:8000/api/users/register/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         username: formData.username,
-        displayName: formData.displayName, // or whatever field your backend expects
+        displayName: formData.displayName,
         password: formData.password,
       }),
     });
@@ -70,8 +75,6 @@ export default function SignUpModal({ isOpen, onClose }) {
     const data = await response.json();
     console.log('Registration successful:', data);
 
-    // Optionally, you can auto-login or redirect here
-
     onClose(); // close modal after successful registration
 
   } catch (error) {
@@ -83,17 +86,17 @@ export default function SignUpModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="relative p-8 rounded-xl w-full max-w-md shadow-lg">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ">
+      <div className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 flex flex-col">
         <button
             type="button"
             onClick={onClose}
-            className="absolute top-0 right-12 text-white text-base hover:cursor-pointer focus:outline-none mb-8 wiggle-zoom"
+            className="self-end px-4 text-white text-base hover:cursor-pointer focus:outline-none wiggle-zoom"
             aria-label="Close modal">
             &#x2715;
         </button>
 
-        <h2 className="font-bold text-base p-2">Sign Up</h2>
+        <h2 className="font-bold text-base p-2 pb-4">Sign Up</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-2">
           <input
             type="text"
