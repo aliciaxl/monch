@@ -1,7 +1,7 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets, permissions, filters
-from ..models import Post
+from ..models import Post, Follow
 from ..serializers import PostSerializer
     
 class PostViewSet(viewsets.ModelViewSet):
@@ -31,3 +31,19 @@ class PostViewSet(viewsets.ModelViewSet):
             "replies": PostSerializer(replies, many=True).data
         }
         return Response(data)
+    
+    @action(detail=False, methods=["get"], url_path="following")
+    def following_posts(self, request):
+        user = request.user
+        print("Authenticated user:", user)
+        
+        if not user.is_authenticated:
+            return Response({"detail": "Authentication required."}, status=401)
+
+        # Get the users this user is following
+        followed_user_ids = Follow.objects.filter(follower=user).values_list("following_id", flat=True)
+
+        # Get posts from those users
+        posts = Post.objects.filter(user__id__in=followed_user_ids).order_by("-created_at")
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)

@@ -7,22 +7,30 @@ import Home from "./pages/Home.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/me/', { credentials: 'include' })
-      .then(res => {
-        if (!res.ok) throw new Error('Not logged in');
-        return res.json();
-      })
-      .then(data => setUser(data.username))
-      .catch(() => setUser(null))
-      .finally(() => setCheckingAuth(false));
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/whoami/', {
+          credentials: 'include',
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.username); // set user from backend
+        }
+      } catch (error) {
+        console.error("Not authenticated");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
-  if (checkingAuth) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
   return (
     <Router>

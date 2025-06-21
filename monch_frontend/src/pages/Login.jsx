@@ -51,7 +51,7 @@ export default function Login({ user, setUser }) {
     <>
         <div className="w-96">
             <h1 className="title mb-20">MONCH</h1>
-            <h2 className="font-bold text-base p-2 pb-4">Log in</h2>
+            <h2 className="font-semibold text-base p-2 pb-4">Log in</h2>
             <form onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-2 p-2">
                     <input 

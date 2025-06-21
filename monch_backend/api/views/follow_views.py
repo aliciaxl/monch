@@ -9,3 +9,6 @@ class FollowViewSet(viewsets.ModelViewSet):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    class Meta:
+        unique_together = ('follower', 'following')
