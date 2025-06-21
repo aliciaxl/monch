@@ -10,13 +10,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'display_name', 'bio', 'avatar_url', 'posts']
     
 class PostSerializer(serializers.ModelSerializer):
+    likes = serializers.IntegerField(source='likes.count', read_only=True)
     user = serializers.StringRelatedField(read_only=True) #nested user info
     parent_post = serializers.PrimaryKeyRelatedField(read_only=True)
     replies = serializers.SerializerMethodField()
     
     class Meta:
         model = Post
-        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'replies']
+        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'replies', 'likes']
+
+    def get_likes(self, obj):
+        return obj.likes.count()
 
     def get_replies(self, obj):
         replies = obj.replies.all().order_by('created_at')  # thanks to related_name='replies'

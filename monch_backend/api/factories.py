@@ -2,6 +2,7 @@ import factory
 from factory.django import DjangoModelFactory
 from faker import Faker
 from .models import User, Post, Follow, Like
+import random
 
 fake = Faker()
 
@@ -29,5 +30,5 @@ class FollowFactory(DjangoModelFactory):
 class LikeFactory(DjangoModelFactory):
     class Meta:
         model = Like
-    user = factory.SubFactory(UserFactory)
-    post = factory.SubFactory(PostFactory)
+    user = factory.LazyFunction(lambda: random.choice(User.objects.all()))
+    post = factory.LazyFunction(lambda: random.choice(Post.objects.all()))

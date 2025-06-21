@@ -5,11 +5,15 @@ from ..models import Post, Follow
 from ..serializers import PostSerializer
     
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all().order_by('-created_at')
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['content', 'user__username']
+
+    def get_queryset(self):
+        # Return only parent posts (no parent_post)
+        return Post.objects.filter(parent_post__isnull=True).order_by('-created_at')
 
     #override perform_create to attach user to post
     def perform_create(self, serializer):
@@ -36,7 +40,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def following_posts(self, request):
         user = request.user
         print("Authenticated user:", user)
-        
+
         if not user.is_authenticated:
             return Response({"detail": "Authentication required."}, status=401)
 
