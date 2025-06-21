@@ -6,6 +6,7 @@ export default function PostInput({ newPost, setNewPost, handlePost, loading }) 
         onChange={(e) => setNewPost(e.target.value)}
         placeholder="What's on your mind?"
         rows={1}
+        maxLength={500}
         className="focus:outline-none focus:ring-0 h-12 w-full resize-none rounded-md bg-neutral-900 text-white px-2 pt-2"
       />
       <button

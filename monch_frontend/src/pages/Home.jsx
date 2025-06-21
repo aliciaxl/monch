@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import PostInput from "../components/PostInput";
 import Feed from "../components/Feed";
@@ -20,13 +20,18 @@ export default function Home() {
         let res = await fetch(endpoint, { credentials: "include" });
 
         if (res.status === 401) {
-          const refreshRes = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
-            method: 'POST',
-            credentials: 'include',
-          });
+          const refreshRes = await fetch(
+            "http://127.0.0.1:8000/api/token/refresh/",
+            {
+              method: "POST",
+              credentials: "include",
+            }
+          );
 
           if (!refreshRes.ok) {
-            console.log("Refresh token expired or invalid, redirecting to login");
+            console.log(
+              "Refresh token expired or invalid, redirecting to login"
+            );
             setPosts([]);
             return;
           }
@@ -47,15 +52,24 @@ export default function Home() {
     fetchPosts();
   }, [tab]);
 
-  const handlePost = () => {
+  const handlePost = (parentPostId = null) => {
     if (!newPost.trim()) return;
 
     setLoading(true);
+
+    
+  const payload = {
+    content: newPost,
+    parent_post_id: parentPostId, // assuming this is not a reply
+    // user_id: "abc123", // optional if backend infers from session
+    // created_at: new Date().toISOString(), // usually backend-generated
+  };
+
     fetch("http://127.0.0.1:8000/api/posts/", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: newPost }),
+      body: JSON.stringify(payload),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to post");
@@ -102,7 +116,7 @@ export default function Home() {
           <PostInput
             newPost={newPost}
             setNewPost={setNewPost}
-            handlePost={handlePost}
+            handlePost={() => handlePost(null)}
             loading={loading}
           />
           <Feed posts={posts} />

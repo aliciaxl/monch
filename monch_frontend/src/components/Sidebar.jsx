@@ -7,9 +7,7 @@ import {
   faPlus,
   faBars,
   faDragon,
-  faCommentDots,
 } from "@fortawesome/free-solid-svg-icons";
-import { formatDistanceToNow } from "date-fns";
 
 function SidebarButton({ icon, label }) {
   return (
