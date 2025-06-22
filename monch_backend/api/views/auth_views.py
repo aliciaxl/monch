@@ -20,22 +20,24 @@ class LoginView(APIView):
         refresh = RefreshToken.for_user(user)
         res = Response({"detail": "Login successful"})
 
-        secure_cookie = not settings.DEBUG
+        secure_cookie = True
+        samesite = "None"
 
         res.set_cookie(
             key="access_token",
             value=str(refresh.access_token),
             httponly=True,
-            secure=secure_cookie,  # True in production
-            samesite="None" if secure_cookie else "Lax",
+            secure=secure_cookie,
+            samesite=samesite,
             path="/",
         )
+
         res.set_cookie(
             key="refresh_token",
             value=str(refresh),
             httponly=True,
             secure=secure_cookie,
-            samesite="None" if secure_cookie else "Lax",
+            samesite=samesite,
             path="/",
         )
         print("Access token set:", refresh.access_token)

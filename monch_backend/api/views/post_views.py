@@ -1,8 +1,9 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets, permissions, filters
-from ..models import Post, Follow
+from ..models import Post, Follow, Like
 from ..serializers import PostSerializer
+from rest_framework import status
     
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -51,3 +52,29 @@ class PostViewSet(viewsets.ModelViewSet):
         posts = Post.objects.filter(user__id__in=followed_user_ids).order_by("-created_at")
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['post', 'delete'], permission_classes=[permissions.IsAuthenticated])
+    def like(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+
+        if request.method == 'POST':
+            like, created = Like.objects.get_or_create(user=user, post=post)
+            if created:
+                return Response({'detail': 'Post liked'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({'detail': 'Already liked'}, status=status.HTTP_400_BAD_REQUEST)
+
+        elif request.method == 'DELETE':
+            try:
+                like = Like.objects.get(user=user, post=post)
+                like.delete()
+                return Response({'detail': 'Like removed'}, status=status.HTTP_204_NO_CONTENT)
+            except Like.DoesNotExist:
+                return Response({'detail': 'Not liked yet'}, status=status.HTTP_400_BAD_REQUEST)
+            
+    def get_serializer_context(self):
+        return {'request': self.request}
+    
+   
+   #update to show posts already liked, allow unlike

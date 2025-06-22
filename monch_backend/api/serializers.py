@@ -14,13 +14,20 @@ class PostSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True) #nested user info
     parent_post = serializers.PrimaryKeyRelatedField(read_only=True)
     replies = serializers.SerializerMethodField()
+    liked_by_user = serializers.SerializerMethodField()
     
     class Meta:
         model = Post
-        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'replies', 'likes']
+        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'replies', 'likes', 'liked_by_user']
 
     def get_likes(self, obj):
         return obj.likes.count()
+    
+    def get_liked_by_user(self, obj):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return obj.likes.filter(user=user).exists()
 
     def get_replies(self, obj):
         replies = obj.replies.all().order_by('created_at')  # thanks to related_name='replies'
