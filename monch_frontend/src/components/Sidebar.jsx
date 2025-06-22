@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -18,6 +20,34 @@ function SidebarButton({ icon, label }) {
 }
 
 export default function Sidebar() {
+  const [showMenu, setShowMenu] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  const toggleMenu = () => setShowMenu((prev) => !prev);
+
+  const logout = async () => {
+     try {
+    const res = await fetch('http://127.0.0.1:8000/api/logout/', {
+      method: 'POST',
+      credentials: 'include', // include cookies
+    });
+
+    console.log('Logout response status:', res.status);
+    const data = await res.json();
+    console.log('Logout response data:', data);
+
+    if (!res.ok) {
+      throw new Error('Logout failed');
+    }
+
+    setUser(null); // Clear any local user state
+    navigate('/login'); // Redirect to login
+  } catch (err) {
+    alert(err.message);
+  }
+  };
+
   return (
     <div className="fixed top-0 left-0 h-full w-12 text-2xl flex flex-col justify-between items-center mx-4 py-4 text-neutral-600">
       <div>
@@ -33,9 +63,27 @@ export default function Sidebar() {
         <SidebarButton icon={faUser} label="Profile" />
       </div>
       <div>
-        <button className="hover:text-white cursor-pointer mb-4" aria-label="More">
+        <button
+          onClick={toggleMenu}
+          className="hover:text-white cursor-pointer mb-4"
+          aria-label="More"
+        >
           <FontAwesomeIcon icon={faBars} />
         </button>
+        {/* Dropdown Menu */}
+        {showMenu && (
+          <div
+            className="absolute left-1 bottom-14 mb-4 w-40 bg-neutral-800 text-white rounded-xl p-2 transition-opacity duration-200 ease-in opacity-100 z-50"
+          >
+            <button
+              onClick={logout}
+              className="w-full text-left font-semibold text-sm px-4 py-2 cursor-pointer border-none"
+            >
+              Log out
+            </button>
+            {/* Add more options here */}
+          </div>
+        )}
       </div>
     </div>
   );
