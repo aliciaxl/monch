@@ -71,9 +71,18 @@ export default function Sidebar() {
           <FontAwesomeIcon icon={faBars} />
         </button>
         {/* Dropdown Menu */}
-        {showMenu && (
           <div
-            className="absolute left-1 bottom-14 mb-4 w-40 bg-neutral-800 text-white rounded-xl p-2 transition-opacity duration-200 ease-in opacity-100 z-50"
+            className={`
+              absolute left-1 bottom-14 mb-4 w-40 bg-neutral-800 text-white rounded-xl p-2 z-50
+              origin-bottom-left transition-transform duration-100 ease-in-out
+              ${showMenu
+                ? 'opacity-100 scale-100 pointer-events-auto'
+                : 'opacity-0 scale-75 pointer-events-none'
+              }
+            `}
+            style={{
+              transform: showMenu ? 'translate(0, 0) scale(1)' : 'translate(-10px, 10px) scale(0.75)',
+            }}
           >
             <button
               onClick={logout}
@@ -83,7 +92,6 @@ export default function Sidebar() {
             </button>
             {/* Add more options here */}
           </div>
-        )}
       </div>
     </div>
   );
