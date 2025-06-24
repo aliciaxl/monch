@@ -33,10 +33,6 @@ export default function Sidebar() {
       credentials: 'include', // include cookies
     });
 
-    console.log('Logout response status:', res.status);
-    const data = await res.json();
-    console.log('Logout response data:', data);
-
     if (!res.ok) {
       throw new Error('Logout failed');
     }
