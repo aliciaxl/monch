@@ -19,6 +19,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
     logger = logging.getLogger(__name__)
 
+    @action(detail=True, methods=['get'], url_path='profile')
+    def profile(self, request, username=None):
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['get'], url_path='followers')
     def followers(self, request, username=None):
         user = self.get_object()

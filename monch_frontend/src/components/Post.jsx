@@ -41,7 +41,7 @@ export default function Post({ post }) {
   };
 
   return (
-    <div className="flex items-start w-full border-b border-neutral-800 px-8 p-4 bg-neutral-900">
+    <div className="flex items-start w-full border-b border-neutral-800 px-6 p-4 bg-neutral-900">
       <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold mr-4">
         {post.user[0]?.toUpperCase()}
       </div>
