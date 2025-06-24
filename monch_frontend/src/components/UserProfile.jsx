@@ -10,6 +10,9 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [loadingFollow, setLoadingFollow] = useState(false);
+
 
   useEffect(() => {
     // Fetch current logged-in user info (adjust URL as needed)
@@ -68,6 +71,57 @@ export default function UserProfile() {
     fetchUserAndPosts();
   }, [username]);
 
+  useEffect(() => {
+    async function checkFollowing() {
+      if (!currentUser || !username) return;
+
+      try {
+        const res = await apiFetch(`http://127.0.0.1:8000/api/follows/is_following/?username=${username}`, {
+          credentials: "include",
+        });
+
+        if (!res.ok) throw new Error("Failed to check following status");
+
+        const data = await res.json();
+        setIsFollowing(data.is_following);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    checkFollowing();
+  }, [username, currentUser]);
+
+  const handleFollowToggle = async () => {
+    if (loadingFollow) return;
+
+    setLoadingFollow(true);
+
+    try {
+      const res = await apiFetch("http://127.0.0.1:8000/api/follows/toggle/", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }), // send username of profile being viewed
+      });
+
+      if (!res.ok) throw new Error("Failed to toggle follow");
+
+      const data = await res.json();
+      setIsFollowing(data.status === "followed");
+
+      setUserData(prev => ({
+      ...prev,
+      follower_count: prev.follower_count + (data.status === "followed" ? 1 : -1),
+    }));
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong.");
+    } finally {
+      setLoadingFollow(false);
+    }
+  };
+
   return (
     <>
         <div className="flex text-m font-semibold justify-center text-neutral-500 ">
@@ -98,13 +152,20 @@ export default function UserProfile() {
                     Edit Profile
                 </button>
                 ) : (
-                <button
-                    // onClick={handleFollow}
-                    className="w-full h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white"
-                >
-                    Follow
-                </button>
-                )}
+                currentUser !== username && (
+                  <button
+                    onClick={handleFollowToggle}
+                    disabled={loadingFollow}
+                    className={`w-full h-10 px-4 border rounded-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
+                      ${isFollowing 
+                        ? "bg-neutral-900 hover:bg-neutral-700 border-neutral-700 text-white" // Unfollow: dark button
+                        : "bg-white text-black border-neutral-300 hover:bg-neutral-200" // Follow: white button
+                      }`}
+                  >
+                    {isFollowing ? "Unfollow" : "Follow"}
+                  </button>
+                )
+              )}
             </div>
             {loading ? (
                 <p className="text-neutral-400">Loading...</p>

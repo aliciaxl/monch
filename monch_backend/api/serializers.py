@@ -44,7 +44,12 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = ['id', 'follower', 'following']
-
+        
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['follower'] = user
+        return super().create(validated_data)
+    
 class LikeSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     post = serializers.PrimaryKeyRelatedField(read_only=True)
