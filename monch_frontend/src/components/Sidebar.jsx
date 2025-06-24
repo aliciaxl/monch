@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { apiFetch } from "../apiFetch.jsx"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -25,6 +26,29 @@ export default function Sidebar() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await apiFetch('http://127.0.0.1:8000/api/me/', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch user');
+        }
+
+        const data = await res.json();
+        setUser(data);  // assuming data has username and other info
+      } catch (error) {
+        console.error(error);
+        // maybe redirect to login or show error
+      }
+    }
+
+    fetchUser();
+  }, []);
+
   const toggleMenu = () => setShowMenu((prev) => !prev);
 
   const logout = async () => {
@@ -37,7 +61,7 @@ export default function Sidebar() {
     if (!res.ok) {
       throw new Error('Logout failed');
     }
-    
+
     setUser(null); // Clear any local user state
     navigate('/login'); // Redirect to login
   } catch (err) {
@@ -53,11 +77,17 @@ export default function Sidebar() {
         </button>
       </div>
       <div className="flex flex-col space-y-8">
-        <SidebarButton icon={faHouse} label="Home" />
+        <Link to="/home">
+          <SidebarButton icon={faHouse} label="Home" />
+        </Link>
         <SidebarButton icon={faMagnifyingGlass} label="Search" />
         <SidebarButton icon={faPlus} label="Add" />
         <SidebarButton icon={faHeart} label="Likes" />
-        <SidebarButton icon={faUser} label="Profile" />
+        {user && (
+          <Link to={`/user/${user.username}`}>
+            <SidebarButton icon={faUser} label="Profile" />
+          </Link>
+        )}
       </div>
       <div>
         <button
