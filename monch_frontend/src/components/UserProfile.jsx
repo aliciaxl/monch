@@ -73,7 +73,7 @@ export default function UserProfile() {
                             : "0 followers"}
                         </p>
                     </div>
-                    <div className="flex-start w-16 h-16 rounded-full bg-neutral-700 flex items-center justify-center text-white text-xl font-semibold">
+                    <div className="self-start flex-none w-16 h-16 rounded-full bg-neutral-700 flex items-center justify-center text-white text-xl font-semibold">
                         {userData?.display_name?.[0]?.toUpperCase() || username[0].toUpperCase()}
                     </div>
                 </div>
