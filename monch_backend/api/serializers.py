@@ -4,10 +4,14 @@ from .models import User, Post, Follow, Like
 # Model serializer converts data to JSON. Auto generate fields corresponding to model, generate validators
 class UserSerializer(serializers.ModelSerializer):
     posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    follower_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'display_name', 'bio', 'avatar_url', 'posts']
+        fields = ['id', 'username', 'display_name', 'bio', 'avatar_url', 'posts', 'follower_count']
+
+    def get_follower_count(self, obj):
+        return obj.followers.count()
     
 class PostSerializer(serializers.ModelSerializer):
     likes = serializers.IntegerField(source='likes.count', read_only=True)

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiFetch } from "../apiFetch.jsx"
 import Sidebar from "../components/Sidebar";
 import PostInput from "../components/PostInput";
 import Feed from "../components/Feed";
@@ -17,10 +18,10 @@ export default function Home() {
 
     const fetchPosts = async () => {
       try {
-        let res = await fetch(endpoint, { credentials: "include" });
+        let res = await apiFetch(endpoint, { credentials: "include" });
 
         if (res.status === 401) {
-          const refreshRes = await fetch(
+          const refreshRes = await apiFetch(
             "http://127.0.0.1:8000/api/token/refresh/",
             {
               method: "POST",
@@ -36,7 +37,7 @@ export default function Home() {
             return;
           }
 
-          res = await fetch(endpoint, { credentials: "include" });
+          res = await apiFetch(endpoint, { credentials: "include" });
         }
 
         if (!res.ok) throw new Error(`Failed with status ${res.status}`);
@@ -65,7 +66,7 @@ export default function Home() {
     // created_at: new Date().toISOString(), // usually backend-generated
   };
 
-    fetch("http://127.0.0.1:8000/api/posts/", {
+    apiFetch("http://127.0.0.1:8000/api/posts/", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

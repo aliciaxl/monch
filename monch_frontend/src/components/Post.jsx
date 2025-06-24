@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiFetch } from "../apiFetch.jsx"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { formatDistanceToNow } from "date-fns";
@@ -16,7 +17,7 @@ export default function Post({ post }) {
     try {
       if (!liked) {
         // Add like (POST)
-        const res = await fetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
+        const res = await apiFetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
           method: "POST",
           credentials: "include",
         });
@@ -25,7 +26,7 @@ export default function Post({ post }) {
         setLikesCount((count) => count + 1);
       } else {
         // Remove like (DELETE)
-        const res = await fetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
+        const res = await apiFetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
           method: "DELETE",
           credentials: "include",
         });

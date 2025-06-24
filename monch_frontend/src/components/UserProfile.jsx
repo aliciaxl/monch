@@ -1,8 +1,8 @@
 // pages/UserProfile.jsx
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { apiFetch } from "../apiFetch.jsx"
 import Feed from "../components/Feed";
-import Sidebar from "../components/Sidebar";
 
 export default function UserProfile() {
   const { username } = useParams();
@@ -15,7 +15,7 @@ export default function UserProfile() {
     // Fetch current logged-in user info (adjust URL as needed)
     async function fetchCurrentUser() {
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/me/", { credentials: "include" });
+        const res = await apiFetch("http://127.0.0.1:8000/api/me/", { credentials: "include" });
         if (!res.ok) throw new Error("Failed to fetch current user");
         const data = await res.json();
         setCurrentUser(data.username);
@@ -31,9 +31,22 @@ export default function UserProfile() {
       try {
         setLoading(true);
         const [userRes, postsRes] = await Promise.all([
-          fetch(`http://127.0.0.1:8000/api/users/${username}/`, { credentials: "include" }),
-          fetch(`http://127.0.0.1:8000/api/users/${username}/posts/`, { credentials: "include" }),
+          apiFetch(`http://127.0.0.1:8000/api/users/${username}/`, { credentials: "include" }),
+          apiFetch(`http://127.0.0.1:8000/api/users/${username}/posts/`, { credentials: "include" }),
         ]);
+
+        console.log("userRes:", userRes);
+        console.log("postsRes:", postsRes);
+
+        if (!userRes.ok) {
+          console.error("User fetch failed:", userRes.status, userRes.statusText);
+          throw new Error("Failed to fetch user data");
+        }
+
+        if (!postsRes.ok) {
+          console.error("Posts fetch failed:", postsRes.status, postsRes.statusText);
+          throw new Error("Failed to fetch posts");
+        }
 
         if (!userRes.ok) throw new Error("Failed to fetch user data");
         if (!postsRes.ok) throw new Error("Failed to fetch posts");
@@ -68,8 +81,8 @@ export default function UserProfile() {
                         <p className="text-neutral-400 mb-4">@{username}</p>
                         <p className="text-white mb-4">{userData?.bio || "No bio available"}</p>
                         <p className="text-neutral-500 mt-1">
-                            {userData?.followers_count !== undefined
-                            ? `${userData.followers_count} follower${userData.followers_count === 1 ? "" : "s"}`
+                            {userData?.follower_count !== undefined
+                            ? `${userData.follower_count} follower${userData.follower_count === 1 ? "" : "s"}`
                             : "0 followers"}
                         </p>
                     </div>

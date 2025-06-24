@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
+import { apiFetch } from "./apiFetch.jsx"
 import Login from "./pages/Login.jsx";
 import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
@@ -14,16 +15,19 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/whoami/', {
+        const res = await apiFetch('http://127.0.0.1:8000/api/whoami/', {
           credentials: 'include',
         });
 
         if (res.ok) {
           const data = await res.json();
           setUser(data.username); // set user from backend
+        } else {
+          setUser(null);
         }
       } catch (error) {
         console.error("Not authenticated");
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -45,14 +49,14 @@ function App() {
         />
 
         {/* Protected layout with sidebar */}
-        {user && (
+        {user ? (
           <Route path="/" element={<Layout />}>
             <Route path="home" element={<Home />} />
             <Route path="user/:username" element={<UserProfile />} />
           </Route>
-        )}
-
-        <Route path="/user/:username" element={<UserProfile />} />
+          ) : (
+            <Route path="*" element={<Navigate to="/login" />} />
+          )}
 
         {/* Redirect any other paths */}
         <Route

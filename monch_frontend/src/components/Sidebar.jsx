@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from "../apiFetch.jsx"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -28,7 +29,7 @@ export default function Sidebar() {
 
   const logout = async () => {
      try {
-    const res = await fetch('http://127.0.0.1:8000/api/logout/', {
+    const res = await apiFetch('http://127.0.0.1:8000/api/logout/', {
       method: 'POST',
       credentials: 'include', // include cookies
     });
@@ -36,7 +37,7 @@ export default function Sidebar() {
     if (!res.ok) {
       throw new Error('Logout failed');
     }
-
+    
     setUser(null); // Clear any local user state
     navigate('/login'); // Redirect to login
   } catch (err) {

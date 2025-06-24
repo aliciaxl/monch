@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiFetch } from "../apiFetch.jsx"
 
 export default function SignUpModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -36,7 +37,7 @@ export default function SignUpModal({ isOpen, onClose }) {
         return;
     }
     try {
-        const res = await fetch(`http://127.0.0.1:8000/api/users/check-username?username=${username}`);
+        const res = await apiFetch(`http://127.0.0.1:8000/api/users/check-username?username=${username}`);
         const data = await res.json();
         setUsernameAvailable(data.available);
     } catch (err) {

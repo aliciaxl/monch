@@ -8,7 +8,6 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user_model
 import logging
 
-
 User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -16,8 +15,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'username'
-
-    logger = logging.getLogger(__name__)
 
     @action(detail=True, methods=['get'], url_path='followers')
     def followers(self, request, username=None):

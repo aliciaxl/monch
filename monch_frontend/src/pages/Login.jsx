@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from "../apiFetch.jsx"
 import SignUpModal from './SignUpModal';
 
 export default function Login({ user, setUser }) {
@@ -14,7 +15,7 @@ export default function Login({ user, setUser }) {
   const login = async (username, password) => {
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/login/', {
+        const response = await apiFetch('http://127.0.0.1:8000/api/login/', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

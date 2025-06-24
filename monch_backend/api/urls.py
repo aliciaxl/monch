@@ -17,7 +17,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('me/', me_view.MeView.as_view()),
-    path('', include(router.urls)),
     path('token/refresh/', token_refresh_view.TokenRefreshView.as_view(), name='token_refresh'),
     path("whoami/", whoami_view.WhoAmIView.as_view()),
+    path('', include(router.urls)),
 ]

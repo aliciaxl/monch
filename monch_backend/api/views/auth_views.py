@@ -3,8 +3,6 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import AllowAny
-from django.conf import settings
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -47,7 +45,7 @@ class LogoutView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        res = Response({'detail': 'Logged out'})
-        res.delete_cookie('access_token', path='/')
-        res.delete_cookie('refresh_token', path='/')
+        res = Response({'detail': 'Logged out'}, status=200)
+        res.delete_cookie("access_token", path="/")
+        res.delete_cookie("refresh_token", path="/")
         return res
