@@ -4,6 +4,7 @@ html, body #root {
   background-color: #0a0a0a;
   margin: 0 auto;
   text-align: center;
+  scrollbar-gutter: stable;
 }
 
 @font-face {

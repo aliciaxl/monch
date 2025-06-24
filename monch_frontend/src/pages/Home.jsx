@@ -85,7 +85,6 @@ export default function Home() {
 
   return (
     <div className="flex h-screen w-full text-white">
-      <Sidebar />
       <div className="flex flex-col">
         {/* Tabs */}
         <div className="flex text-m font-semibold justify-center text-neutral-500">
@@ -112,7 +111,7 @@ export default function Home() {
         </div>
 
         {/* Post Input and Feed */}
-        <div className="flex-1 flex-col justify-center w-160 items-center pt-8 rounded-3xl border-neutral-800 bg-neutral-900">
+        <div className="flex-1 flex-col justify-center w-160 items-center pt-8 rounded-t-3xl border-neutral-800 bg-neutral-900">
           <PostInput
             newPost={newPost}
             setNewPost={setNewPost}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { formatDistanceToNow } from "date-fns";
+import { Link } from "react-router-dom";
 
 export default function Post({ post }) {
     const [liked, setLiked] = useState(post.liked_by_user || false);
@@ -46,7 +47,9 @@ export default function Post({ post }) {
       </div>
       <div>
         <div className="flex text-sm text-neutral-400 mb-1">
-          <span className="font-semibold text-white mr-2">{post.user}</span>
+          <Link to={`/user/${post.user}`} className="font-semibold text-white mr-2 hover:underline">
+            {post.user}
+          </Link>
           {formatDistanceToNow(new Date(post.created_at), {
             addSuffix: true,
           })}

@@ -6,6 +6,8 @@ from ..models import User, Post
 from ..serializers import UserSerializer, PostSerializer
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user_model
+import logging
+
 
 User = get_user_model()
 
@@ -13,35 +15,38 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = 'username'
+
+    logger = logging.getLogger(__name__)
 
     @action(detail=True, methods=['get'], url_path='followers')
-    def followers(self, request, pk=None):
+    def followers(self, request, username=None):
         user = self.get_object()
         followers = User.objects.filter(following__following=user)
         serializer = UserSerializer(followers, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'], url_path='following')
-    def following(self, request, pk=None):
+    def following(self, request, username=None):
         user = self.get_object()
         following = User.objects.filter(followers__follower=user)
         serializer = UserSerializer(following, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get'])
-    def posts(self, request, pk=None):
+    @action(detail=True, methods=['get'], url_path='posts')
+    def posts(self, request, username=None):
         user = self.get_object()
         posts = Post.objects.filter(user=user).order_by('-created_at')
-        serializer = PostSerializer(posts, many=True)
+        serializer = PostSerializer(posts, many=True, context={'request': request})
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get'])
-    def replies(self, request, pk=None):
+    @action(detail=True, methods=['get'], url_path='replies')
+    def replies(self, request, username=None):
         user = self.get_object()
         replies = Post.objects.filter(user=user, parent_post__isnull=False).order_by('-created_at')
-        serializer = PostSerializer(replies, many=True)
+        serializer = PostSerializer(replies, many=True, context={'request': request})
         return Response(serializer.data)
-
+    
     @action(detail=False, methods=['get'], url_path='check-username')
     def check_username(self, request):
         username = request.query_params.get('username', '').strip()
