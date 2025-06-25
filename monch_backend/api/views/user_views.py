@@ -53,8 +53,6 @@ class UserViewSet(viewsets.ModelViewSet):
         exists = User.objects.filter(username=username).exists()
         return Response({"username": username, "available": not exists})
     
-    User = get_user_model()
-    
     @action(detail=False, methods=['post'], url_path='register', permission_classes=[])
     def register(self, request):
         data = request.data

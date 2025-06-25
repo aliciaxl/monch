@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiFetch } from "../apiFetch.jsx"
+import apiClient from "../api/apiClient.js"
 import SignUpModal from './SignUpModal';
 
 export default function Login({ user, setUser }) {
@@ -15,23 +15,13 @@ export default function Login({ user, setUser }) {
   const login = async (username, password) => {
 
     try {
-        const response = await apiFetch('http://127.0.0.1:8000/api/login/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-        });
+        const response = await apiClient.post('/login/', { username, password });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || 'Invalid credentials');
-        }
-
-        const data = await response.json();
         setUser(username);
         navigate('/home');
     } catch (error) {
-        alert(error.message);
+        const errorMsg = error.response?.data?.detail || error.message || 'Login failed';
+        alert(errorMsg);
     }
     };
 

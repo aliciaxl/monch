@@ -1,7 +1,7 @@
 // pages/UserProfile.jsx
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { apiFetch } from "../apiFetch.jsx"
+import apiClient from "../api/apiClient.js"
 import Feed from "../components/Feed";
 
 export default function UserProfile() {
@@ -15,13 +15,10 @@ export default function UserProfile() {
 
 
   useEffect(() => {
-    // Fetch current logged-in user info (adjust URL as needed)
     async function fetchCurrentUser() {
       try {
-        const res = await apiFetch("http://127.0.0.1:8000/api/me/", { credentials: "include" });
-        if (!res.ok) throw new Error("Failed to fetch current user");
-        const data = await res.json();
-        setCurrentUser(data.username);
+        const data = await apiClient.get("/me/", { withCredentials: true });
+        setCurrentUser(data.data.username); // Axios response data is in data.data
       } catch {
         setCurrentUser(null);
       }
@@ -29,36 +26,19 @@ export default function UserProfile() {
     fetchCurrentUser();
   }, []);
 
+
   useEffect(() => {
     const fetchUserAndPosts = async () => {
       try {
         setLoading(true);
+
         const [userRes, postsRes] = await Promise.all([
-          apiFetch(`http://127.0.0.1:8000/api/users/${username}/`, { credentials: "include" }),
-          apiFetch(`http://127.0.0.1:8000/api/users/${username}/posts/`, { credentials: "include" }),
+          apiClient.get(`/users/${username}/`, { withCredentials: true }),
+          apiClient.get(`/users/${username}/posts/`, { withCredentials: true }),
         ]);
 
-        console.log("userRes:", userRes);
-        console.log("postsRes:", postsRes);
-
-        if (!userRes.ok) {
-          console.error("User fetch failed:", userRes.status, userRes.statusText);
-          throw new Error("Failed to fetch user data");
-        }
-
-        if (!postsRes.ok) {
-          console.error("Posts fetch failed:", postsRes.status, postsRes.statusText);
-          throw new Error("Failed to fetch posts");
-        }
-
-        if (!userRes.ok) throw new Error("Failed to fetch user data");
-        if (!postsRes.ok) throw new Error("Failed to fetch posts");
-
-        const userData = await userRes.json();
-        const postsData = await postsRes.json();
-
-        setUserData(userData);
-        setPosts(postsData);
+        setUserData(userRes.data);
+        setPosts(postsRes.data);
       } catch (error) {
         console.error("Failed to load user profile:", error);
         setUserData(null);
@@ -71,19 +51,17 @@ export default function UserProfile() {
     fetchUserAndPosts();
   }, [username]);
 
+
   useEffect(() => {
     async function checkFollowing() {
       if (!currentUser || !username) return;
 
       try {
-        const res = await apiFetch(`http://127.0.0.1:8000/api/follows/is_following/?username=${username}`, {
-          credentials: "include",
+        const res = await apiClient.get("/follows/is_following/", {
+          withCredentials: true,
+          params: { username },
         });
-
-        if (!res.ok) throw new Error("Failed to check following status");
-
-        const data = await res.json();
-        setIsFollowing(data.is_following);
+        setIsFollowing(res.data.is_following);
       } catch (error) {
         console.error(error);
       }
@@ -92,28 +70,26 @@ export default function UserProfile() {
     checkFollowing();
   }, [username, currentUser]);
 
+
   const handleFollowToggle = async () => {
     if (loadingFollow) return;
 
     setLoadingFollow(true);
 
     try {
-      const res = await apiFetch("http://127.0.0.1:8000/api/follows/toggle/", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username }), // send username of profile being viewed
-      });
+      const res = await apiClient.post(
+        "/follows/toggle/",
+        { username }, // body
+        { withCredentials: true }
+      );
 
-      if (!res.ok) throw new Error("Failed to toggle follow");
+      setIsFollowing(res.data.status === "followed");
 
-      const data = await res.json();
-      setIsFollowing(data.status === "followed");
-
-      setUserData(prev => ({
-      ...prev,
-      follower_count: prev.follower_count + (data.status === "followed" ? 1 : -1),
-    }));
+      setUserData((prev) => ({
+        ...prev,
+        follower_count:
+          prev.follower_count + (res.data.status === "followed" ? 1 : -1),
+      }));
     } catch (err) {
       console.error(err);
       alert("Something went wrong.");

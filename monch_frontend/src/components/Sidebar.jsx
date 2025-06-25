@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { apiFetch } from "../apiFetch.jsx"
+import apiClient from "../api/apiClient.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -29,44 +29,30 @@ export default function Sidebar() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await apiFetch('http://127.0.0.1:8000/api/me/', {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const res = await apiClient.get('/me/'); // Axios GET request
 
-        if (!res.ok) {
-          throw new Error('Failed to fetch user');
-        }
-
-        const data = await res.json();
-        setUser(data);  // assuming data has username and other info
+        setUser(res.data);  // Axios response data
       } catch (error) {
-        console.error(error);
-        // maybe redirect to login or show error
+        console.error("Failed to fetch user:", error);
+        // You might want to redirect to login if unauthorized:
+        navigate('/login');
       }
     }
 
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   const toggleMenu = () => setShowMenu((prev) => !prev);
 
   const logout = async () => {
-     try {
-    const res = await apiFetch('http://127.0.0.1:8000/api/logout/', {
-      method: 'POST',
-      credentials: 'include', // include cookies
-    });
+    try {
+      await apiClient.post('/logout/'); // Axios POST request
 
-    if (!res.ok) {
-      throw new Error('Logout failed');
+      setUser(null); // Clear user state
+      navigate('/login'); // Redirect to login page
+    } catch (err) {
+      alert(err.response?.data?.detail || err.message || 'Logout failed');
     }
-
-    setUser(null); // Clear any local user state
-    navigate('/login'); // Redirect to login
-  } catch (err) {
-    alert(err.message);
-  }
   };
 
   return (

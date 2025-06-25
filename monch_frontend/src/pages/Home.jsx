@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "../apiFetch.jsx"
+import apiClient from "../api/apiClient.js"
 import Sidebar from "../components/Sidebar";
 import PostInput from "../components/PostInput";
 import Feed from "../components/Feed";
@@ -10,40 +10,17 @@ export default function Home() {
   const [posts, setPosts] = useState([]);
   const [tab, setTab] = useState("bites");
 
-  useEffect(() => {
-    const endpoint =
-      tab === "following"
-        ? "http://127.0.0.1:8000/api/posts/following/"
-        : "http://127.0.0.1:8000/api/posts/";
+useEffect(() => {
+    const endpoint = tab === "following" ? "/posts/following/" : "/posts/";
 
     const fetchPosts = async () => {
       try {
-        let res = await apiFetch(endpoint, { credentials: "include" });
+        let res = await apiClient.get(endpoint, { withCredentials: true });
 
-        if (res.status === 401) {
-          const refreshRes = await apiFetch(
-            "http://127.0.0.1:8000/api/token/refresh/",
-            {
-              method: "POST",
-              credentials: "include",
-            }
-          );
+        // No need to manually handle 401 & refresh tokens here if you have interceptors
+        // If you want to handle token refresh manually, you'd do it differently with axios
 
-          if (!refreshRes.ok) {
-            console.log(
-              "Refresh token expired or invalid, redirecting to login"
-            );
-            setPosts([]);
-            return;
-          }
-
-          res = await apiFetch(endpoint, { credentials: "include" });
-        }
-
-        if (!res.ok) throw new Error(`Failed with status ${res.status}`);
-
-        const data = await res.json();
-        setPosts(data);
+        setPosts(res.data);
       } catch (error) {
         console.error("Error fetching posts:", error);
         setPosts([]);
@@ -53,35 +30,26 @@ export default function Home() {
     fetchPosts();
   }, [tab]);
 
-  const handlePost = (parentPostId = null) => {
+
+  const handlePost = async (parentPostId = null) => {
     if (!newPost.trim()) return;
 
     setLoading(true);
 
-    
-  const payload = {
-    content: newPost,
-    parent_post_id: parentPostId, // assuming this is not a reply
-    // user_id: "abc123", // optional if backend infers from session
-    // created_at: new Date().toISOString(), // usually backend-generated
-  };
+    const payload = {
+      content: newPost,
+      parent_post_id: parentPostId,
+    };
 
-    apiFetch("http://127.0.0.1:8000/api/posts/", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to post");
-        return res.json();
-      })
-      .then((post) => {
-        setPosts((prev) => [post, ...prev]);
-        setNewPost("");
-      })
-      .catch((err) => alert(err.message))
-      .finally(() => setLoading(false));
+    try {
+      const res = await apiClient.post("/posts/", payload, { withCredentials: true });
+      setPosts((prev) => [res.data, ...prev]);
+      setNewPost("");
+    } catch (err) {
+      alert(err.message || "Failed to post");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

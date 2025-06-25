@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { apiFetch } from "../apiFetch.jsx"
+import apiClient from "../api/apiClient.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { formatDistanceToNow } from "date-fns";
@@ -10,36 +10,28 @@ export default function Post({ post }) {
     const [likesCount, setLikesCount] = useState(post.likes || 0);
     const [loading, setLoading] = useState(false);
 
-    const toggleLike = async () => {
-    if (loading) return; // prevent double clicks while processing
-    setLoading(true);
+const toggleLike = async () => {
+  if (loading) return; // prevent double clicks while processing
+  setLoading(true);
 
-    try {
-      if (!liked) {
-        // Add like (POST)
-        const res = await apiFetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
-          method: "POST",
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("Failed to like");
-        setLiked(true);
-        setLikesCount((count) => count + 1);
-      } else {
-        // Remove like (DELETE)
-        const res = await apiFetch(`http://127.0.0.1:8000/api/posts/${post.id}/like/`, {
-          method: "DELETE",
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("Failed to unlike");
-        setLiked(false);
-        setLikesCount((count) => count - 1);
-      }
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
+  try {
+    if (!liked) {
+      // Add like (POST)
+      await apiClient.post(`/posts/${post.id}/like/`, null, { withCredentials: true });
+      setLiked(true);
+      setLikesCount((count) => count + 1);
+    } else {
+      // Remove like (DELETE)
+      await apiClient.delete(`/posts/${post.id}/like/`, { withCredentials: true });
+      setLiked(false);
+      setLikesCount((count) => count - 1);
     }
-  };
+  } catch (error) {
+    alert(error.response?.data?.detail || error.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex items-start w-full border-b border-neutral-800 px-6 p-4 bg-neutral-900">

@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
-import { apiFetch } from "./apiFetch.jsx"
+import apiClient from "./api/apiClient.js"
 import Login from "./pages/Login.jsx";
 import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
@@ -15,18 +15,12 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await apiFetch('http://127.0.0.1:8000/api/whoami/', {
-          credentials: 'include',
-        });
+        const res = await apiClient.get('/whoami/');  // Axios auto handles baseURL, cookies
 
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.username); // set user from backend
-        } else {
-          setUser(null);
-        }
+        // Axios responses put data inside `res.data`
+        setUser(res.data.username); // set user from backend
       } catch (error) {
-        console.error("Not authenticated");
+        console.error("Not authenticated", error);
         setUser(null);
       } finally {
         setLoading(false);
