@@ -9,7 +9,7 @@ html, body #root {
 
 @font-face {
     font-family: 'Vanished';
-    src: url('../public/fonts/Vanished.ttf') format('truetype');
+    src: url('../fonts/Vanished.ttf') format('truetype');
 }
 
 .title {

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api', // your API base URL
-  withCredentials: true,                 // send cookies with requests
+  baseURL: 'http://127.0.0.1:8000/api',
+  withCredentials: true,
 });
 
 apiClient.interceptors.response.use(
@@ -10,7 +10,19 @@ apiClient.interceptors.response.use(
   async error => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Do NOT try to refresh token for these endpoints
+    const nonRefreshablePaths = [
+      '/login/',
+      '/token/refresh/',
+      '/register/',
+      // add other endpoints you don't want to retry
+    ];
+
+    const isNonRefreshable = nonRefreshablePaths.some(path =>
+      originalRequest.url.includes(path)
+    );
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isNonRefreshable) {
       originalRequest._retry = true;
 
       try {
@@ -21,16 +33,14 @@ apiClient.interceptors.response.use(
         );
 
         if (refreshResponse.status === 200) {
-          // Retry original request after successful token refresh
+          // Retry the original request
           return apiClient(originalRequest);
         }
       } catch (refreshError) {
-        // Refresh token failed: redirect to login or handle logout here
-        window.location.href = '/login';
+        console.error("Token refresh failed", refreshError);
         return Promise.reject(refreshError);
       }
     }
-    return Promise.reject(error);
   }
 );
 

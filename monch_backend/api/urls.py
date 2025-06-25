@@ -2,8 +2,6 @@
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-
-from rest_framework_simplejwt.views import TokenObtainPairView
 from .views import user_views, post_views, follow_views, like_views, auth_views, me_view, whoami_view
 
 

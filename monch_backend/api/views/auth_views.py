@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework import status
 
@@ -47,51 +47,75 @@ class LogoutView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+        access_token = request.COOKIES.get("access_token")
+
+        print("Logging out:")
+        print("Access token:", access_token)
+        print("Refresh token:", refresh_token)
+
         res = Response({'detail': 'Logged out'}, status=200)
+
+        # Delete the cookies client-side
         res.delete_cookie("access_token", path="/")
         res.delete_cookie("refresh_token", path="/")
+
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+                print("Refresh token successfully blacklisted.")
+            except TokenError as e:
+                print("TokenError during blacklist:", str(e))
+            except Exception as e:
+                print("Unexpected error during token blacklist:", str(e))
+        else:
+            print("No refresh token found in cookies.")
+
         return res
     
 class CookieTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
-        # Read refresh token from cookie
         refresh_token = request.COOKIES.get('refresh_token')
 
-        if refresh_token is None:
+        if not refresh_token:
             return Response({"detail": "Refresh token cookie not found."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Create a new request data dict with the refresh token
-        request.data._mutable = True  # if request.data is immutable (QueryDict)
+        # Inject refresh token into request data
+        request.data._mutable = True if hasattr(request.data, "_mutable") else False
         request.data['refresh'] = refresh_token
-        request.data._mutable = False
 
         response = super().post(request, *args, **kwargs)
 
         if response.status_code == 200:
             access_token = response.data.get('access')
 
-            # Set new access token cookie
+            secure_cookie = True  # True in production HTTPS
+            samesite = "None"       
+
+            # Set access token as HttpOnly cookie
             response.set_cookie(
                 key="access_token",
                 value=access_token,
                 httponly=True,
-                secure=False,  # set to True in production (HTTPS)
-                samesite="Lax",
+                secure=secure_cookie,  # Change to True in production!
+                samesite="None",
                 path="/",
             )
-            # Optionally, you can also update the refresh token cookie if returned
+
+            # Optional: Refresh refresh token if returned
             refresh = response.data.get('refresh')
             if refresh:
                 response.set_cookie(
                     key="refresh_token",
                     value=refresh,
                     httponly=True,
-                    secure=False,
-                    samesite="Lax",
+                    secure=secure_cookie,
+                    samesite="None",
                     path="/",
                 )
-            
-            # Clear the response body for security (optional)
+
+            # Optionally remove tokens from body
             response.data = {"detail": "Token refreshed"}
 
         return response

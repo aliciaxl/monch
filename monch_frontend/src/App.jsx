@@ -13,22 +13,31 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await apiClient.get('/whoami/');  // Axios auto handles baseURL, cookies
+  const checkAuth = async () => {
+    // Don't bother calling /whoami if no cookies set
+    const hasTokens =
+      document.cookie.includes("access_token") ||
+      document.cookie.includes("refresh_token");
 
-        // Axios responses put data inside `res.data`
-        setUser(res.data.username); // set user from backend
-      } catch (error) {
-        console.error("Not authenticated", error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!hasTokens) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
 
-    checkAuth();
-  }, []);
+    try {
+      const res = await apiClient.get('/whoami/');
+      setUser(res.data.username);
+    } catch (error) {
+      console.error("Not authenticated", error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  checkAuth();
+}, []);
 
   if (loading) return <div>Loading...</div>;
 
@@ -55,7 +64,13 @@ function App() {
         {/* Redirect any other paths */}
         <Route
           path="*"
-          element={<Navigate to={user ? "/home" : "/login"} />}
+          element={
+            user
+              ? <Navigate to="/home" />
+              : window.location.pathname === "/login"
+                ? null
+                : <Navigate to="/login" />
+          }
         />
       </Routes>
     </Router>
