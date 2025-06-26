@@ -47,18 +47,35 @@ class LogoutView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+
         refresh_token = request.COOKIES.get("refresh_token")
         access_token = request.COOKIES.get("access_token")
 
         print("Logging out:")
-        print("Access token:", access_token)
-        print("Refresh token:", refresh_token)
 
         res = Response({'detail': 'Logged out'}, status=200)
 
-        # Delete the cookies client-side
-        res.delete_cookie("access_token", path="/")
-        res.delete_cookie("refresh_token", path="/")
+        # Force-expire access_token
+        res.set_cookie(
+            key="access_token",
+            value="",
+            max_age=0,
+            path="/",
+            samesite="None",
+            secure=True,
+            httponly=True,
+        )
+
+        # Force-expire refresh_token
+        res.set_cookie(
+            key="refresh_token",
+            value="",
+            max_age=0,
+            path="/",
+            samesite="None",
+            secure=True,
+            httponly=True,
+        )
 
         if refresh_token:
             try:
@@ -99,7 +116,7 @@ class CookieTokenRefreshView(TokenRefreshView):
                 value=access_token,
                 httponly=True,
                 secure=secure_cookie,  # Change to True in production!
-                samesite="None",
+                samesite=samesite,
                 path="/",
             )
 
@@ -111,7 +128,7 @@ class CookieTokenRefreshView(TokenRefreshView):
                     value=refresh,
                     httponly=True,
                     secure=secure_cookie,
-                    samesite="None",
+                    samesite=samesite,
                     path="/",
                 )
 

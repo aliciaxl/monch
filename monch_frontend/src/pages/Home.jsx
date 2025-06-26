@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import apiClient from "../api/apiClient.js"
-import Sidebar from "../components/Sidebar";
 import PostInput from "../components/PostInput";
 import Feed from "../components/Feed";
 

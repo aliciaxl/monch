@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import apiClient from "../api/apiClient.js"
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -23,35 +23,17 @@ function SidebarButton({ icon, label }) {
 
 export default function Sidebar() {
   const [showMenu, setShowMenu] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const res = await apiClient.get('/me/'); // Axios GET request
-
-        setUser(res.data);  // Axios response data
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-        // You might want to redirect to login if unauthorized:
-        navigate('/login');
-      }
-    }
-
-    fetchUser();
-  }, [navigate]);
 
   const toggleMenu = () => setShowMenu((prev) => !prev);
 
-  const logout = async () => {
+  const handleLogout = async () => {
     try {
-      await apiClient.post('/logout/'); // Axios POST request
-
-      setUser(null); // Clear user state
-      navigate('/login'); // Redirect to login page
+      await logout();
+      navigate("/login");
     } catch (err) {
-      alert(err.response?.data?.detail || err.message || 'Logout failed');
+      alert(err.response?.data?.detail || err.message || "Logout failed");
     }
   };
 
@@ -69,7 +51,7 @@ export default function Sidebar() {
         <SidebarButton icon={faMagnifyingGlass} label="Search" />
         <SidebarButton icon={faPlus} label="Add" />
         <SidebarButton icon={faHeart} label="Likes" />
-        {user && (
+        {user?.username && (
           <Link to={`/user/${user.username}`}>
             <SidebarButton icon={faUser} label="Profile" />
           </Link>
@@ -84,27 +66,30 @@ export default function Sidebar() {
           <FontAwesomeIcon icon={faBars} />
         </button>
         {/* Dropdown Menu */}
-          <div
-            className={`
+        <div
+          className={`
               absolute left-1 bottom-14 mb-4 w-40 bg-neutral-800 text-white rounded-xl p-2 z-50
               origin-bottom-left transition-transform duration-100 ease-in-out
-              ${showMenu
-                ? 'opacity-100 scale-100 pointer-events-auto'
-                : 'opacity-0 scale-75 pointer-events-none'
+              ${
+                showMenu
+                  ? "opacity-100 scale-100 pointer-events-auto"
+                  : "opacity-0 scale-75 pointer-events-none"
               }
             `}
-            style={{
-              transform: showMenu ? 'translate(0, 0) scale(1)' : 'translate(-10px, 10px) scale(0.75)',
-            }}
+          style={{
+            transform: showMenu
+              ? "translate(0, 0) scale(1)"
+              : "translate(-10px, 10px) scale(0.75)",
+          }}
+        >
+          <button
+            onClick={handleLogout}
+            className="w-full text-left font-semibold text-sm px-4 py-2 cursor-pointer border-none"
           >
-            <button
-              onClick={logout}
-              className="w-full text-left font-semibold text-sm px-4 py-2 cursor-pointer border-none"
-            >
-              Log out
-            </button>
-            {/* Add more options here */}
-          </div>
+            Log out
+          </button>
+          {/* Add more options here */}
+        </div>
       </div>
     </div>
   );

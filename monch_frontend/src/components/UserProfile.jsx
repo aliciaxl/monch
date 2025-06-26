@@ -1,30 +1,19 @@
 // pages/UserProfile.jsx
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import apiClient from "../api/apiClient.js"
 import Feed from "../components/Feed";
 
 export default function UserProfile() {
+  const { user: currentUser } = useAuth();
   const { username } = useParams();
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loadingFollow, setLoadingFollow] = useState(false);
-
-
-  useEffect(() => {
-    async function fetchCurrentUser() {
-      try {
-        const data = await apiClient.get("/me/", { withCredentials: true });
-        setCurrentUser(data.data.username); // Axios response data is in data.data
-      } catch {
-        setCurrentUser(null);
-      }
-    }
-    fetchCurrentUser();
-  }, []);
 
 
   useEffect(() => {

@@ -1,48 +1,42 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import apiClient from "../api/apiClient.js";
 import SignUpModal from "./SignUpModal";
 
 export default function Login({ user, setUser }) {
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showModal, setShowModal] = useState(false);
 
   const navigate = useNavigate();
-
   const isFormFilled = username.trim() !== "" && password.trim() !== "";
-
-  const login = async (username, password) => {
-  try {
-    const response = await apiClient.post('/login/', 
-        { username, password },
-        { withCredentials: true },
-    );
-    
-    // force a recheck so the backend validates and sets cookies properly
-    const whoami = await apiClient.get('/whoami/');
-    setUser(whoami.data.username);
-    navigate('/home');
-  } catch (error) {
-    const errorMsg = error.response?.data?.detail || error.message || 'Login failed';
-    alert(errorMsg);
-  }
-};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    login(username, password);
+    try {
+      await login(username, password); // uses context
+      navigate("/home");
+    } catch (err) {
+      alert("Login failed");
+    }
   };
 
-  const loginAsGuest = (e) => {
+  const loginAsGuest = async (e) => {
     e.preventDefault();
-    login("admin", "strongPassword");
+    try {
+      await login("admin", "strongPassword"); // uses context
+      navigate("/home");
+    } catch (err) {
+      alert("Guest login failed");
+    }
   };
 
   const signUp = (e) => {
     e.preventDefault();
+    setShowModal(true);
   };
-
   return (
     <>
       <div className="flex justify-center items-center min-h-screen">
