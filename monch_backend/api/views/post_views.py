@@ -40,7 +40,6 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], url_path="following")
     def following_posts(self, request):
         user = request.user
-        print("Authenticated user:", user)
 
         if not user.is_authenticated:
             return Response({"detail": "Authentication required."}, status=401)
@@ -50,7 +49,8 @@ class PostViewSet(viewsets.ModelViewSet):
 
         # Get posts from those users
         posts = Post.objects.filter(user__id__in=followed_user_ids).order_by("-created_at")
-        serializer = PostSerializer(posts, many=True)
+        serializer = PostSerializer(posts, many=True, context={'request': request})
+        print("Serialized posts data:", serializer.data)
         return Response(serializer.data)
     
     @action(detail=True, methods=['post', 'delete'], permission_classes=[permissions.IsAuthenticated])

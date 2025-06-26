@@ -33,7 +33,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], url_path='posts')
     def posts(self, request, username=None):
         user = self.get_object()
-        posts = Post.objects.filter(user=user).order_by('-created_at')
+        posts = Post.objects.filter(user=user, parent_post__isnull=True).order_by('-created_at')
         serializer = PostSerializer(posts, many=True, context={'request': request})
         return Response(serializer.data)
 

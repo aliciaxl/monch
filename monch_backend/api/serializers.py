@@ -32,10 +32,11 @@ class PostSerializer(serializers.ModelSerializer):
     parent_post = serializers.PrimaryKeyRelatedField(read_only=True)
     replies = serializers.SerializerMethodField()
     liked_by_user = serializers.SerializerMethodField()
+    replies_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Post
-        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'replies', 'likes', 'liked_by_user']
+        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'replies', 'likes', 'liked_by_user', 'replies_count']
 
     def get_likes(self, obj):
         return obj.likes.count()
@@ -49,6 +50,9 @@ class PostSerializer(serializers.ModelSerializer):
     def get_replies(self, obj):
         replies = obj.replies.all().order_by('created_at')  # thanks to related_name='replies'
         return PostSerializer(replies, many=True, context=self.context).data
+    
+    def get_replies_count(self, obj):
+        return obj.replies.count()
 
 class FollowSerializer(serializers.ModelSerializer):
     follower = UserSerializer(read_only=True)
