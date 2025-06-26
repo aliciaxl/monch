@@ -42,7 +42,6 @@ class FollowViewSet(viewsets.ModelViewSet):
         username = request.query_params.get("username")
         if not username:
             return Response({"error": "Username required"}, status=400)
-
         try:
             target = User.objects.get(username=username)
         except User.DoesNotExist:
