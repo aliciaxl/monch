@@ -44,16 +44,16 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = PostSerializer(replies, many=True, context={'request': request})
         return Response(serializer.data)
     
-    @action(detail=False, methods=['get'], url_path='check-username')
+    @action(detail=False, methods=['get'], url_path='check-username', permission_classes=[permissions.AllowAny])
     def check_username(self, request):
         username = request.query_params.get('username', '').strip()
         if not username:
             return Response({"detail": "Username query parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        exists = User.objects.filter(username=username).exists()
+        exists = User.objects.using('default').filter(username=username).exists()
         return Response({"username": username, "available": not exists})
     
-    @action(detail=False, methods=['post'], url_path='register', permission_classes=[])
+    @action(detail=False, methods=['post'], url_path='register', permission_classes=[permissions.AllowAny])
     def register(self, request):
         data = request.data
         username = data.get('username')

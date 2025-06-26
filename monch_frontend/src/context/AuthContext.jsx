@@ -1,15 +1,23 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import apiClient from '../api/apiClient';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Load user from cookies using whoami
   useEffect(() => {
+
+    if (location.pathname === '/login' || location.pathname === '/register') {
+      setLoading(false);
+      return;
+    }
+
     const checkAuth = async () => {
       try {
         const res = await apiClient.get('/whoami/', { withCredentials: true });
@@ -22,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
-  }, []);
+  }, [location.pathname]);
 
   const login = async (username, password) => {
     await apiClient.post(
