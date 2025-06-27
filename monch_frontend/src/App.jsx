@@ -5,6 +5,7 @@ import Login from "./pages/Login.jsx";
 import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import UserProfile from "./components/UserProfile.jsx";
+import PostDetail from "./components/PostDetail.jsx";
 
 
 function PrivateRoute({ element }) {
@@ -27,6 +28,7 @@ function App() {
       >
         <Route path="home" element={<Home />} />
         <Route path="user/:username" element={<UserProfile />} />
+        <Route path="/post/:postId" element={<PostDetail />} />
       </Route>
       <Route path="*" element={<Navigate to={user ? "/home" : "/login"} />} />
     </Routes>
