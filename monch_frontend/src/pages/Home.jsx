@@ -15,10 +15,6 @@ useEffect(() => {
     const fetchPosts = async () => {
       try {
         let res = await apiClient.get(endpoint, { withCredentials: true });
-
-        // No need to manually handle 401 & refresh tokens here if you have interceptors
-        // If you want to handle token refresh manually, you'd do it differently with axios
-
         setPosts(res.data);
       } catch (error) {
         console.error("Error fetching posts:", error);
