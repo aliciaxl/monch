@@ -28,8 +28,12 @@ class UserSerializer(serializers.ModelSerializer):
     
 class PostSerializer(serializers.ModelSerializer):
     likes = serializers.IntegerField(source='likes.count', read_only=True)
-    user = serializers.StringRelatedField(read_only=True) #nested user info
-    parent_post = serializers.PrimaryKeyRelatedField(read_only=True)
+    user = UserSerializer(read_only=True)
+    parent_post = serializers.PrimaryKeyRelatedField(
+    queryset=Post.objects.all(),  # allow setting parent_post by ID
+    required=False,               # optional field
+    allow_null=True
+    )
     replies = serializers.SerializerMethodField()
     liked_by_user = serializers.SerializerMethodField()
     replies_count = serializers.SerializerMethodField()
