@@ -138,14 +138,14 @@ export default function PostDetail() {
 
               {/* Username */}
               <div className="flex flex-col items-start justify-center">
-                <span className="font-semibold text-white text-sm">
+                <span className="font-semibold text-white">
                   {post.user.display_name
                     ? post.user.display_name
                     : post.user.username}
                 </span>
                 <Link
                   to={`/user/${post.user.username}`}
-                  className="text-sm text-neutral-500"
+                  className="text-neutral-500"
                 >
                   @{post.user.username}
                 </Link>
@@ -159,12 +159,12 @@ export default function PostDetail() {
 
             <div className="w-full border-b border-neutral-800">
               {/* Post date */}
-              <div className="w-full text-sm text-neutral-600 mt-4 mb-4 text-left">
+              <div className="w-full text-neutral-600 mt-4 mb-4 text-left">
                 {formatPostedDate(post.created_at)}
               </div>
             </div>
 
-            <div className="w-full text-sm text-neutral-600 py-4 text-left flex space-x-6 border-b border-neutral-800">
+            <div className="w-full text text-neutral-600 py-4 text-left flex space-x-6 border-b border-neutral-800">
               <span>
                 <strong className="font-semibold text-white">
                   {likesCount}

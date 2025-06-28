@@ -1,16 +1,25 @@
 import { useEffect, useState } from "react";
-import apiClient from "../api/apiClient.js"
+import apiClient from "../api/apiClient.js";
 import PostInput from "../components/PostInput";
 import Feed from "../components/Feed";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const { tab: paramTab } = useParams();
   const [newPost, setNewPost] = useState("");
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [tab, setTab] = useState("bites");
+  const [tab, setTab] = useState(
+    paramTab === "following" ? "following" : "bites"
+  );
+  const navigate = useNavigate();
 
-useEffect(() => {
-    const endpoint = tab === "following" ? "/posts/following/" : "/posts/";
+  useEffect(() => {
+    setTab(paramTab === "following" ? "following" : "bites");
+  }, [paramTab]);
+
+  useEffect(() => {
+    const endpoint = paramTab === "following" ? "/posts/following/" : "/posts/";
 
     const fetchPosts = async () => {
       try {
@@ -25,7 +34,6 @@ useEffect(() => {
     fetchPosts();
   }, [tab]);
 
-
   const handlePost = async (parentPostId = null) => {
     if (!newPost.trim()) return;
 
@@ -37,7 +45,9 @@ useEffect(() => {
     };
 
     try {
-      const res = await apiClient.post("/posts/", payload, { withCredentials: true });
+      const res = await apiClient.post("/posts/", payload, {
+        withCredentials: true,
+      });
       setPosts((prev) => [res.data, ...prev]);
       setNewPost("");
     } catch (err) {
@@ -53,8 +63,8 @@ useEffect(() => {
         {/* Tabs */}
         <div className="flex text-m font-semibold justify-center text-neutral-500">
           <button
-            onClick={() => setTab("bites")}
-            className={`w-32 py-4 text-center border-b ${
+            onClick={() => navigate("/home/bites")}
+            className={`w-32 py-4 text-center cursor-pointer border-b ${
               tab === "bites"
                 ? "text-white border-neutral-300"
                 : "border-transparent hover:text-white"
@@ -63,8 +73,8 @@ useEffect(() => {
             Bites
           </button>
           <button
-            onClick={() => setTab("following")}
-            className={`w-32 py-4 text-center border-b ${
+            onClick={() => navigate("/home/following")}
+            className={`w-32 py-4 text-center cursor-pointer border-b ${
               tab === "following"
                 ? "text-white border-neutral-300"
                 : "border-transparent hover:text-white"

@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import apiClient from "../api/apiClient.js";
 import Feed from "../components/Feed";
+import EditProfile from "./EditProfile";
 
 export default function UserProfile() {
   const { user } = useAuth();
   const currentUser = user?.username;
   const { username } = useParams();
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -98,6 +100,13 @@ export default function UserProfile() {
     }
   };
 
+  const handleSave = (updatedData) => {
+    // Send to API or update local state
+    console.log("Updated profile:", updatedData);
+    // TODO: API PATCH request here
+  };
+
+
   return (
     <>
       <div className="flex text-m font-semibold justify-center text-neutral-500 ">
@@ -129,6 +138,7 @@ export default function UserProfile() {
           {currentUser === username ? (
             <button
               // onClick={updateBio}
+              onClick={() => setShowEditModal(true)}
               className="w-full h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white"
             >
               Edit Profile
@@ -149,6 +159,15 @@ export default function UserProfile() {
               </button>
             )
           )}
+
+          {showEditModal && userData && (
+            <EditProfile
+              user={userData}
+              onClose={() => setShowEditModal(false)}
+              onSave={handleSave}
+            />
+          )}
+
         </div>
         <div className="flex text-m font-semibold justify-center text-neutral-500 border-b border-neutral-700 mt-3">
           <button

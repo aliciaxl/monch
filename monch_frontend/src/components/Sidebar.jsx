@@ -45,7 +45,7 @@ export default function Sidebar() {
         </button>
       </div>
       <div className="flex flex-col space-y-8">
-        <Link to="/home">
+        <Link to="/home/bites">
           <SidebarButton icon={faHouse} label="Home" />
         </Link>
         <SidebarButton icon={faMagnifyingGlass} label="Search" />

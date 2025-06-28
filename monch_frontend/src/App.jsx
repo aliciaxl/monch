@@ -26,7 +26,7 @@ function App() {
         path="/"
         element={<PrivateRoute element={<Layout />} />}
       >
-        <Route path="home" element={<Home />} />
+        <Route path="/home/:tab?" element={<Home />} />
         <Route path="user/:username" element={<UserProfile />} />
         <Route path="/post/:postId" element={<PostDetail />} />
       </Route>
