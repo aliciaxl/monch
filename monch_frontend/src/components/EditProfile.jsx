@@ -72,8 +72,6 @@ export default function EditProfile({ user, onClose, onSave }) {
           &#x2715;
         </button>
 
-        <h2 className="font-bold text-base p-2 pb-4">Edit Profile</h2>
-
         <form
           onSubmit={handleSubmit}
           className="flex flex-col items-center p-2"
@@ -188,7 +186,7 @@ export default function EditProfile({ user, onClose, onSave }) {
 
           <button
             type="submit"
-            className="text-[15px] w-full bg-white font-semibold p-3 rounded-xl mt-4 text-black hover:bg-neutral-100 cursor-pointer"
+            className="transform transition-transform active:scale-[.95] duration-150 text-[15px] w-full bg-white font-semibold p-3 rounded-xl mt-4 text-black hover:bg-neutral-100 cursor-pointer"
           >
             Save Changes
           </button>
