@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import apiClient from "../api/apiClient.js";
 import SignUpModal from "./SignUpModal";
 
 export default function Login({ user, setUser }) {
@@ -48,6 +47,7 @@ export default function Login({ user, setUser }) {
               <input
                 id="username"
                 type="text"
+                maxLength={20}
                 className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700"
                 value={username}
                 placeholder="Username"

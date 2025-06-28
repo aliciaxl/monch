@@ -4,8 +4,9 @@ from django.contrib.auth.models import AbstractUser
 # Create models using Django ORM. Each model class maps to a table in db.
 
 class User(AbstractUser):
-    display_name = models.CharField(max_length=25)
-    bio = models.TextField(blank=True, null=True)
+    username = models.CharField(max_length=20, unique=True)  # override default
+    display_name = models.CharField(max_length=30)
+    bio = models.CharField(max_length=150, blank=True, null=True)  # limit to 150 characters
     avatar_url = models.TextField(blank=True, null=True)
 
 class Follow(models.Model):

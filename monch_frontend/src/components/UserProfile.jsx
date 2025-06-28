@@ -100,12 +100,29 @@ export default function UserProfile() {
     }
   };
 
-  const handleSave = (updatedData) => {
-    // Send to API or update local state
-    console.log("Updated profile:", updatedData);
-    // TODO: API PATCH request here
-  };
+  const handleSave = async (updatedData) => {
+    try {
+      const res = await apiClient.patch(
+        `/users/${user.username}/`,
+        {
+          display_name: updatedData.displayName,
+          bio: updatedData.bio,
+          avatar_url: updatedData.avatarUrl,
+        },
+        {
+          withCredentials: true, // if using cookie/session auth
+        }
+      );
 
+      setUserData(res.data); // update local state with latest data
+      fetchUserAndPosts();
+
+      console.log("User profile updated successfully");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Failed to update profile. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -163,11 +180,10 @@ export default function UserProfile() {
           {showEditModal && userData && (
             <EditProfile
               user={userData}
-              onClose={() => setShowEditModal(false)}
               onSave={handleSave}
+              onClose={() => setShowEditModal(false)}
             />
           )}
-
         </div>
         <div className="flex text-m font-semibold justify-center text-neutral-500 border-b border-neutral-700 mt-3">
           <button

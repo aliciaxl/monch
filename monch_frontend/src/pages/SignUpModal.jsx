@@ -94,6 +94,7 @@ export default function SignUpModal({ isOpen, onClose }) {
           <input
             type="text"
             name="username"
+            maxLength={20}
             placeholder="Username"
             value={formData.username}
             onChange={handleChange}
@@ -105,6 +106,7 @@ export default function SignUpModal({ isOpen, onClose }) {
           <input
             type="text"
             name="displayName"
+            maxLength={30}
             placeholder="Display Name"
             value={formData.displayName}
             onChange={handleChange}
