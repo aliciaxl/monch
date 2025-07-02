@@ -1,15 +1,20 @@
 import { useState, useRef } from "react";
 import apiClient from "../api/apiClient.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faCommentDots } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHeart,
+  faCommentDots,
+  faRetweet,
+} from "@fortawesome/free-solid-svg-icons";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import { formatDistanceToNow, format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
 
 export default function Post({ post }) {
   const [liked, setLiked] = useState(post.liked_by_user || false);
   const [likesCount, setLikesCount] = useState(post.likes || 0);
+  const [reposted, setReposted] = useState(post.reposted_by_user || false);
   const [loading, setLoading] = useState(false);
   const [replyText, setReplyText] = useState("");
   const textareaRef = useRef(null);
@@ -55,33 +60,71 @@ export default function Post({ post }) {
     }
   };
 
+  const repost = async () => {
+    try {
+      await apiClient.post(
+        "/posts/",
+        { repost_of: post.id,
+          content: post.content,
+         },
+        { withCredentials: true }
+      );
+      toast.success("Successfully reposted!");
+      setReposted(true);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.detail || "Failed to repost. Please try again."
+      );
+    }
+  };
+
   return (
     <>
       {/* Original Post */}
-      <div className="flex flex-col w-full border-b border-neutral-800 px-6 py-6 bg-neutral-900">
-        <div className="flex items-start">
+      <div className="flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 bg-neutral-900">
+
+        {/* Repost note */}
+          {post.repost_of_detail ? (
+            <div className="text-xs text-neutral-400 flex items-center gap-1 -mb-1" >
+              <FontAwesomeIcon icon={faRetweet} className="text-neutral-400 pl-12" />
+              <span>
+                Bit from{" "}
+                <Link
+                  to={`/user/${post.repost_of_detail.user.username}`}
+                  className="italic"
+                >
+                  @{post.repost_of_detail.user.username}
+                </Link>
+              </span>
+            </div>
+          ) : null}
+        <div className="flex items-start pt-2">
+          
           {/* OP Avatar */}
           <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold mr-4">
             {post.user.username[0]?.toUpperCase()}
           </div>
           <div className="flex-1">
+
             {/* OP Display Name / Time Posted */}
-            <div className="flex text-sm items-center text-neutral-400 mb-1">
+            <div className="flex text-base items-center text-neutral-400 mb-1">
               <Link
                 to={`/user/${post.user.username}`}
-                className="font-semibold text-white mr-2"
+                className="font-bold text-white mr-2"
               >
                 {post.user.username}
               </Link>
               <div className="text-xs">{formatPostedDate(post.created_at)}</div>
             </div>
-            <div className="text-white text-base text-left my-2">
+            <div className="text-white font-thin text-left mt-1 mb-2">
               <Link to={`/post/${post.id}`} className="hover:underline">
                 {post.content.trim()}
               </Link>
             </div>
 
             {/* Buttons */}
+
+            {/* Like */}
             <div className="flex w-full justify-between text-sm mt-4 pr-12 text-neutral-400">
               <button
                 onClick={toggleLike}
@@ -97,6 +140,7 @@ export default function Post({ post }) {
                 </span>
               </button>
 
+              {/* Replies */}
               <button
                 onClick={() => navigate(`/post/${post.id}`)}
                 className="hover:text-white cursor-pointer flex items-center space-x-1"
@@ -107,24 +151,27 @@ export default function Post({ post }) {
                   {post.replies_count > 0 ? post.replies_count : "\u00A0"}
                 </span>
               </button>
+
+              {/* Repost */}
               <button
-                onClick={() => navigate(`/post/${post.id}`)}
-                className="hover:text-white cursor-pointer flex items-center space-x-1"
-                aria-label="Go to post detail"
+                onClick={repost}
+                className={`hover:text-white cursor-pointer flex items-center space-x-1 ${
+    reposted ? "text-indigo-300" : "text-neutral-400"
+  }`}
+                aria-label="Repost"
               >
-                <FontAwesomeIcon icon={faCommentDots} />
-                <span>
-                  {post.replies_count > 0 ? post.replies_count : "\u00A0"}
-                </span>
-                <span className="sr-only">View post and replies</span>
+                <FontAwesomeIcon icon={faRetweet} />
+                <span className="sr-only">Repost success</span>
               </button>
+
+              {/* Copy to Clipboard */}
               <button
                 onClick={() => {
                   const postUrl = `${window.location.origin}/post/${post.id}`;
                   navigator.clipboard
                     .writeText(postUrl)
                     .then(() => {
-                      toast.success('Link copied to clipboard!');
+                      toast.success("Link copied to clipboard!");
                     })
                     .catch((err) => {
                       console.error("Failed to copy: ", err);

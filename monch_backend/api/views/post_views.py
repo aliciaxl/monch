@@ -16,7 +16,7 @@ class PostViewSet(viewsets.ModelViewSet):
     # If listing posts (feed), only return top-level posts
         if self.action == 'list':
             return Post.objects.filter(parent_post__isnull=True).order_by('-created_at')
-        # For retrieve, replies, thread, like, etc, return all posts
+        # For retrieve, replies, repost, thread, like, etc, return all posts
         return Post.objects.all().order_by('-created_at')
 
     #override perform_create to attach user to post

@@ -25,6 +25,13 @@ class UserSerializer(serializers.ModelSerializer):
         instance = self.get_object()
         serializer = self.get_serializer(instance, context={'request': request})
         return Response(serializer.data)
+
+class RepostOfSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'content', 'user']
     
 class PostSerializer(serializers.ModelSerializer):
     likes = serializers.IntegerField(source='likes.count', read_only=True)
@@ -34,13 +41,21 @@ class PostSerializer(serializers.ModelSerializer):
     required=False,               # optional field
     allow_null=True
     )
+    repost_of = serializers.PrimaryKeyRelatedField(
+        queryset=Post.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True  # <-- This field is only for input, not output
+    )
+    repost_of_detail = RepostOfSerializer(source='repost_of', read_only=True)  # nested read-only output
     replies = serializers.SerializerMethodField()
     liked_by_user = serializers.SerializerMethodField()
+    reposted_by_user = serializers.SerializerMethodField()
     replies_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Post
-        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'replies', 'likes', 'liked_by_user', 'replies_count']
+        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'repost_of', 'repost_of_detail', 'replies', 'likes', 'liked_by_user', 'reposted_by_user', 'replies_count']
 
     def get_likes(self, obj):
         return obj.likes.count()
@@ -50,6 +65,12 @@ class PostSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
         return obj.likes.filter(user=user).exists()
+    
+    def get_reposted_by_user(self, obj):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return Post.objects.filter(repost_of=obj, user=user).exists()
 
     def get_replies(self, obj):
         replies = obj.replies.all().order_by('created_at')  # thanks to related_name='replies'
