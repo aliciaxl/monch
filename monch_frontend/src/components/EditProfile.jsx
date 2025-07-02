@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 
 export default function EditProfile({ user, onClose, onSave }) {
-  console.log("EditProfile user prop:", user);
   const [formData, setFormData] = useState({
     displayName: "",
     bio: "",
@@ -103,7 +102,7 @@ export default function EditProfile({ user, onClose, onSave }) {
             <input
               type="file"
               ref={fileInputRef}
-              accept="image/*,video/gif"
+              accept="image/jpeg,image/png,image/webp,image/gif"
               onChange={handleFileChange}
               className="hidden"
             />

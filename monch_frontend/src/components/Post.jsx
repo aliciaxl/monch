@@ -2,9 +2,10 @@ import { useState, useRef } from "react";
 import apiClient from "../api/apiClient.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faCommentDots } from "@fortawesome/free-solid-svg-icons";
+import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import { formatDistanceToNow, format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
+import toast from 'react-hot-toast'
 
 export default function Post({ post }) {
   const [liked, setLiked] = useState(post.liked_by_user || false);
@@ -118,15 +119,22 @@ export default function Post({ post }) {
                 <span className="sr-only">View post and replies</span>
               </button>
               <button
-                onClick={() => navigate(`/post/${post.id}`)}
+                onClick={() => {
+                  const postUrl = `${window.location.origin}/post/${post.id}`;
+                  navigator.clipboard
+                    .writeText(postUrl)
+                    .then(() => {
+                      toast.success('Link copied to clipboard!');
+                    })
+                    .catch((err) => {
+                      console.error("Failed to copy: ", err);
+                    });
+                }}
                 className="hover:text-white cursor-pointer flex items-center space-x-1"
-                aria-label="Go to post detail"
+                aria-label="Copy post link to clipboard"
               >
-                <FontAwesomeIcon icon={faCommentDots} />
-                <span>
-                  {post.replies_count > 0 ? post.replies_count : "\u00A0"}
-                </span>
-                <span className="sr-only">View post and replies</span>
+                <FontAwesomeIcon icon={faCopy} />
+                <span className="sr-only">Copy post link to clipboard</span>
               </button>
             </div>
           </div>

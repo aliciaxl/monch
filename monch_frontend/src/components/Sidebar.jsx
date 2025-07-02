@@ -10,7 +10,7 @@ import {
   faUser,
   faPlus,
   faBars,
-  faDragon,
+  faCookie,
 } from "@fortawesome/free-solid-svg-icons";
 
 function SidebarButton({ icon, label }) {
@@ -28,7 +28,7 @@ export default function Sidebar() {
 
   const toggleMenu = () => setShowMenu((prev) => !prev);
 
-  const handleLogout = async () => {
+   const handleLogout = async () => {
     try {
       await logout();
       navigate("/login");
@@ -40,8 +40,8 @@ export default function Sidebar() {
   return (
     <div className="fixed top-0 left-0 h-full w-12 text-2xl flex flex-col justify-between items-center mx-4 py-4 text-neutral-600">
       <div>
-        <button className="text-white" aria-label="Profile">
-          <FontAwesomeIcon icon={faDragon} />
+        <button className="text-white text-3xl" aria-label="Profile">
+          <FontAwesomeIcon icon={faCookie} />
         </button>
       </div>
       <div className="flex flex-col space-y-8">

@@ -154,7 +154,6 @@ export default function UserProfile() {
 
           {currentUser === username ? (
             <button
-              // onClick={updateBio}
               onClick={() => setShowEditModal(true)}
               className="transform transition-transform active:scale-[.95] duration-150 w-full h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white"
             >
