@@ -18,6 +18,13 @@ html, body #root {
     font-weight: 400;
 }
 
+.post-image {
+  width: 300px;         /* desired preview width */
+  height: 200px;        /* desired preview height */
+  object-fit: cover;    /* crops to fill */
+  cursor: pointer;      /* indicates clickable */
+}
+
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
