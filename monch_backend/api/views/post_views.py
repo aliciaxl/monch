@@ -1,9 +1,10 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import viewsets, permissions, filters
-from ..models import Post, Follow, Like
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import viewsets, permissions, filters, status
+from ..models import Post, Follow, Like, PostMedia
 from ..serializers import PostSerializer
-from rest_framework import status
+
     
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -11,6 +12,7 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['content', 'user__username']
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
     # If listing posts (feed), only return top-level posts
@@ -78,3 +80,49 @@ class PostViewSet(viewsets.ModelViewSet):
             
     def get_serializer_context(self):
         return {'request': self.request}
+    
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        content = request.data.get("content")
+        parent_post = request.data.get("parent_post")
+        repost_of = request.data.get("repost_of")
+
+        media_file = request.FILES.get("media")
+
+        try:
+            if repost_of:
+                
+                original_post = Post.objects.get(id=repost_of)
+
+                post = Post.objects.create(
+                    user=user,
+                    content=original_post.content,
+                    parent_post_id=parent_post if parent_post else None,
+                    repost_of=original_post,
+                )
+
+                for media in original_post.media.all():
+                    PostMedia.objects.create(
+                        post=post,
+                        media_file=media.media_file,
+                        media_type=media.media_type
+                    )
+
+            else:
+                post = Post.objects.create(
+                    user=user,
+                    content=content,
+                    parent_post_id=parent_post if parent_post else None,
+                    repost_of_id=None,
+                )
+
+                if media_file:
+                    PostMedia.objects.create(post=post, media_file=media_file)
+
+        except Post.DoesNotExist:
+            return Response({"detail": "Original post to repost not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(post)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

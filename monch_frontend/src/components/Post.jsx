@@ -21,19 +21,19 @@ export default function Post({ post }) {
   const navigate = useNavigate();
 
   const toggleLike = async () => {
-    if (loading) return; // prevent double clicks while processing
+    if (loading) return;
     setLoading(true);
 
     try {
       if (!liked) {
-        // Add like (POST)
+        // Add like
         await apiClient.post(`/posts/${post.id}/like/`, null, {
           withCredentials: true,
         });
         setLiked(true);
         setLikesCount((count) => count + 1);
       } else {
-        // Remove like (DELETE)
+        // Remove like
         await apiClient.delete(`/posts/${post.id}/like/`, {
           withCredentials: true,
         });
@@ -61,14 +61,17 @@ export default function Post({ post }) {
   };
 
   const repost = async () => {
+    const formData = new FormData();
+    formData.append("repost_of", post.id);
+    formData.append("content", post.content);
+
     try {
-      await apiClient.post(
-        "/posts/",
-        { repost_of: post.id,
-          content: post.content,
-         },
-        { withCredentials: true }
-      );
+      await apiClient.post("/posts/", formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       toast.success("Successfully reposted!");
       setReposted(true);
     } catch (err) {
@@ -81,31 +84,31 @@ export default function Post({ post }) {
   return (
     <>
       {/* Original Post */}
-      <div className="flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 bg-neutral-900">
-
+      <div className="flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 pr-12 bg-neutral-900">
         {/* Repost note */}
-          {post.repost_of_detail ? (
-            <div className="text-xs text-neutral-400 flex items-center gap-1 -mb-1" >
-              <FontAwesomeIcon icon={faRetweet} className="text-neutral-400 pl-12" />
-              <span>
-                Bit from{" "}
-                <Link
-                  to={`/user/${post.repost_of_detail.user.username}`}
-                  className="italic"
-                >
-                  @{post.repost_of_detail.user.username}
-                </Link>
-              </span>
-            </div>
-          ) : null}
+        {post.repost_of_detail ? (
+          <div className="text-xs text-neutral-400 flex items-center gap-1 -mb-1">
+            <FontAwesomeIcon
+              icon={faRetweet}
+              className="text-neutral-400 pl-12"
+            />
+            <span>
+              Bit from{" "}
+              <Link
+                to={`/user/${post.repost_of_detail.user.username}`}
+                className="italic"
+              >
+                @{post.repost_of_detail.user.username}
+              </Link>
+            </span>
+          </div>
+        ) : null}
         <div className="flex items-start pt-2">
-          
           {/* OP Avatar */}
           <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold mr-4">
             {post.user.username[0]?.toUpperCase()}
           </div>
           <div className="flex-1">
-
             {/* OP Display Name / Time Posted */}
             <div className="flex text-base items-center text-neutral-400 mb-1">
               <Link
@@ -116,11 +119,34 @@ export default function Post({ post }) {
               </Link>
               <div className="text-xs">{formatPostedDate(post.created_at)}</div>
             </div>
+
+            {/* Text Content */}
             <div className="text-white font-thin text-left mt-1 mb-2">
               <Link to={`/post/${post.id}`} className="hover:underline">
                 {post.content.trim()}
               </Link>
             </div>
+
+            {/* Post Media */}
+            {post.media && post.media.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {post.media.map((mediaItem) => (
+                  <a
+                    key={mediaItem.id}
+                    href={mediaItem.media_file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <img
+                      src={mediaItem.media_file}
+                      alt=""
+                      className="max-w-full my-2 rounded-md object-cover"
+                    />
+                  </a>
+                ))}
+              </div>
+            )}
 
             {/* Buttons */}
 
@@ -156,8 +182,8 @@ export default function Post({ post }) {
               <button
                 onClick={repost}
                 className={`hover:text-white cursor-pointer flex items-center space-x-1 ${
-    reposted ? "text-indigo-300" : "text-neutral-400"
-  }`}
+                  reposted ? "text-indigo-300" : "text-neutral-400"
+                }`}
                 aria-label="Repost"
               >
                 <FontAwesomeIcon icon={faRetweet} />

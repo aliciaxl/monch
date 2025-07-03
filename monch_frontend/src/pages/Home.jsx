@@ -9,6 +9,8 @@ export default function Home() {
   const [newPost, setNewPost] = useState("");
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [media, setMedia] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState(null);
   const [tab, setTab] = useState(
     paramTab === "following" ? "following" : "bites"
   );
@@ -34,22 +36,33 @@ export default function Home() {
     fetchPosts();
   }, [tab]);
 
-  const handlePost = async (parentPostId = null) => {
+  const handlePost = async (parentPostId = null, media = null) => {
     if (!newPost.trim()) return;
 
     setLoading(true);
 
-    const payload = {
-      content: newPost,
-      parent_post_id: parentPostId,
-    };
+    const formData = new FormData();
+    formData.append("content", newPost);
+    if (parentPostId) {
+      formData.append("parent_post_id", parentPostId);
+    }
+    if (media) {
+      console.log("Adding media: ", media);
+      formData.append("media", media);
+    }
 
     try {
-      const res = await apiClient.post("/posts/", payload, {
+      const res = await apiClient.post("/posts/", formData, {
         withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+      console.log("Post response:", res);
       setPosts((prev) => [res.data, ...prev]);
       setNewPost("");
+      setMedia(null);            
+      setMediaPreview(null); 
     } catch (err) {
       alert(err.message || "Failed to post");
     } finally {
@@ -89,8 +102,12 @@ export default function Home() {
           <PostInput
             newPost={newPost}
             setNewPost={setNewPost}
-            handlePost={() => handlePost(null)}
+            handlePost={handlePost}
             loading={loading}
+            media={media}
+            setMedia={setMedia}
+            mediaPreview={mediaPreview}
+            setMediaPreview={setMediaPreview}
           />
           <Feed posts={posts} />
         </div>

@@ -47,16 +47,14 @@ class PostMedia(models.Model):
         if self.media_file and self.media_type == 'image':
             img = Image.open(self.media_file)
 
-            # Resize if image is too large (max 1080x1080)
+            # Resize
             max_size = (1080, 1080)
-            img.thumbnail(max_size, Image.ANTIALIAS)
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
 
-            # Save compressed image to memory
             output = BytesIO()
             img.save(output, format='JPEG', quality=75)
             output.seek(0)
 
-            # Replace the original image with the compressed one
             self.media_file = ContentFile(output.read(), self.media_file.name)
 
         super().save(*args, **kwargs)

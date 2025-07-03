@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.response import Response
-from .models import User, Post, Follow, Like
+from .models import User, Post, PostMedia, Follow, Like
 
 # Model serializer converts data to JSON. Auto generate fields corresponding to model, generate validators
 class UserSerializer(serializers.ModelSerializer):
@@ -33,6 +33,12 @@ class RepostOfSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id', 'content', 'user']
     
+class PostMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostMedia
+        fields = ['id', 'media_file', 'media_type', 'uploaded_at']
+        read_only_fields = ['id', 'uploaded_at']
+    
 class PostSerializer(serializers.ModelSerializer):
     likes = serializers.IntegerField(source='likes.count', read_only=True)
     user = UserSerializer(read_only=True)
@@ -52,10 +58,11 @@ class PostSerializer(serializers.ModelSerializer):
     liked_by_user = serializers.SerializerMethodField()
     reposted_by_user = serializers.SerializerMethodField()
     replies_count = serializers.SerializerMethodField()
+    media = PostMediaSerializer(many=True, required=False)
     
     class Meta:
         model = Post
-        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'repost_of', 'repost_of_detail', 'replies', 'likes', 'liked_by_user', 'reposted_by_user', 'replies_count']
+        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'repost_of', 'repost_of_detail', 'replies', 'likes', 'liked_by_user', 'reposted_by_user', 'replies_count', 'media']
 
     def get_likes(self, obj):
         return obj.likes.count()
@@ -73,7 +80,7 @@ class PostSerializer(serializers.ModelSerializer):
         return Post.objects.filter(repost_of=obj, user=user).exists()
 
     def get_replies(self, obj):
-        replies = obj.replies.all().order_by('created_at')  # thanks to related_name='replies'
+        replies = obj.replies.all().order_by('created_at')
         return PostSerializer(replies, many=True, context=self.context).data
     
     def get_replies_count(self, obj):

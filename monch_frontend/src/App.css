@@ -18,11 +18,13 @@ html, body #root {
     font-weight: 400;
 }
 
+/* CONTAIN post images to given area! */
+
 .post-image {
-  width: 300px;         /* desired preview width */
-  height: 200px;        /* desired preview height */
-  object-fit: cover;    /* crops to fill */
-  cursor: pointer;      /* indicates clickable */
+  width: 4800px;         
+  height: 480px;        
+  object-fit: cover;   
+  cursor: pointer;    
 }
 
 @keyframes logo-spin {
