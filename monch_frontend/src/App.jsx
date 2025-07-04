@@ -9,6 +9,7 @@ import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import UserProfile from "./components/UserProfile.jsx";
 import PostDetail from "./components/PostDetail.jsx";
+import SearchPage from "./components/SearchPage.jsx";
 
 function PrivateRoute({ element }) {
   const { user, loading } = useAuth();
@@ -43,6 +44,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<PrivateRoute element={<Layout />} />}>
           <Route path="/home/:tab?" element={<Home />} />
+          <Route path="/home/search" element={<SearchPage />} />
           <Route path="user/:username" element={<UserProfile />} />
           <Route path="/post/:postId" element={<PostDetail />} />
         </Route>

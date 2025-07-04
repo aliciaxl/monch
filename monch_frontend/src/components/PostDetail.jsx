@@ -206,10 +206,20 @@ export default function PostDetail() {
           <div className="relative z-10 flex flex-col w-full border-b border-neutral-800 px-6 py-6 bg-neutral-900">
             {/* Top row: Avatar + Username */}
             <div className="flex items-start mb-2">
-              {/* Avatar */}
-              <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold mr-4">
-                {post.user.username[0]?.toUpperCase()}
-              </div>
+              <div className="self-start flex-none w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold overflow-hidden mr-4">
+            {post.user.avatar ? (
+              <img
+                src={post.user.avatar}
+                alt="Avatar"
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <span>
+                {post.user.display_name?.[0]?.toUpperCase() ||
+                  post.user.username[0]?.toUpperCase()}
+              </span>
+            )}
+          </div>
 
               {/* Username */}
               <div className="flex flex-col items-start justify-center">

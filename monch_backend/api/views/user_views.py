@@ -1,6 +1,7 @@
 # your_app/views/user_views.py
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from ..models import User, Post
@@ -151,3 +152,18 @@ class UserViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'], url_path='search')
+    def search_users(self, request):
+        query = request.query_params.get('q', '').strip()
+        if not query:
+            return Response([])
+
+        matches = User.objects.filter(
+            Q(username__icontains=query) |
+            Q(display_name__icontains=query) |
+            Q(bio__icontains=query)
+        ).order_by('username')[:10]  # optional limit
+
+        serializer = UserSerializer(matches, many=True, context={'request': request})
+        return Response(serializer.data)

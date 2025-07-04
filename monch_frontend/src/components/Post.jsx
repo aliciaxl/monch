@@ -105,8 +105,19 @@ export default function Post({ post }) {
         ) : null}
         <div className="flex items-start pt-2">
           {/* OP Avatar */}
-          <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold mr-4">
-            {post.user.username[0]?.toUpperCase()}
+          <div className="self-start flex-none w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold overflow-hidden mr-4">
+            {post.user.avatar ? (
+              <img
+                src={post.user.avatar}
+                alt="Avatar"
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <span>
+                {post.user.display_name?.[0]?.toUpperCase() ||
+                  post.user.username[0]?.toUpperCase()}
+              </span>
+            )}
           </div>
           <div className="flex-1">
             {/* OP Display Name / Time Posted */}

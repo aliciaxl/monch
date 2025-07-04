@@ -171,8 +171,8 @@ export default function UserProfile() {
                 className={`w-full h-10 px-4 border rounded-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
                       ${
                         isFollowing
-                          ? "bg-neutral-900 hover:bg-neutral-700 border-neutral-700 text-white" // Unfollow: dark button
-                          : "bg-white text-black border-neutral-300 hover:bg-neutral-200" // Follow: white button
+                          ? "bg-neutral-900 hover:bg-neutral-700 border-neutral-700 text-white"
+                          : "bg-white text-black border-neutral-300 hover:bg-neutral-200"
                       }`}
               >
                 {isFollowing ? "Unfollow" : "Follow"}
