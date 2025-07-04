@@ -7,7 +7,10 @@ from ..models import User, Post
 from ..serializers import UserSerializer, PostSerializer
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user_model
-import logging
+from rest_framework.exceptions import ValidationError
+from PIL import Image, UnidentifiedImageError
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 User = get_user_model()
 
@@ -86,10 +89,66 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return super().update(request, *args, **kwargs)
     
-    def partial_update(self, request, *args, **kwargs):
-        user = self.get_object()
+    from PIL import Image, UnidentifiedImageError
+from io import BytesIO
+from django.core.files.base import ContentFile
 
-        if request.user != user:
-            return Response({'detail': 'You do not have permission to update this user.'}, status=status.HTTP_403_FORBIDDEN)
+def partial_update(self, request, *args, **kwargs):
+    print("Request Data:", request.data)
+    print("Request Files:", request.FILES)
+    user = self.get_object()
 
-        return super().partial_update(request, *args, **kwargs)
+    if request.user != user:
+        return Response({'detail': 'You do not have permission to update this user.'}, status=status.HTTP_403_FORBIDDEN)
+
+    if 'avatar' in request.FILES:
+        avatar = request.FILES['avatar']
+        if avatar:
+
+            # Avatar validation
+            if avatar.size > 5 * 1024 * 1024:
+                raise ValidationError("Avatar file exceeds size limit (5MB).")
+            if avatar.content_type not in ['image/jpeg', 'image/png', 'image/gif']:
+                raise ValidationError("Invalid avatar format. Only JPEG, PNG, and GIF are allowed.")
+            
+            print(f"Avatar file name: {avatar.name}")
+            print(f"Avatar content type: {avatar.content_type}")
+
+    
+            try:
+                img = Image.open(avatar)
+                img_format = img.format
+
+                # Resize PNGs and JPEGs, but do not touch GIFs
+                if img_format == 'GIF':
+                    pass 
+                else:
+                    max_size = (360, 360)
+                    img.thumbnail(max_size, Image.LANCZOS)
+
+                    if img.mode in ("RGBA", "P"):
+                        img = img.convert("RGB")
+
+                output = BytesIO()
+                if img_format == "PNG":
+                    img.save(output, format='PNG', optimize=True)
+                else:
+                    img.save(output, format='JPEG', quality=75)
+
+                output.seek(0)
+                avatar = ContentFile(output.read(), avatar.name)
+
+                user.avatar = avatar
+
+            except UnidentifiedImageError:
+                raise ValidationError("Uploaded file is not a valid image.")
+    
+    if 'display_name' in request.data:
+        user.display_name = request.data['display_name']
+    if 'bio' in request.data:
+        user.bio = request.data['bio']
+
+    user.save()
+
+    serializer = self.get_serializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)

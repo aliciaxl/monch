@@ -100,37 +100,22 @@ export default function UserProfile() {
     }
   };
 
-  const handleSave = async (updatedData) => {
-  try {
-    const formData = new FormData();
-    formData.append("display_name", updatedData.displayName);
-    formData.append("bio", updatedData.bio);
+  const handleSave = async (formData) => {
 
-    if (updatedData.avatarFile) {
-      formData.append("avatar", updatedData.avatarFile);
-    }
-
-    const res = await apiClient.patch(
-      `/users/${user.username}/`,
-      formData,
-      {
+    try {
+      const res = await apiClient.patch(`/users/${user.username}/`, formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
-    );
+      });
 
-    setUserData(res.data); // update local state with latest data
-    fetchUserAndPosts();
-
-    console.log("User profile updated successfully");
-  } catch (error) {
-    console.error("Failed to update profile:", error);
-    alert("Failed to update profile. Please try again.");
-  }
-};
-
+      setUserData(res.data);
+      fetchUserAndPosts();
+    } catch (error) {
+      alert("Failed to update profile. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -154,9 +139,20 @@ export default function UserProfile() {
                   : "0 followers"}
               </p>
             </div>
+            {/* Avatar Circle */}
             <div className="self-start flex-none w-16 h-16 rounded-full bg-neutral-700 flex items-center justify-center text-white text-xl font-semibold">
-              {userData?.display_name?.[0]?.toUpperCase() ||
-                username[0].toUpperCase()}
+              {userData?.avatar ? (
+                <img
+                  src={userData.avatar}
+                  alt="Avatar"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <span>
+                  {userData?.display_name?.[0]?.toUpperCase() ||
+                    username[0]?.toUpperCase()}
+                </span>
+              )}
             </div>
           </div>
 

@@ -85,18 +85,15 @@ export default function PostInput({
 
       <div className="flex justify-between w-full pb-2">
         <div className="flex items-center gap-12 pl-2">
-          <div className="cursor-pointer relative">
-            <FontAwesomeIcon
-              icon={faImage}
-              className="text-neutral-400 hover:text-white text-lg cursor-pointer"
-            />
+          <label className="cursor-pointer inline-block relative text-neutral-400 hover:text-white text-lg">
+            <FontAwesomeIcon icon={faImage} />
             <input
               type="file"
               accept="image/*,.gif"
               onChange={handleFileChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
             />
-          </div>
+          </label>
           <FontAwesomeIcon
             icon={faFaceSmile}
             className="text-neutral-400 hover:text-white text-lg cursor-pointer"

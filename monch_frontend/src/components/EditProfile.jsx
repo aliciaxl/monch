@@ -3,61 +3,88 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 
 export default function EditProfile({ user, onClose, onSave }) {
-  const [formData, setFormData] = useState({
+  const [profileData, setProfileData] = useState({
     displayName: "",
     bio: "",
-    avatarUrl: "",
+    avatarFile: null,
   });
 
-  // For previewing a newly selected avatar file before saving
   const [previewUrl, setPreviewUrl] = useState("");
   const fileInputRef = useRef(null);
+  const [media, setMedia] = useState(null);
+  const [mediaError, setMediaError] = useState("");
 
-  // Initialize state when `user` is available
   useEffect(() => {
+    console.log("User object inside useEffect:", user);
     if (user) {
-      setFormData({
+      setProfileData({
         displayName: user.display_name || "",
         bio: user.bio || "",
-        avatarUrl: user.avatar_url || "",
+        avatarFile: user.avatar || "",
       });
-      setPreviewUrl(user.avatar_url || "");
+      setPreviewUrl(user.avatar || "");
     }
   }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // When user clicks avatar circle, open file selector
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
   };
 
-  // Handle file input change, generate preview URL
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
 
-    // Validate file type/size here if needed
+    console.log("Selected file:", file);
 
-    const localUrl = URL.createObjectURL(file);
-    setPreviewUrl(localUrl);
+    // Allowed file types
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
 
-    // Optional: you might want to store the file itself instead of URL,
-    // but for now updating avatarUrl with preview is ok for UI
-    setFormData((prev) => ({ ...prev, avatarUrl: localUrl }));
+    if (!allowedTypes.includes(file.type)) {
+      setMedia(null);
+      setPreviewUrl(null);
+      setMediaError("Only JPEG, PNG, and GIF files are allowed.");
+      return;
+    }
 
-    // TODO: Handle file upload to backend/cloud on form submit
+    const MAX_FILE_SIZE_MB = 5;
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      setMedia(null);
+      setPreviewUrl(null);
+      setMediaError("File exceeds 5MB size limit.");
+      return;
+    }
+
+    setMedia(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setMediaError("");
+
+    setProfileData((prev) => ({ ...prev, avatarFile: URL.createObjectURL(file) }));
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitted:", formData); // 🔍 check here
-    onSave(formData);
-    onClose();
-  };
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.append("display_name", profileData.displayName);
+  formData.append("bio", profileData.bio);
+
+  if (media) {
+    formData.append("avatar", media); 
+  }
+  
+  onSave(formData); 
+  onClose();       
+};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -94,8 +121,11 @@ export default function EditProfile({ user, onClose, onSave }) {
             </div>
 
             {/* Overlay */}
-            <div className="absolute inset-0 bg-white bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-full">         
-                 <FontAwesomeIcon icon={faCamera} className="text-black text-2xl" />
+            <div className="absolute inset-0 bg-white bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-full">
+              <FontAwesomeIcon
+                icon={faCamera}
+                className="text-black text-2xl"
+              />
             </div>
 
             {/* Hidden file input */}
@@ -108,23 +138,27 @@ export default function EditProfile({ user, onClose, onSave }) {
             />
           </div>
 
+          {mediaError && (
+            <div className="text-red-500 text-xs mb-6">{mediaError}</div>
+          )}
+
           {/* Display Name */}
           <div className="relative z-0 w-full mb-6 group">
             <input
               type="text"
               name="displayName"
               maxLength={30}
-              value={formData.displayName}
+              value={profileData.displayName}
               onChange={handleChange}
               required
-              className="px-2.5 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-white peer"
+              className="px-3 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-white peer"
               placeholder=" "
             />
             <label
               htmlFor="displayName"
               className={`pointer-events-none absolute text-sm duration-300 transform scale-75 left-2 z-10 origin-[0] bg-neutral-900 px-2
     ${
-      formData.displayName
+      profileData.displayName
         ? "text-white -translate-y-4 top-2 scale-75 left-2"
         : "text-gray-400 top-1/2 -translate-y-1/2 scale-100"
     }
@@ -139,49 +173,26 @@ export default function EditProfile({ user, onClose, onSave }) {
             <textarea
               name="bio"
               maxLength={150}
-              value={formData.bio}
+              value={profileData.bio}
               onChange={handleChange}
-              rows={1}
-              className="block px-2.5 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-white peer resize-none field-sizing-content"
+              rows={3}
+              className="block px-3 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-white peer resize-none field-sizing-content min-h-24"
               placeholder=" "
             />
             <label
               htmlFor="bio"
               className={`pointer-events-none absolute text-sm duration-300 transform scale-75 left-2 z-10 origin-[0] bg-neutral-900 px-2
     ${
-      formData.bio
+      profileData.bio
         ? "text-white -translate-y-4 top-2 scale-75 left-2"
-        : "text-gray-400 top-1/2 -translate-y-1/2 scale-100"
+        : "text-gray-400 top-6 -translate-y-1/2 scale-100"
     }
     peer-focus:text-white peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:top-2 peer-focus:left-2`}
             >
-              Bio
+              Write a bio...
             </label>
           </div>
 
-          {/* Avatar URL */}
-          <div className="relative z-0 w-full mb-6 group">
-            <input
-              type="text"
-              name="avatarUrl"
-              value={formData.avatarUrl}
-              onChange={handleChange}
-              className="block px-2.5 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-white peer"
-              placeholder=" "
-            />
-            <label
-              htmlFor="avatarUrl"
-              className={`pointer-events-none absolute text-sm duration-300 transform scale-75 left-2 z-10 origin-[0] bg-neutral-900 px-2
-    ${
-      formData.avatarUrl
-        ? "text-white -translate-y-4 top-2 scale-75 left-2"
-        : "text-gray-400 top-1/2 -translate-y-1/2 scale-100"
-    }
-    peer-focus:text-white peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:top-2 peer-focus:left-2`}
-            >
-              Avatar URL
-            </label>
-          </div>
 
           <button
             type="submit"

@@ -17,43 +17,6 @@ class User(AbstractUser):
     display_name = models.CharField(max_length=30)
     bio = models.CharField(max_length=150, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-
-        if self.pk:
-            try:
-                old_user = User.objects.get(pk=self.pk)
-            except User.DoesNotExist:
-                old_user = None
-
-            if (
-                old_user 
-                and old_user.avatar 
-                and self.avatar 
-                and old_user.avatar.name != self.avatar.name
-            ):
-                storage = old_user.avatar.storage
-                if storage.exists(old_user.avatar.name):
-                    storage.delete(old_user.avatar.name)
-
-        # Resize/compress new avatar if exists
-        if self.avatar:
-            try:
-                img = Image.open(self.avatar)
-                max_size = (360, 360)
-                img.thumbnail(max_size, Image.LANCZOS)
-                if img.mode in ("RGBA", "P"):
-                    img = img.convert("RGB")
-
-                output = BytesIO()
-                img.save(output, format='JPEG', quality=75)
-                output.seek(0)
-
-                self.avatar = ContentFile(output.read(), self.avatar.name)
-            except UnidentifiedImageError:
-                pass
-
-        super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
         storage = self.avatar.storage
