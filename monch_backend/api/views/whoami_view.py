@@ -6,4 +6,10 @@ class WhoAmIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response({"username": request.user.username})
+        user = request.user
+        return Response({
+            "username": user.username,
+            "display_name": user.display_name,
+            "bio": user.bio,
+            "avatar": user.avatar.url if user.avatar else None,
+        })

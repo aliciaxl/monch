@@ -207,19 +207,19 @@ export default function PostDetail() {
             {/* Top row: Avatar + Username */}
             <div className="flex items-start mb-2">
               <div className="self-start flex-none w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold overflow-hidden mr-4">
-            {post.user.avatar ? (
-              <img
-                src={post.user.avatar}
-                alt="Avatar"
-                className="w-full h-full object-cover rounded-full"
-              />
-            ) : (
-              <span>
-                {post.user.display_name?.[0]?.toUpperCase() ||
-                  post.user.username[0]?.toUpperCase()}
-              </span>
-            )}
-          </div>
+                {post.user.avatar ? (
+                  <img
+                    src={post.user.avatar}
+                    alt="Avatar"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <span>
+                    {post.user.display_name?.[0]?.toUpperCase() ||
+                      post.user.username[0]?.toUpperCase()}
+                  </span>
+                )}
+              </div>
 
               {/* Username */}
               <div className="flex flex-col items-start justify-center">
@@ -363,8 +363,18 @@ export default function PostDetail() {
 
           {/* Avatar + reply box side-by-side */}
           <div className="flex w-full border-b border-neutral-800 items-start px-6 bg-neutral-900 space-x-4">
-            <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold">
-              {currentUser?.[0]?.toUpperCase() || "U"}
+            <div className="self-start flex-none w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold overflow-hidden">
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt="Your Avatar"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span>
+                  {user.username?.[0]?.toUpperCase()}
+                </span>
+              )}
             </div>
 
             <div className="flex flex-col w-full">
@@ -398,7 +408,7 @@ export default function PostDetail() {
                   </button>
                 </div>
               )}
-              <div className="flex justify-between w-full pb-2">
+              <div className="flex justify-between w-full pb-4">
                 <div className="flex items-center gap-12 pl-2">
                   <div className="cursor-pointer relative">
                     <FontAwesomeIcon
