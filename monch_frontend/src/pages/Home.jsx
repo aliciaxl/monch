@@ -47,7 +47,6 @@ export default function Home() {
       formData.append("parent_post_id", parentPostId);
     }
     if (media) {
-      console.log("Adding media: ", media);
       formData.append("media", media);
     }
 

@@ -13,16 +13,24 @@ export default function PostInput({
   media,
   setMedia,
   mediaPreview,
-  setMediaPreview
+  setMediaPreview,
 }) {
   const [mediaError, setMediaError] = useState("");
-   const fileInputRef = useRef();
+  const fileInputRef = useRef();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
 
     if (!file) return;
-    
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      setMedia(null);
+      setMediaPreview(null);
+      setMediaError("Only JPEG, PNG, and GIF files are allowed.");
+      return;
+    }
+
     if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
       setMedia(null);
       setMediaPreview(null);
@@ -33,17 +41,17 @@ export default function PostInput({
     setMedia(file);
     setMediaPreview(URL.createObjectURL(file));
     setMediaError("");
+
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-
   };
 
   const removeMedia = () => {
-  setMedia(null);
-  setMediaPreview(null);
-  setMediaError(null);
-};
+    setMedia(null);
+    setMediaPreview(null);
+    setMediaError(null);
+  };
 
   return (
     <div className="flex flex-col items-start border-b border-neutral-800 bg-neutral-900 px-8 pb-4">
@@ -55,21 +63,23 @@ export default function PostInput({
         maxLength={500}
         className="focus:outline-none focus:ring-0 h-12 w-full resize-none rounded-md bg-neutral-900 text-white px-2 pt-2"
       />
-      {mediaError && <p className="text-red-500 text-xs ml-2 mt-2">{mediaError}</p>}
+      {mediaError && (
+        <p className="text-red-500 text-xs ml-2 mt-2">{mediaError}</p>
+      )}
       {mediaPreview && !mediaError && (
         <div className="relative ml-2 mt-4 my-6 inline-block">
           <img
             src={mediaPreview}
             alt="preview"
-            className="max-h-80 rounded-lg border border-neutral-700"
+            className="max-h-80 rounded-lg border border-neutral-800"
           />
           <button
-      onClick={removeMedia}
-      className="absolute top-1 right-2 bg-opacity-70 text-neutral-700 cursor-pointer rounded-full p-1 font-bold text-xs hover:bg-opacity-100"
-      aria-label="Remove image"
-    >
-      ✕
-    </button>
+            onClick={removeMedia}
+            className="absolute top-1 right-2 bg-opacity-70 text-neutral-700 cursor-pointer rounded-full p-1 font-bold text-xs hover:bg-opacity-100"
+            aria-label="Remove image"
+          >
+            ✕
+          </button>
         </div>
       )}
 
@@ -78,11 +88,11 @@ export default function PostInput({
           <div className="cursor-pointer relative">
             <FontAwesomeIcon
               icon={faImage}
-              className="text-neutral-400 hover:text-white text-lg"
+              className="text-neutral-400 hover:text-white text-lg cursor-pointer"
             />
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,.gif"
               onChange={handleFileChange}
               className="absolute inset-0 opacity-0 cursor-pointer"
             />
@@ -93,7 +103,7 @@ export default function PostInput({
           />
         </div>
         <button
-          onClick={() => handlePost(null, media)}  
+          onClick={() => handlePost(null, media)}
           disabled={loading || !newPost.trim()}
           className="transform transition-transform active:scale-[.95] duration-150 h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white"
         >

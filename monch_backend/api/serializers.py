@@ -10,6 +10,15 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'display_name', 'bio', 'avatar', 'posts', 'follower_count']
+    
+    def update(self, instance, validated_data):
+        avatar = validated_data.pop('avatar', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        if avatar is not None:
+            instance.avatar = avatar
+        instance.save()
+        return instance
 
     def get_follower_count(self, obj):
         return obj.followers.count()

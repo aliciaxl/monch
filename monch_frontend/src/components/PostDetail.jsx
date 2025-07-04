@@ -5,10 +5,13 @@ import Post from "./Post.jsx";
 import { format } from "date-fns";
 import { useAuth } from "../context/AuthContext.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage, faCopy } from "@fortawesome/free-regular-svg-icons";
 import {
   faHeart,
   faCommentDots,
   faArrowLeft,
+  faFaceSmile,
+  faRetweet,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function PostDetail() {
@@ -25,6 +28,15 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const textareaRef = useRef(null);
+
+  const [media, setMedia] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [mediaError, setMediaError] = useState("");
+  const fileInputRef = useRef(null);
+
+  const [reposted, setReposted] = useState(false);
+
+  const MAX_FILE_SIZE_MB = 5;
 
   useEffect(() => {
     async function fetchPost() {
@@ -87,17 +99,24 @@ export default function PostDetail() {
   const handleReplySubmit = async () => {
     if (!replyText.trim()) return;
     setSubmitting(true);
+
+    const formData = new FormData();
+    formData.append("content", replyText.trim());
+    formData.append("parent_post", postId);
+    if (media) formData.append("media", media);
+
     try {
-      const res = await apiClient.post(
-        `/posts/`,
-        {
-          content: replyText.trim(),
-          parent_post: postId,
+      const res = await apiClient.post("/posts/", formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-        { withCredentials: true }
-      );
-      setReplies((prev) => [...prev, res.data]);
+      });
+      setReplies((prev) => [res.data, ...prev]);
       setReplyText("");
+      setMedia(null);
+      setMediaPreview(null);
+      setMediaError("");
     } catch (error) {
       alert("Failed to submit reply");
     } finally {
@@ -105,9 +124,65 @@ export default function PostDetail() {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      setMedia(null);
+      setMediaPreview(null);
+      setMediaError("Only JPEG, PNG, and GIF files are allowed.");
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      setMedia(null);
+      setMediaPreview(null);
+      setMediaError("File exceeds 5MB size limit.");
+      return;
+    }
+
+    setMedia(file);
+    setMediaPreview(URL.createObjectURL(file));
+    setMediaError("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const formatPostedDate = (dateString) => {
     const date = new Date(dateString);
     return format(date, "EEEE MMMM d, yyyy 'at' h:mm a");
+  };
+
+  const repost = async () => {
+    const formData = new FormData();
+    formData.append("repost_of", post.id);
+    formData.append("content", post.content);
+
+    try {
+      await apiClient.post("/posts/", formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      toast.success("Successfully reposted!");
+      setReposted(true);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.detail || "Failed to repost. Please try again."
+      );
+    }
+  };
+
+  const removeMedia = () => {
+    setMedia(null);
+    setMediaPreview(null);
+    setMediaError(null);
   };
 
   if (loading) return <div className="text-white p-6">Loading...</div>;
@@ -157,6 +232,27 @@ export default function PostDetail() {
               {post.content.trim()}
             </div>
 
+            {/* Post Media */}
+            {post.media && post.media.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {post.media.map((mediaItem) => (
+                  <a
+                    key={mediaItem.id}
+                    href={mediaItem.media_file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <img
+                      src={mediaItem.media_file}
+                      alt=""
+                      className="max-w-full my-2 rounded-xl object-cover"
+                    />
+                  </a>
+                ))}
+              </div>
+            )}
+
             <div className="w-full border-b border-neutral-800">
               {/* Post date */}
               <div className="w-full text-neutral-600 mt-4 mb-4 text-left">
@@ -205,25 +301,36 @@ export default function PostDetail() {
                   {post.replies_count > 0 ? post.replies_count : "\u00A0"}
                 </span>
               </button>
+              {/* Repost */}
               <button
-                onClick={() => navigate(`/post/${post.id}`)}
-                className="hover:text-white cursor-pointer flex items-center space-x-1"
-                aria-label="Go to post detail"
+                onClick={repost}
+                className={`hover:text-white cursor-pointer flex items-center space-x-1 ${
+                  reposted ? "text-indigo-300" : "text-neutral-400"
+                }`}
+                aria-label="Repost"
               >
-                <FontAwesomeIcon icon={faCommentDots} />
-                <span>
-                  {post.replies_count > 0 ? post.replies_count : "\u00A0"}
-                </span>
+                <FontAwesomeIcon icon={faRetweet} />
+                <span className="sr-only">Repost success</span>
               </button>
+
+              {/* Copy to Clipboard */}
               <button
-                onClick={() => navigate(`/post/${post.id}`)}
+                onClick={() => {
+                  const postUrl = `${window.location.origin}/post/${post.id}`;
+                  navigator.clipboard
+                    .writeText(postUrl)
+                    .then(() => {
+                      toast.success("Link copied to clipboard!");
+                    })
+                    .catch((err) => {
+                      console.error("Failed to copy: ", err);
+                    });
+                }}
                 className="hover:text-white cursor-pointer flex items-center space-x-1"
-                aria-label="Go to post detail"
+                aria-label="Copy post link to clipboard"
               >
-                <FontAwesomeIcon icon={faCommentDots} />
-                <span>
-                  {post.replies_count > 0 ? post.replies_count : "\u00A0"}
-                </span>
+                <FontAwesomeIcon icon={faCopy} />
+                <span className="sr-only">Copy post link to clipboard</span>
               </button>
             </div>
           </div>
@@ -255,12 +362,52 @@ export default function PostDetail() {
                 ref={textareaRef}
                 rows={1}
                 placeholder="Write your reply..."
-                className="w-full text-white p-2 resize-none border-b border-neutral-800 focus:outline-none overflow-hidden"
+                className="w-full text-white p-2 resize-none focus:outline-none overflow-hidden"
                 value={replyText}
                 onChange={handleInput}
                 disabled={submitting}
               />
-              <div className="my-4 flex justify-end">
+              {mediaError && (
+                <p className="text-red-500 text-left text-xs ml-2 mt-1">
+                  {mediaError}
+                </p>
+              )}
+              {mediaPreview && !mediaError && (
+                <div className="relative w-fit my-2 inline-block">
+                  <img
+                    src={mediaPreview}
+                    alt="preview"
+                    className="max-h-80 rounded-lg border border-neutral-800"
+                  />
+                  <button
+                    onClick={removeMedia}
+                    className="absolute top-1 right-2 bg-opacity-70 text-neutral-700 cursor-pointer rounded-full p-1 font-bold text-xs hover:bg-opacity-100"
+                    aria-label="Remove image"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+              <div className="flex justify-between w-full pb-2">
+                <div className="flex items-center gap-12 pl-2">
+                  <div className="cursor-pointer relative">
+                    <FontAwesomeIcon
+                      icon={faImage}
+                      className="text-neutral-400 hover:text-white text-md cursor-pointer"
+                    />
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*,.gif"
+                      onChange={handleFileChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                  </div>
+                  <FontAwesomeIcon
+                    icon={faFaceSmile}
+                    className="text-neutral-400 hover:text-white text-md cursor-pointer"
+                  />
+                </div>
                 <button
                   onClick={handleReplySubmit}
                   disabled={submitting || !replyText.trim()}
@@ -274,7 +421,7 @@ export default function PostDetail() {
 
           {/* Replies List */}
           {replies.length > 0 && (
-            <div className="space-y-4 border-l border-neutral-700">
+            <div className="border-l border-neutral-700">
               {replies.map((reply) => (
                 <Post key={reply.id} post={reply} />
               ))}
