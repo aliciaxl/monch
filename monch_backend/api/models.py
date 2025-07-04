@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from django.core.files.base import ContentFile
+import uuid
+import os
 
 def validate_file_size(file):
     max_size_mb = 5 
@@ -50,37 +52,44 @@ class PostMedia(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        if self.media_file and self.media_type == 'image':
+        if self.media_file:
             try:
                 img = Image.open(self.media_file)
-                if img.format == "GIF":
+                img_format = img.format
+
+                if img_format == "GIF":
                     self.media_type = "gif"
+                    ext = ".gif"
+                    content = self.media_file.read()
                 else:
+                    self.media_type = "image"
                     max_size = (1080, 1080)
                     img.thumbnail(max_size, Image.LANCZOS)
 
-                    output = BytesIO()
+                    if img.mode in ("RGBA", "P"):
+                        img = img.convert("RGB")
 
-                    # Save as PNG if original is PNG, else JPEG
-                    if img.format == "PNG":
+                    output = BytesIO()
+                    if img_format == "PNG":
                         img.save(output, format='PNG', optimize=True)
+                        ext = ".png"
                     else:
                         img.save(output, format='JPEG', quality=75)
+                        ext = ".jpg"
 
                     output.seek(0)
+                    content = output.read()
 
-                    # Fix file name extension to match new format
-                    ext = img.format.lower()
-                    # Rename file to have proper extension
-                    filename = self.media_file.name
-                    if not filename.lower().endswith(f".{ext}"):
-                        filename = filename.rsplit('.', 1)[0] + f".{ext}"
+                # Always assign a UUID filename
+                unique_filename = f"{uuid.uuid4().hex}{ext}"
 
-                    self.media_file = ContentFile(output.read(), filename)
+                self.media_file = ContentFile(content, name=unique_filename)
+
             except UnidentifiedImageError:
-                pass  
+                pass
 
         super().save(*args, **kwargs)
+
 
     def delete(self, *args, **kwargs):
         storage = self.media_file.storage

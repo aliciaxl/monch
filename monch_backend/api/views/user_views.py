@@ -11,6 +11,9 @@ from rest_framework.exceptions import ValidationError
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from django.core.files.base import ContentFile
+import uuid
+import os
+
 
 User = get_user_model()
 
@@ -88,67 +91,63 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'You do not have permission to update this user.'}, status=status.HTTP_403_FORBIDDEN)
 
         return super().update(request, *args, **kwargs)
-    
-    from PIL import Image, UnidentifiedImageError
-from io import BytesIO
-from django.core.files.base import ContentFile
 
-def partial_update(self, request, *args, **kwargs):
-    print("Request Data:", request.data)
-    print("Request Files:", request.FILES)
-    user = self.get_object()
+    def partial_update(self, request, *args, **kwargs):
+        print("Request Data:", request.data)
+        print("Request Files:", request.FILES)
+        user = self.get_object()
 
-    if request.user != user:
-        return Response({'detail': 'You do not have permission to update this user.'}, status=status.HTTP_403_FORBIDDEN)
+        if request.user != user:
+            return Response({'detail': 'You do not have permission to update this user.'}, status=status.HTTP_403_FORBIDDEN)
 
-    if 'avatar' in request.FILES:
-        avatar = request.FILES['avatar']
-        if avatar:
+        if 'avatar' in request.FILES:
+            avatar = request.FILES['avatar']
 
-            # Avatar validation
             if avatar.size > 5 * 1024 * 1024:
                 raise ValidationError("Avatar file exceeds size limit (5MB).")
             if avatar.content_type not in ['image/jpeg', 'image/png', 'image/gif']:
                 raise ValidationError("Invalid avatar format. Only JPEG, PNG, and GIF are allowed.")
             
-            print(f"Avatar file name: {avatar.name}")
-            print(f"Avatar content type: {avatar.content_type}")
-
-    
             try:
                 img = Image.open(avatar)
-                img_format = img.format
+                img_format = img.format 
 
-                # Resize PNGs and JPEGs, but do not touch GIFs
+                # GIFs stay as is
                 if img_format == 'GIF':
-                    pass 
+                    ext = 'gif'
+                    filename = f"{uuid.uuid4().hex}.{ext}"
+                    user.avatar.save(filename, ContentFile(avatar.read()), save=False)
                 else:
+                    # Compress
                     max_size = (360, 360)
                     img.thumbnail(max_size, Image.LANCZOS)
 
                     if img.mode in ("RGBA", "P"):
                         img = img.convert("RGB")
 
-                output = BytesIO()
-                if img_format == "PNG":
-                    img.save(output, format='PNG', optimize=True)
-                else:
-                    img.save(output, format='JPEG', quality=75)
+                    output = BytesIO()
+                    if img_format == "PNG":
+                        img.save(output, format='PNG', optimize=True)
+                        ext = "png"
+                    else:
+                        img.save(output, format='JPEG', quality=75)
+                        ext = "jpg"
 
-                output.seek(0)
-                avatar = ContentFile(output.read(), avatar.name)
-
-                user.avatar = avatar
+                    output.seek(0)
+                    filename = f"{uuid.uuid4().hex}.{ext}"
+                    print("Saving avatar with filename:", filename)
+                    user.avatar.save(filename, ContentFile(output.read()), save=False)
+                    print("user.avatar.name after save:", user.avatar.name)
 
             except UnidentifiedImageError:
                 raise ValidationError("Uploaded file is not a valid image.")
-    
-    if 'display_name' in request.data:
-        user.display_name = request.data['display_name']
-    if 'bio' in request.data:
-        user.bio = request.data['bio']
+        
+        if 'display_name' in request.data:
+            user.display_name = request.data['display_name']
+        if 'bio' in request.data:
+            user.bio = request.data['bio']
 
-    user.save()
+        user.save()
 
-    serializer = self.get_serializer(user)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
