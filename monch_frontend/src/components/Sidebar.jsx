@@ -28,7 +28,7 @@ export default function Sidebar() {
 
   const toggleMenu = () => setShowMenu((prev) => !prev);
 
-   const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
       await logout();
       navigate("/login");
@@ -40,7 +40,14 @@ export default function Sidebar() {
   return (
     <div className="fixed top-0 left-0 h-full w-12 text-2xl flex flex-col justify-between items-center mx-4 py-4 text-neutral-600">
       <div>
-        <button className="text-white text-3xl" aria-label="Profile">
+        <button
+          onClick={() => {
+            navigate("/home/bites");
+            window.location.reload();
+          }}
+          className="text-white text-4xl cursor-pointer transform transition-transform hover:scale-105 active:scale-[.95] duration-150"
+          aria-label="Home Refresh"
+        >
           <FontAwesomeIcon icon={faCookie} />
         </button>
       </div>
