@@ -8,6 +8,7 @@ class WhoAmIView(APIView):
     def get(self, request):
         user = request.user
         return Response({
+            "id": user.id,
             "username": user.username,
             "display_name": user.display_name,
             "bio": user.bio,

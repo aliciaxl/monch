@@ -3,8 +3,10 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
+import { useAuth } from '../context/AuthContext';
 
 export default function SearchPage() {
+  const { user } = useAuth();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,10 @@ export default function SearchPage() {
             withCredentials: true,
             signal: controller.signal,
           })
-          .then((res) => setResults(res.data))
+          .then((res) => {
+            const filtered = res.data.filter(u => u.id !== user?.id);
+            setResults(filtered);
+          })
           .catch((err) => {
             if (err.name !== "CanceledError") console.error(err);
           })
@@ -36,7 +41,7 @@ export default function SearchPage() {
       clearTimeout(delayDebounce);
       controller.abort();
     };
-  }, [query]);
+  }, [query, user?.id]);
 
   return (
     <>

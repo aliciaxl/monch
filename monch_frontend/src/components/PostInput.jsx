@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFaceSmile } from "@fortawesome/free-solid-svg-icons";
 import { useRef, useState } from "react";
+import Picker from "emoji-picker-react";
 
 const MAX_FILE_SIZE_MB = 5;
 
@@ -16,6 +17,7 @@ export default function PostInput({
   setMediaPreview,
 }) {
   const [mediaError, setMediaError] = useState("");
+  const [showPicker, setShowPicker] = useState(false);
   const fileInputRef = useRef();
 
   const handleFileChange = (e) => {
@@ -52,6 +54,11 @@ export default function PostInput({
     setMediaPreview(null);
     setMediaError(null);
   };
+
+  const onEmojiClick = (emojiData) => {
+  setNewPost((prev) => prev + emojiData.emoji);
+  setShowPicker(false);
+};
 
   return (
     <div className="flex flex-col items-start border-b border-neutral-800 bg-neutral-900 px-8 pb-4">
@@ -94,10 +101,24 @@ export default function PostInput({
               className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
             />
           </label>
-          <FontAwesomeIcon
-            icon={faFaceSmile}
-            className="text-neutral-400 hover:text-white text-lg cursor-pointer"
-          />
+          <div className="relative inline-block">
+            <FontAwesomeIcon
+              icon={faFaceSmile}
+              className="text-neutral-400 hover:text-white text-lg cursor-pointer"
+              onClick={() => setShowPicker((prev) => !prev)}
+            />
+
+            {showPicker && (
+              <div className="picker-container absolute left-0 mt-2">
+                <Picker
+                  onEmojiClick={onEmojiClick}
+                  width="280px"
+                  height="360px"
+                  theme="dark"
+                />
+              </div>
+            )}
+          </div>
         </div>
         <button
           onClick={() => handlePost(null, media)}
