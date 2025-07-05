@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFaceSmile } from "@fortawesome/free-solid-svg-icons";
 import { useRef, useState } from "react";
-import Picker from "emoji-picker-react";
+import { MyEmojiPicker } from "./EmojiPicker";
 
 const MAX_FILE_SIZE_MB = 5;
 
@@ -110,11 +110,8 @@ export default function PostInput({
 
             {showPicker && (
               <div className="picker-container absolute left-0 mt-2">
-                <Picker
+                <MyEmojiPicker
                   onEmojiClick={onEmojiClick}
-                  width="280px"
-                  height="360px"
-                  theme="dark"
                 />
               </div>
             )}

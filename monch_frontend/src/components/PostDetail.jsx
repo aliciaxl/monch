@@ -13,6 +13,7 @@ import {
   faFaceSmile,
   faRetweet,
 } from "@fortawesome/free-solid-svg-icons";
+import { MyEmojiPicker } from "./EmojiPicker";
 
 export default function PostDetail() {
   const { user } = useAuth();
@@ -35,6 +36,7 @@ export default function PostDetail() {
   const fileInputRef = useRef(null);
 
   const [reposted, setReposted] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
   const MAX_FILE_SIZE_MB = 5;
 
@@ -183,6 +185,11 @@ export default function PostDetail() {
     setMedia(null);
     setMediaPreview(null);
     setMediaError(null);
+  };
+
+  const onEmojiClick = (emojiData) => {
+    setReplyText((prev) => prev + emojiData.emoji);
+    setShowPicker(false);
   };
 
   if (loading) return <div className="text-white p-6">Loading...</div>;
@@ -371,9 +378,7 @@ export default function PostDetail() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span>
-                  {user.username?.[0]?.toUpperCase()}
-                </span>
+                <span>{user.username?.[0]?.toUpperCase()}</span>
               )}
             </div>
 
@@ -423,10 +428,18 @@ export default function PostDetail() {
                       className="absolute inset-0 opacity-0 cursor-pointer"
                     />
                   </div>
-                  <FontAwesomeIcon
-                    icon={faFaceSmile}
-                    className="text-neutral-400 hover:text-white text-md cursor-pointer"
-                  />
+                  <div className="relative inline-block">
+                    <FontAwesomeIcon
+                      icon={faFaceSmile}
+                      className="text-neutral-400 hover:text-white text-md cursor-pointer"
+                      onClick={() => setShowPicker((prev) => !prev)}
+                    />
+                    {showPicker && (
+                      <div className="picker-container absolute left-0 mt-2 z-20">
+                        <MyEmojiPicker onEmojiClick={onEmojiClick} />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <button
                   onClick={handleReplySubmit}
