@@ -212,37 +212,37 @@ export default function PostDetail() {
         <div className="parent-post">
           <div className="relative z-10 flex flex-col w-full border-b border-neutral-800 px-6 py-6 bg-neutral-900">
             {/* Top row: Avatar + Username */}
-            <div className="flex items-start mb-2">
-              <div className="self-start flex-none w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold overflow-hidden mr-4">
-                {post.user.avatar ? (
-                  <img
-                    src={post.user.avatar}
-                    alt="Avatar"
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                ) : (
-                  <span>
-                    {post.user.display_name?.[0]?.toUpperCase() ||
-                      post.user.username[0]?.toUpperCase()}
-                  </span>
-                )}
-              </div>
+            <Link
+              to={`/user/${post.user.username}`}
+              className="text-neutral-500"
+            >
+              <div className="flex items-start mb-2">
+                <div className="self-start flex-none w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold overflow-hidden mr-4">
+                  {post.user.avatar ? (
+                    <img
+                      src={post.user.avatar}
+                      alt="Avatar"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <span>
+                      {post.user.display_name?.[0]?.toUpperCase() ||
+                        post.user.username[0]?.toUpperCase()}
+                    </span>
+                  )}
+                </div>
 
-              {/* Username */}
-              <div className="flex flex-col items-start justify-center">
-                <span className="font-semibold text-white">
-                  {post.user.display_name
-                    ? post.user.display_name
-                    : post.user.username}
-                </span>
-                <Link
-                  to={`/user/${post.user.username}`}
-                  className="text-neutral-500"
-                >
+                {/* Username */}
+                <div className="flex flex-col items-start justify-center">
+                  <span className="font-semibold text-white">
+                    {post.user.display_name
+                      ? post.user.display_name
+                      : post.user.username}
+                  </span>
                   @{post.user.username}
-                </Link>
+                </div>
               </div>
-            </div>
+            </Link>
 
             {/* Post content */}
             <div className="text-white text-lg my-3 text-left">
