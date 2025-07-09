@@ -12,9 +12,11 @@ import {
   faArrowLeft,
   faFaceSmile,
   faRetweet,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { MyEmojiPicker } from "./EmojiPicker";
 import toast from "react-hot-toast";
+import ConfirmDialog from "../components/ConfirmDialog.jsx";
 
 export default function PostDetail() {
   const { user } = useAuth();
@@ -38,6 +40,9 @@ export default function PostDetail() {
 
   const [reposted, setReposted] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const isOwner = currentUser === post?.user?.username;
 
   const MAX_FILE_SIZE_MB = 5;
 
@@ -211,12 +216,21 @@ export default function PostDetail() {
         {/* Original Post */}
         <div className="parent-post">
           <div className="relative z-10 flex flex-col w-full border-b border-neutral-800 px-6 py-6 bg-neutral-900">
+            {isOwner && (
+              <button
+                onClick={() => setIsDialogOpen(true)}
+                className="flex flex-col z-20 w-full text-neutral-700 text-sm items-end"
+              >
+                <FontAwesomeIcon icon={faXmark} className="text-sm hover:text-white cursor-pointer p-2 -m-2" />
+              </button>
+            )}
             {/* Top row: Avatar + Username */}
-            <Link
+
+              <div className="flex items-start mb-2">
+                <Link
               to={`/user/${post.user.username}`}
               className="text-neutral-500"
             >
-              <div className="flex items-start mb-2">
                 <div className="self-start flex-none w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-white font-semibold overflow-hidden mr-4">
                   {post.user.avatar ? (
                     <img
@@ -231,7 +245,11 @@ export default function PostDetail() {
                     </span>
                   )}
                 </div>
-
+                </Link>
+                <Link
+              to={`/user/${post.user.username}`}
+              className="text-neutral-500"
+            >
                 {/* Username */}
                 <div className="flex flex-col items-start justify-center">
                   <span className="font-semibold text-white">
@@ -241,8 +259,9 @@ export default function PostDetail() {
                   </span>
                   @{post.user.username}
                 </div>
+                </Link>
               </div>
-            </Link>
+            
 
             {/* Post content */}
             <div className="text-white text-lg my-3 text-left">
@@ -464,6 +483,18 @@ export default function PostDetail() {
             </div>
           )}
         </div>
+        <ConfirmDialog
+          open={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          onConfirm={async () => {
+            await apiClient.delete(`/posts/${post.id}/`, {
+              withCredentials: true,
+            });
+            toast.success("Post deleted");
+            setIsDialogOpen(false);
+            navigate(-1); // or redirect to feed
+          }}
+        />
       </div>
     </div>
   );
