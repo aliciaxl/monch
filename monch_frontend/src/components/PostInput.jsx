@@ -56,9 +56,9 @@ export default function PostInput({
   };
 
   const onEmojiClick = (emojiData) => {
-  setNewPost((prev) => prev + emojiData.emoji);
-  setShowPicker(false);
-};
+    setNewPost((prev) => prev + emojiData.emoji);
+    setShowPicker(false);
+  };
 
   return (
     <div className="flex flex-col items-start border-b border-neutral-800 bg-neutral-900 px-8 pb-4">
@@ -92,15 +92,22 @@ export default function PostInput({
 
       <div className="flex justify-between w-full pb-2">
         <div className="flex items-center gap-12 pl-2">
-          <label className="cursor-pointer inline-block relative text-neutral-400 hover:text-white text-lg">
-            <FontAwesomeIcon icon={faImage} />
+          <div className="relative">
+            <label htmlFor="file-upload" className="cursor-pointer">
+              <FontAwesomeIcon
+                icon={faImage}
+                className="text-neutral-400 hover:text-white text-lg"
+              />
+            </label>
             <input
+              id="file-upload"
+              ref={fileInputRef}
               type="file"
               accept="image/*,.gif"
               onChange={handleFileChange}
-              className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+              className="hidden"
             />
-          </label>
+          </div>
           <div className="relative inline-block">
             <FontAwesomeIcon
               icon={faFaceSmile}
@@ -110,9 +117,7 @@ export default function PostInput({
 
             {showPicker && (
               <div className="picker-container absolute left-0 mt-2">
-                <MyEmojiPicker
-                  onEmojiClick={onEmojiClick}
-                />
+                <MyEmojiPicker onEmojiClick={onEmojiClick} />
               </div>
             )}
           </div>

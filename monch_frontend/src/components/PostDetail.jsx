@@ -415,17 +415,20 @@ export default function PostDetail() {
               )}
               <div className="flex justify-between w-full pb-4">
                 <div className="flex items-center gap-12 pl-2">
-                  <div className="cursor-pointer relative">
-                    <FontAwesomeIcon
-                      icon={faImage}
-                      className="text-neutral-400 hover:text-white text-md cursor-pointer"
-                    />
+                  <div className="relative">
+                    <label htmlFor="file-upload" className="cursor-pointer">
+                      <FontAwesomeIcon
+                        icon={faImage}
+                        className="text-neutral-400 hover:text-white text-md"
+                      />
+                    </label>
                     <input
+                      id="file-upload"
                       ref={fileInputRef}
                       type="file"
                       accept="image/*,.gif"
                       onChange={handleFileChange}
-                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      className="hidden"
                     />
                   </div>
                   <div className="relative inline-block">
