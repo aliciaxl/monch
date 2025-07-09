@@ -12,6 +12,7 @@ from rest_framework.exceptions import ValidationError
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from django.core.files.base import ContentFile
+from PIL import ExifTags
 import uuid
 import os
 
@@ -111,6 +112,23 @@ class UserViewSet(viewsets.ModelViewSet):
             
             try:
                 img = Image.open(avatar)
+                try:
+                    for orientation in ExifTags.TAGS.keys():
+                        if ExifTags.TAGS[orientation] == 'Orientation':
+                            break
+
+                    exif = img._getexif()
+                    if exif is not None:
+                        orientation_value = exif.get(orientation)
+                        if orientation_value == 3:
+                            img = img.rotate(180, expand=True)
+                        elif orientation_value == 6:
+                            img = img.rotate(270, expand=True)
+                        elif orientation_value == 8:
+                            img = img.rotate(90, expand=True)
+                except Exception:
+                    pass
+                
                 img_format = img.format 
 
                 # GIFs stay as is

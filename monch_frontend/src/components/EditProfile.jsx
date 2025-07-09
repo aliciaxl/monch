@@ -113,7 +113,7 @@ const handleSubmit = (e) => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                user?.username?.[0]?.toUpperCase() || "?"
+                user?.display_name?.[0]?.toUpperCase() || "?"
               )}
             </div>
 

@@ -19,6 +19,11 @@ class User(AbstractUser):
     display_name = models.CharField(max_length=30)
     bio = models.CharField(max_length=150, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.username:
+            self.username = self.username.lower()
+        super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
         storage = self.avatar.storage
@@ -60,6 +65,7 @@ class PostMedia(models.Model):
                 if img_format == "GIF":
                     self.media_type = "gif"
                     ext = ".gif"
+                    self.media_file.seek(0)
                     content = self.media_file.read()
                 else:
                     self.media_type = "image"
