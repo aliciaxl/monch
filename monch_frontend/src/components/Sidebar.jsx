@@ -21,7 +21,7 @@ function SidebarButton({ icon, label }) {
   );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ onOpenPostModal }) {
   const [showMenu, setShowMenu] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -58,7 +58,9 @@ export default function Sidebar() {
         <Link to="/home/search">
           <SidebarButton icon={faMagnifyingGlass} label="Search" />
         </Link>
-        <SidebarButton icon={faPlus} label="Add" />
+        <button onClick={onOpenPostModal}>
+          <SidebarButton icon={faPlus} label="Add" />
+        </button>
         <Link to="/home/likes">
           <SidebarButton icon={faHeart} label="Likes" />
         </Link>

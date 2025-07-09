@@ -11,6 +11,7 @@ export default function Home() {
   const [posts, setPosts] = useState([]);
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [tab, setTab] = useState(
     paramTab === "following" ? "following" : "bites"
   );

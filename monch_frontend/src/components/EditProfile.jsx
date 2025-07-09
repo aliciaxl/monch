@@ -89,7 +89,7 @@ const handleSubmit = (e) => {
         <button
           type="button"
           onClick={onClose}
-          className="self-end px-4 text-white text-base hover:cursor-pointer focus:outline-none"
+          className="self-end px-4 text-neutral-700 hover:text-white text-base hover:cursor-pointer focus:outline-none"
           aria-label="Close modal"
         >
           &#x2715;

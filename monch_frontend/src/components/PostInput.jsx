@@ -19,6 +19,16 @@ export default function PostInput({
   const [mediaError, setMediaError] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const fileInputRef = useRef();
+  const textareaRef = useRef();
+
+  const handleTextareaChange = (e) => {
+    setNewPost(e.target.value);
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -63,12 +73,13 @@ export default function PostInput({
   return (
     <div className="flex flex-col items-start border-b border-neutral-800 bg-neutral-900 px-8 pb-4">
       <textarea
+        ref={textareaRef}
         value={newPost}
-        onChange={(e) => setNewPost(e.target.value)}
+        onChange={handleTextareaChange}
         placeholder="What's on your mind?"
         rows={1}
         maxLength={500}
-        className="focus:outline-none focus:ring-0 h-12 w-full resize-none rounded-md bg-neutral-900 text-white px-2 pt-2"
+        className="min-h-[3rem] focus:outline-none focus:ring-0 h-12 w-full resize-none rounded-md bg-neutral-900 text-white px-2 pt-1"
       />
       {mediaError && (
         <p className="text-red-500 text-xs ml-2 mt-2">{mediaError}</p>
@@ -90,7 +101,7 @@ export default function PostInput({
         </div>
       )}
 
-      <div className="flex justify-between w-full pb-2">
+      <div className="flex justify-between w-full pb-2 mt-1">
         <div className="flex items-center gap-12 pl-2">
           <div className="relative">
             <label htmlFor="file-upload" className="cursor-pointer">

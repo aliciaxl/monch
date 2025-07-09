@@ -15,10 +15,8 @@ class PostViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-    # If listing posts (feed), only return top-level posts
         if self.action == 'list':
             return Post.objects.filter(parent_post__isnull=True).order_by('-created_at')
-        # For retrieve, replies, repost, thread, like, etc, return all posts
         return Post.objects.all().order_by('-created_at')
 
     #override perform_create to attach user to post
@@ -49,7 +47,7 @@ class PostViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return Response({"detail": "Authentication required."}, status=401)
 
-        # Get the users this user is following
+        # Get users current user is following
         followed_user_ids = Follow.objects.filter(follower=user).values_list("following_id", flat=True)
 
         # Get posts from those users

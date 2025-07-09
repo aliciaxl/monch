@@ -99,7 +99,7 @@ export default function Post({ post, isOwner = false, onPostDeleted }) {
 
   return (
     <>
-      {isOwner && (
+            {isOwner && (
         <button
           onClick={() => setIsDialogOpen(true)}
           className="flex flex-col w-full text-neutral-700 text-sm items-end hover:text-white cursor-pointer pt-5 pr-5 -mb-8"
