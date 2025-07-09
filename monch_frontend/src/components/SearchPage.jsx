@@ -3,13 +3,15 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from "../context/AuthContext";
 
 export default function SearchPage() {
   const { user } = useAuth();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [followState, setFollowState] = useState({});
+  const [loadingFollow, setLoadingFollow] = useState({});
 
   useEffect(() => {
     const controller = new AbortController();
@@ -23,9 +25,24 @@ export default function SearchPage() {
             withCredentials: true,
             signal: controller.signal,
           })
-          .then((res) => {
-            const filtered = res.data.filter(u => u.id !== user?.id);
+          .then(async (res) => {
+            const filtered = res.data.filter((u) => u.id !== user?.id);
             setResults(filtered);
+
+            const checkFollows = await Promise.all(
+              filtered.map((u) =>
+                apiClient
+                  .get("/follows/is_following/", {
+                    withCredentials: true,
+                    params: { username: u.username },
+                  })
+                  .then((res) => [u.id, res.data.is_following])
+                  .catch(() => [u.id, false])
+              )
+            );
+
+            const followMap = Object.fromEntries(checkFollows);
+            setFollowState(followMap);
           })
           .catch((err) => {
             if (err.name !== "CanceledError") console.error(err);
@@ -33,6 +50,7 @@ export default function SearchPage() {
           .finally(() => setLoading(false));
       } else {
         setResults([]);
+        setFollowState({});
         setLoading(false);
       }
     }, 300);
@@ -42,6 +60,31 @@ export default function SearchPage() {
       controller.abort();
     };
   }, [query, user?.id]);
+
+  const handleFollowToggle = async (targetUser) => {
+    const id = targetUser.id;
+    if (loadingFollow[id]) return;
+
+    setLoadingFollow((prev) => ({ ...prev, [id]: true }));
+
+    try {
+      await apiClient.post(
+        "/follows/toggle/",
+        { username: targetUser.username },
+        { withCredentials: true }
+      );
+
+      setFollowState((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+      }));
+    } catch (error) {
+      console.error("Follow toggle failed:", error);
+      alert("Could not follow/unfollow user.");
+    } finally {
+      setLoadingFollow((prev) => ({ ...prev, [id]: false }));
+    }
+  };
 
   return (
     <>
@@ -100,7 +143,7 @@ export default function SearchPage() {
 
                 {/* Text Content */}
                 <div className="flex flex-col text-left mr-8">
-                    <Link
+                  <Link
                     to={`/user/${user.username}`}
                     className="text-sm text-white font-bold"
                   >
@@ -109,23 +152,27 @@ export default function SearchPage() {
                   <div className="text-sm text-neutral-400">
                     {user.display_name || user.username}
                   </div>
-                  <div className="text-sm text-neutral-400 mt-3">{user.bio}</div>
+                  <div className="text-sm text-neutral-400 mt-3">
+                    {user.bio}
+                  </div>
                 </div>
               </div>
-            
+
               {/* Follow Button */}
               <div className="flex items-center ">
-              <button
-                className="transform transition-transform active:scale-[.95] duration-150 h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white"
-                onClick={() => {
-                  // TODO: replace with real follow logic
-                  alert(`Followed ${user.username}`);
-                }}
-              >
-                Follow
-              </button>
+                <button
+                  disabled={loadingFollow[user.id]}
+                  className={`transform transition-transform active:scale-[.95] duration-150 h-10 px-4 border rounded-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
+                    ${
+                      followState[user.id]
+                        ? "bg-neutral-900 hover:bg-neutral-700 border-neutral-700 text-white"
+                        : "bg-white text-black border-neutral-300 hover:bg-neutral-200"
+                    }`}
+                  onClick={() => handleFollowToggle(user)}
+                >
+                  {followState[user.id] ? "Unfollow" : "Follow"}
+                </button>
               </div>
-              
             </div>
           ))}
         </div>
