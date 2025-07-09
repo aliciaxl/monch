@@ -85,8 +85,8 @@ export default function SignUpModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ">
-      <div className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 flex flex-col">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center ">
+      <div className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col">
         <button
           type="button"
           onClick={onClose}
@@ -106,7 +106,7 @@ export default function SignUpModal({ isOpen, onClose }) {
             value={formData.username}
             onChange={handleChange}
             onBlur={(e) => checkUsername(e.target.value)}
-            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700"
+            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none border-[.5px] border-neutral-800 focus:ring-1 focus:ring-neutral-700"
             required
           />
           {usernameAvailable === false && (
@@ -119,7 +119,7 @@ export default function SignUpModal({ isOpen, onClose }) {
             placeholder="Display Name"
             value={formData.displayName}
             onChange={handleChange}
-            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700"
+            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none border-[.5px] border-neutral-800 focus:ring-1 focus:ring-neutral-700"
             required
           />
           <input
@@ -128,7 +128,7 @@ export default function SignUpModal({ isOpen, onClose }) {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700"
+            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none border-[.5px] border-neutral-800 focus:ring-1 focus:ring-neutral-700"
             required
           />
           <input
@@ -137,7 +137,7 @@ export default function SignUpModal({ isOpen, onClose }) {
             placeholder="Confirm Password"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700"
+            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 border-[.5px] border-neutral-800 focus:ring-neutral-700"
             required
           />
           <button

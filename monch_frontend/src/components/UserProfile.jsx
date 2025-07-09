@@ -2,6 +2,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { usePostContext } from "../context/PostContext";
 import apiClient from "../api/apiClient.js";
 import Feed from "../components/Feed";
 import EditProfile from "./EditProfile";
@@ -13,6 +14,7 @@ export default function UserProfile() {
   const [showEditModal, setShowEditModal] = useState(false);
 
   const [posts, setPosts] = useState([]);
+  const { postsNeedRefresh, setPostsNeedRefresh } = usePostContext();
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -71,6 +73,13 @@ export default function UserProfile() {
 
     checkFollowing();
   }, [username, currentUser, toggleTrigger]);
+
+  useEffect(() => {
+    if (postsNeedRefresh) {
+      fetchUserAndPosts();
+      setPostsNeedRefresh(false);
+    }
+  }, [postsNeedRefresh]);
 
   const handleFollowToggle = async () => {
     if (loadingFollow) return;

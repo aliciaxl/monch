@@ -3,7 +3,7 @@ const ConfirmDialog = ({ open, onClose, onConfirm }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-neutral-800/40 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0  bg-black/50 backdrop-blur-md flex items-center justify-center z-50"
       onClick={onClose} // Close modal if clicking outside content
     >
       <div

@@ -1,6 +1,7 @@
 import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext.jsx";
+import { PostProvider } from './context/PostContext';
 import { Toaster } from "react-hot-toast";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -43,7 +44,7 @@ function App() {
       />
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<PrivateRoute element={<Layout />} />}>
+        <Route path="/" element={<PrivateRoute element={<PostProvider><Layout /></PostProvider>} />}>
           <Route path="/home/:tab?" element={<Home />} />
           <Route path="/home/search" element={<SearchPage />} />
           <Route path="/home/likes" element={<LikesPage />} />

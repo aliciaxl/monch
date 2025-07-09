@@ -61,31 +61,56 @@ export default function EditProfile({ user, onClose, onSave }) {
     setPreviewUrl(URL.createObjectURL(file));
     setMediaError("");
 
-    setProfileData((prev) => ({ ...prev, avatarFile: URL.createObjectURL(file) }));
+    setProfileData((prev) => ({
+      ...prev,
+      avatarFile: URL.createObjectURL(file),
+    }));
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  const formData = new FormData();
-  formData.append("display_name", profileData.displayName);
-  formData.append("bio", profileData.bio);
+    const formData = new FormData();
+    formData.append("display_name", profileData.displayName);
+    formData.append("bio", profileData.bio);
 
-  if (media) {
-    formData.append("avatar", media); 
-  }
-  
-  onSave(formData); 
-  onClose();       
-};
+    if (media) {
+      formData.append("avatar", media);
+    }
+
+    onSave(formData);
+    onClose();
+  };
+
+  const resetForm = () => {
+    setProfileData({
+      displayName: user?.display_name || "",
+      bio: user?.bio || "",
+      avatarFile: user?.avatar || null,
+    });
+    setPreviewUrl(user?.avatar || "");
+    setMedia(null);
+    setMediaError("");
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col">
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center z-50"
+      onClick={handleClose}
+    >
+      <div
+        className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col"
+        onClick={(e) => e.stopPropagation()} //Stops clicks inside modal from closing it
+      >
         <button
           type="button"
           onClick={onClose}
@@ -189,7 +214,6 @@ const handleSubmit = (e) => {
               Write a bio...
             </label>
           </div>
-
 
           <button
             type="submit"

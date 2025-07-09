@@ -13,9 +13,9 @@ import {
   faCookie,
 } from "@fortawesome/free-solid-svg-icons";
 
-function SidebarButton({ icon, label }) {
+function SidebarButton({ icon, label, onClick }) {
   return (
-    <button className="hover:text-white cursor-pointer" aria-label={label}>
+    <button onClick={onClick} className="hover:text-white cursor-pointer" aria-label={label}>
       <FontAwesomeIcon icon={icon} />
     </button>
   );
@@ -58,9 +58,7 @@ export default function Sidebar({ onOpenPostModal }) {
         <Link to="/home/search">
           <SidebarButton icon={faMagnifyingGlass} label="Search" />
         </Link>
-        <button onClick={onOpenPostModal}>
-          <SidebarButton icon={faPlus} label="Add" />
-        </button>
+        <SidebarButton icon={faPlus} label="Add" onClick={onOpenPostModal} />
         <Link to="/home/likes">
           <SidebarButton icon={faHeart} label="Likes" />
         </Link>

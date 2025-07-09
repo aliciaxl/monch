@@ -1,71 +1,51 @@
 import { useEffect, useState } from "react";
+import { usePostContext } from "../context/PostContext";
 import apiClient from "../api/apiClient.js";
 import PostInput from "../components/PostInput";
 import Feed from "../components/Feed";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function Home() {
-  const { tab: paramTab } = useParams();
   const [newPost, setNewPost] = useState("");
-  const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
+  const { postsNeedRefresh, setPostsNeedRefresh, handlePost, loading } = usePostContext();
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tab, setTab] = useState(
-    paramTab === "following" ? "following" : "bites"
-  );
+  const { tab: paramTab } = useParams();
+  const tab = paramTab === "following" ? "following" : "bites"; 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setTab(paramTab === "following" ? "following" : "bites");
-  }, [paramTab]);
+  const fetchPosts = async () => {
+    const endpoint = tab === "following" ? "/posts/following/" : "/posts/";
+    try {
+      const res = await apiClient.get(endpoint, { withCredentials: true });
+      setPosts(res.data);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      setPosts([]);
+    }
+  };
 
   useEffect(() => {
-    const endpoint = paramTab === "following" ? "/posts/following/" : "/posts/";
-
-    const fetchPosts = async () => {
-      try {
-        let res = await apiClient.get(endpoint, { withCredentials: true });
-        setPosts(res.data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-        setPosts([]);
-      }
-    };
-
     fetchPosts();
   }, [tab]);
 
-  const handlePost = async (parentPostId = null, media = null) => {
+  useEffect(() => {
+    if (postsNeedRefresh) {
+      fetchPosts();
+      setPostsNeedRefresh(false);
+    }
+  }, [postsNeedRefresh]);
+
+  const onSubmit = async () => {
     if (!newPost.trim()) return;
-
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append("content", newPost);
-    if (parentPostId) {
-      formData.append("parent_post_id", parentPostId);
-    }
-    if (media) {
-      formData.append("media", media);
-    }
-
     try {
-      const res = await apiClient.post("/posts/", formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setPosts((prev) => [res.data, ...prev]);
+      await handlePost({ content: newPost, media });
       setNewPost("");
-      setMedia(null);            
-      setMediaPreview(null); 
+      setMedia(null);
+      setMediaPreview(null);
     } catch (err) {
-      alert(err.message || "Failed to post");
-    } finally {
-      setLoading(false);
+
     }
   };
 
@@ -101,8 +81,8 @@ export default function Home() {
           <PostInput
             newPost={newPost}
             setNewPost={setNewPost}
-            handlePost={handlePost}
-            loading={loading}
+            handlePost={onSubmit} 
+            loading={loading}      
             media={media}
             setMedia={setMedia}
             mediaPreview={mediaPreview}
