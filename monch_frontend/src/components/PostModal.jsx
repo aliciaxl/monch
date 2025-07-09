@@ -38,21 +38,21 @@ export default function PostModal({ isOpen, onClose }) {
   return (
     <div
       className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50"
-      onClick={handleClose}
+      onMouseDown={handleClose}
     >
       <div
         className="w-160 rounded-xl border-[0.5px] border-neutral-700 bg-neutral-900 text-white shadow-lg overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="relative flex items-center pt-4 pb-8 px-4 border-b-[0.5px] border-neutral-700">
+        <div className="relative flex items-center p-5 border-b-[0.5px] border-neutral-700">
           <button
             onClick={handleClose}
-            className="ml-auto text-neutral-700 hover:text-white text-sm cursor-pointer -mt-1"
+            className="ml-auto text-neutral-700 hover:text-white text-sm cursor-pointer"
             aria-label="Close modal"
           >
             ✕
           </button>
-          <h2 className="absolute left-1/2 transform -translate-x-1/2 font-semibold text-base mt-4">
+          <h2 className="absolute left-1/2 transform -translate-x-1/2 font-semibold text-base">
             Create Post
           </h2>
         </div>

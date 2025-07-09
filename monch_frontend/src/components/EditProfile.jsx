@@ -105,11 +105,11 @@ export default function EditProfile({ user, onClose, onSave }) {
   return (
     <div
       className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center z-50"
-      onClick={handleClose}
+      onMouseDown={handleClose}
     >
       <div
         className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col"
-        onClick={(e) => e.stopPropagation()} //Stops clicks inside modal from closing it
+        onMouseDown={(e) => e.stopPropagation()} //Stops clicks inside modal from closing it
       >
         <button
           type="button"
@@ -173,7 +173,7 @@ export default function EditProfile({ user, onClose, onSave }) {
               value={profileData.displayName}
               onChange={handleChange}
               required
-              className="px-3 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-white peer"
+              className="px-3 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-1 focus:ring-neutral-700 peer"
               placeholder=" "
             />
             <label
@@ -181,8 +181,8 @@ export default function EditProfile({ user, onClose, onSave }) {
               className={`pointer-events-none absolute text-sm duration-300 transform scale-75 left-2 z-10 origin-[0] bg-neutral-900 px-2
     ${
       profileData.displayName
-        ? "text-white -translate-y-4 top-2 scale-75 left-2"
-        : "text-gray-400 top-1/2 -translate-y-1/2 scale-100"
+        ? "text-neutral-500 -translate-y-4 top-2 scale-75 left-2"
+        : "text-neutral-400 top-1/2 -translate-y-1/2 scale-100"
     }
     peer-focus:text-white peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:top-2 peer-focus:left-2`}
             >
@@ -198,7 +198,7 @@ export default function EditProfile({ user, onClose, onSave }) {
               value={profileData.bio}
               onChange={handleChange}
               rows={3}
-              className="block px-3 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-white peer resize-none field-sizing-content min-h-24"
+              className="block px-3 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-1 focus:ring-neutral-700 peer resize-none field-sizing-content min-h-24"
               placeholder=" "
             />
             <label
@@ -206,8 +206,8 @@ export default function EditProfile({ user, onClose, onSave }) {
               className={`pointer-events-none absolute text-sm duration-300 transform scale-75 left-2 z-10 origin-[0] bg-neutral-900 px-2
     ${
       profileData.bio
-        ? "text-white -translate-y-4 top-2 scale-75 left-2"
-        : "text-gray-400 top-6 -translate-y-1/2 scale-100"
+        ? "text-neutral-500 -translate-y-4 top-2 scale-75 left-2"
+        : "text-neutral-400 top-6 -translate-y-1/2 scale-100"
     }
     peer-focus:text-white peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:top-2 peer-focus:left-2`}
             >

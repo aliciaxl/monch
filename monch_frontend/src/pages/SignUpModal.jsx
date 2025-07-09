@@ -85,8 +85,14 @@ export default function SignUpModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex justify-center items-center ">
-      <div className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col">
+     <div
+    className="fixed inset-0 bg-neutral-900/10 backdrop-blur-lg flex justify-center items-center "
+    onMouseDown={onClose}
+  >
+      <div
+      className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col"
+      onMouseDown={(e) => e.stopPropagation()}
+    >
         <button
           type="button"
           onClick={onClose}

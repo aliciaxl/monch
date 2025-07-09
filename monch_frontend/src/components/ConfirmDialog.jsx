@@ -4,11 +4,11 @@ const ConfirmDialog = ({ open, onClose, onConfirm }) => {
   return (
     <div
       className="fixed inset-0  bg-black/50 backdrop-blur-md flex items-center justify-center z-50"
-      onClick={onClose} // Close modal if clicking outside content
+      onMouseDown={onClose} // Close modal if clicking outside content
     >
       <div
         className="w-68 bg-neutral-900 text-white rounded-xl border-[0.5px] border-neutral-700 overflow-hidden"
-        onClick={(e) => e.stopPropagation()} // Prevent closing if clicking inside modal
+        onMouseDown={(e) => e.stopPropagation()} // Prevent closing if clicking inside modal
       >
         <div className="px-6 pt-6 pb-4">
           <h2 className="text-base font-semibold">Delete Post</h2>
@@ -19,7 +19,7 @@ const ConfirmDialog = ({ open, onClose, onConfirm }) => {
         <div className="flex">
           <button
             onClick={onClose}
-            className="w-1/2 py-4 border-t border-neutral-800 text-base font-semibold text-neutral-300 hover:bg-neutral-700 cursor-pointer"
+            className="w-1/2 py-4 border-t border-neutral-800 text-sm text-neutral-300 hover:bg-neutral-700 cursor-pointer"
           >
             Cancel
           </button>
@@ -28,7 +28,7 @@ const ConfirmDialog = ({ open, onClose, onConfirm }) => {
               onConfirm();
               onClose();
             }}
-            className="w-1/2 py-4 border-t border-l border-neutral-800 text-base font-semibold text-red-500 hover:bg-neutral-700 cursor-pointer"
+            className="w-1/2 py-4 border-t border-l border-neutral-800 text-sm text-red-400 hover:bg-neutral-700 cursor-pointer"
           >
             Delete
           </button>

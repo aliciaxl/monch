@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { usePostContext } from "../context/PostContext";
 import apiClient from "../api/apiClient.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,8 +20,7 @@ export default function Post({ post, isOwner = false, onPostDeleted }) {
   const [reposted, setReposted] = useState(post.reposted_by_user || false);
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [replyText, setReplyText] = useState("");
-  const textareaRef = useRef(null);
+  const { setPostsNeedRefresh } = usePostContext();
   const navigate = useNavigate();
 
   const toggleLike = async () => {
@@ -71,16 +71,14 @@ export default function Post({ post, isOwner = false, onPostDeleted }) {
     try {
       await apiClient.post("/posts/", formData, {
         withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Successfully reposted!");
       setReposted(true);
+
+      setPostsNeedRefresh(true);
     } catch (err) {
-      toast.error(
-        err.response?.data?.detail || "Failed to repost. Please try again."
-      );
+      toast.error(err.response?.data?.detail || "Failed to repost. Please try again.");
     }
   };
 

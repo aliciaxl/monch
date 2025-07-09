@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 import SignUpModal from "./SignUpModal";
 
 export default function Login({ user, setUser }) {
@@ -13,19 +14,19 @@ export default function Login({ user, setUser }) {
   const isFormFilled = username.trim() !== "" && password.trim() !== "";
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await login(username, password); // uses context
-      navigate("/home");
-    } catch (err) {
-      alert("Login failed");
-    }
-  };
+  e.preventDefault();
+  try {
+    await login(username, password);
+    navigate("/home");
+  } catch (err) {
+    toast.error("Invalid login credentials"); 
+  }
+};
 
   const loginAsGuest = async (e) => {
     e.preventDefault();
     try {
-      await login("admin", "strongPassword"); // uses context
+      await login("admin", "strongPassword");
       navigate("/home");
     } catch (err) {
       alert("Guest login failed");
