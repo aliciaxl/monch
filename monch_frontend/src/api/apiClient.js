@@ -1,4 +1,5 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const apiClient = axios.create({
   baseURL: 'http://127.0.0.1:8000/api',
@@ -10,19 +11,22 @@ apiClient.interceptors.response.use(
   async error => {
     const originalRequest = error.config;
 
-    // Do NOT try to refresh token for these endpoints
     const nonRefreshablePaths = [
       '/login/',
       '/token/refresh/',
       '/register/',
-      // add other endpoints you don't want to retry
     ];
 
     const isNonRefreshable = nonRefreshablePaths.some(path =>
       originalRequest.url.includes(path)
     );
 
-    if (error.response?.status === 401 && !originalRequest._retry && !isNonRefreshable) {
+    // Only try refresh if it's a 401 and it's not a login/register route
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isNonRefreshable
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -33,14 +37,23 @@ apiClient.interceptors.response.use(
         );
 
         if (refreshResponse.status === 200) {
-          // Retry the original request
-          return apiClient(originalRequest);
+          return apiClient(originalRequest); // Retry the original request
         }
       } catch (refreshError) {
         console.error("Token refresh failed", refreshError);
-        return Promise.reject(refreshError);
+
+        // Optional toast for user feedback
+        toast.error("Session expired. Please log in again.");
+
+        // Dispatch a logout event to your AuthContext
+        window.dispatchEvent(new Event("force-logout"));
+
+        return Promise.reject(refreshError); // Let components handle the error
       }
     }
+
+    // If it's not eligible for retry or fails, just reject
+    return Promise.reject(error);
   }
 );
 

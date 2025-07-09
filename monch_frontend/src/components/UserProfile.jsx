@@ -213,7 +213,7 @@ export default function UserProfile() {
         {loading ? (
           <p className="text-neutral-400">Loading...</p>
         ) : (
-          <Feed posts={posts} />
+          <Feed posts={posts} isOwner={currentUser === username} onPostDeleted={fetchUserAndPosts} />
         )}
       </div>
     </>

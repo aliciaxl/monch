@@ -28,7 +28,7 @@ return (
   <div className="flex h-screen w-full text-white flex-col">
 
     <div className="flex text-m font-semibold justify-center text-neutral-500">
-      <span className="w-32 py-4 text-center text-white">Liked Posts</span>
+      <span className="w-32 py-4 text-center text-white">Liked</span>
     </div>
 
     {/* Main Content */}

@@ -10,9 +10,21 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user from cookies using whoami
   useEffect(() => {
+    // Listen for token refresh failure
+    const handleForceLogout = () => {
+      setUser(null);
+      setLoading(false);
+    };
 
+    window.addEventListener('force-logout', handleForceLogout);
+
+    return () => {
+      window.removeEventListener('force-logout', handleForceLogout);
+    };
+  }, []);
+
+  useEffect(() => {
     if (location.pathname === '/login' || location.pathname === '/register') {
       setLoading(false);
       return;

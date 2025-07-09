@@ -57,7 +57,6 @@ export default function Home() {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Post response:", res);
       setPosts((prev) => [res.data, ...prev]);
       setNewPost("");
       setMedia(null);            

@@ -5,17 +5,20 @@ import {
   faHeart,
   faCommentDots,
   faRetweet,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import { formatDistanceToNow, format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import ConfirmDialog from "./ConfirmDialog.jsx";
 
-export default function Post({ post }) {
+export default function Post({ post, isOwner = false, onPostDeleted }) {
   const [liked, setLiked] = useState(post.liked_by_user || false);
   const [likesCount, setLikesCount] = useState(post.likes || 0);
   const [reposted, setReposted] = useState(post.reposted_by_user || false);
   const [loading, setLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
   const textareaRef = useRef(null);
   const navigate = useNavigate();
@@ -81,8 +84,29 @@ export default function Post({ post }) {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await apiClient.delete(`/posts/${post.id}/`, {
+        withCredentials: true,
+      });
+      toast.success("Post deleted");
+      if (onPostDeleted) onPostDeleted(); // refresh feed
+    } catch (error) {
+      console.error("Delete failed:", error);
+      toast.error("Failed to delete post.");
+    }
+  };
+
   return (
     <>
+      {isOwner && (
+        <button
+          onClick={() => setIsDialogOpen(true)}
+          className="flex flex-col w-full text-neutral-700 text-sm items-end hover:text-white cursor-pointer pt-5 pr-5 -mb-8"
+        >
+          <FontAwesomeIcon icon={faXmark} className="text-xs" />
+        </button>
+      )}
       {/* Original Post */}
       <div className="flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 pr-12 bg-neutral-900">
         {/* Repost note */}
@@ -220,6 +244,12 @@ export default function Post({ post }) {
                 <FontAwesomeIcon icon={faCopy} />
                 <span className="sr-only">Copy post link to clipboard</span>
               </button>
+
+              <ConfirmDialog
+                open={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                onConfirm={handleDelete}
+              />
             </div>
           </div>
         </div>
