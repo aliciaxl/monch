@@ -53,7 +53,7 @@ class PostViewSet(viewsets.ModelViewSet):
         followed_user_ids = Follow.objects.filter(follower=user).values_list("following_id", flat=True)
 
         # Get posts from those users
-        posts = Post.objects.filter(user__id__in=followed_user_ids).order_by("-created_at")
+        posts = Post.objects.filter(user__id__in=followed_user_ids, parent_post__isnull=True).order_by("-created_at")
         serializer = PostSerializer(posts, many=True, context={'request': request})
         print("Serialized posts data:", serializer.data)
         return Response(serializer.data)

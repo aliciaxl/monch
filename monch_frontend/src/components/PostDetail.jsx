@@ -48,7 +48,6 @@ export default function PostDetail() {
         const res = await apiClient.get(`/posts/${postId}`, {
           withCredentials: true,
         });
-        console.log("Post data:", res.data);
         setPost(res.data);
         setReplies(res.data.replies || []);
         setLiked(res.data.liked_by_user || false);

@@ -10,7 +10,7 @@ export default function LikesPage() {
   useEffect(() => {
     const fetchLikedPosts = async () => {
       try {
-        const res = await apiClient.get("/posts/liked/", {
+        const res = await apiClient.get("/likes/liked-posts/", {
           withCredentials: true,
         });
         setLikedPosts(res.data);
