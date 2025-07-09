@@ -15,7 +15,6 @@ export default function EditProfile({ user, onClose, onSave }) {
   const [mediaError, setMediaError] = useState("");
 
   useEffect(() => {
-    console.log("User object inside useEffect:", user);
     if (user) {
       setProfileData({
         displayName: user.display_name || "",
@@ -39,8 +38,6 @@ export default function EditProfile({ user, onClose, onSave }) {
     const file = e.target.files?.[0];
 
     if (!file) return;
-
-    console.log("Selected file:", file);
 
     // Allowed file types
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import apiClient from "../api/apiClient.js"
+import toast from "react-hot-toast";
 
 export default function SignUpModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -69,10 +70,11 @@ export default function SignUpModal({ isOpen, onClose }) {
         withCredentials: true,
       });
 
+      toast.success("Registration successful!");
       console.log('Registration successful:', res.data);
       onClose(); // close modal after success
     } catch (error) {
-      alert(error.response?.data?.detail || 'Registration failed');
+      toast.error(error.response?.data?.detail || 'Registration failed');
     }
   };
 

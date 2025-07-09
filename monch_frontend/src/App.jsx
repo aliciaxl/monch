@@ -10,6 +10,7 @@ import Home from "./pages/Home.jsx";
 import UserProfile from "./components/UserProfile.jsx";
 import PostDetail from "./components/PostDetail.jsx";
 import SearchPage from "./components/SearchPage.jsx";
+import LikesPage from './components/LikesPage';
 
 function PrivateRoute({ element }) {
   const { user, loading } = useAuth();
@@ -45,6 +46,7 @@ function App() {
         <Route path="/" element={<PrivateRoute element={<Layout />} />}>
           <Route path="/home/:tab?" element={<Home />} />
           <Route path="/home/search" element={<SearchPage />} />
+          <Route path="/home/likes" element={<LikesPage />} />
           <Route path="user/:username" element={<UserProfile />} />
           <Route path="/post/:postId" element={<PostDetail />} />
         </Route>

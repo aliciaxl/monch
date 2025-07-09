@@ -59,7 +59,9 @@ export default function Sidebar() {
           <SidebarButton icon={faMagnifyingGlass} label="Search" />
         </Link>
         <SidebarButton icon={faPlus} label="Add" />
-        <SidebarButton icon={faHeart} label="Likes" />
+        <Link to="/home/likes">
+          <SidebarButton icon={faHeart} label="Likes" />
+        </Link>
         {user?.username && (
           <Link to={`/user/${user.username}`}>
             <SidebarButton icon={faUser} label="Profile" />

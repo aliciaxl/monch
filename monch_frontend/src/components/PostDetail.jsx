@@ -14,6 +14,7 @@ import {
   faRetweet,
 } from "@fortawesome/free-solid-svg-icons";
 import { MyEmojiPicker } from "./EmojiPicker";
+import toast from "react-hot-toast";
 
 export default function PostDetail() {
   const { user } = useAuth();
