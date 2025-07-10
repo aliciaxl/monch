@@ -4,25 +4,33 @@ import apiClient from "../api/apiClient.js";
 import PostInput from "../components/PostInput";
 import Feed from "../components/Feed";
 import { useParams, useNavigate } from "react-router-dom";
+import Spinner from "../components/Spinner.jsx";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [fadeIn, setFadeIn] = useState(false);
   const [newPost, setNewPost] = useState("");
   const [posts, setPosts] = useState([]);
-  const { postsNeedRefresh, setPostsNeedRefresh, handlePost, loading } = usePostContext();
+  const { postsNeedRefresh, setPostsNeedRefresh, handlePost, loading } =
+    usePostContext();
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const { tab: paramTab } = useParams();
-  const tab = paramTab === "following" ? "following" : "bites"; 
+  const tab = paramTab === "following" ? "following" : "bites";
   const navigate = useNavigate();
 
   const fetchPosts = async () => {
     const endpoint = tab === "following" ? "/posts/following/" : "/posts/";
     try {
+      setIsLoading(true);
       const res = await apiClient.get(endpoint, { withCredentials: true });
+
       setPosts(res.data);
     } catch (error) {
       console.error("Error fetching posts:", error);
       setPosts([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -37,6 +45,14 @@ export default function Home() {
     }
   }, [postsNeedRefresh]);
 
+  useEffect(() => {
+    if (!loading) {
+      requestAnimationFrame(() => setFadeIn(true));
+    } else {
+      setFadeIn(false);
+    }
+  }, [loading]);
+
   const onSubmit = async () => {
     if (!newPost.trim()) return;
     try {
@@ -44,9 +60,7 @@ export default function Home() {
       setNewPost("");
       setMedia(null);
       setMediaPreview(null);
-    } catch (err) {
-
-    }
+    } catch (err) {}
   };
 
   return (
@@ -81,14 +95,25 @@ export default function Home() {
           <PostInput
             newPost={newPost}
             setNewPost={setNewPost}
-            handlePost={onSubmit} 
-            loading={loading}      
+            handlePost={onSubmit}
+            loading={loading}
             media={media}
             setMedia={setMedia}
             mediaPreview={mediaPreview}
             setMediaPreview={setMediaPreview}
           />
-          <Feed posts={posts} />
+          {/* Loading / Fade Container */}
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <div
+              className={`transition-opacity duration-500 ease-in-out ${
+                fadeIn ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Feed posts={posts} isLoading={false} />
+            </div>
+          )}
         </div>
       </div>
     </div>
