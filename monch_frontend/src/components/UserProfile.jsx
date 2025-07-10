@@ -258,6 +258,7 @@ export default function UserProfile() {
               isOwner={currentUser === username}
               onPostDeleted={fetchUserAndPosts}
               isLoading={loading}
+              showRepliesWithParents={tab === "replies"}
             />
           </div>
         )}

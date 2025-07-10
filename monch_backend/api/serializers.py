@@ -51,10 +51,42 @@ class PostMediaSerializer(serializers.ModelSerializer):
 class ParentPostSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     media = PostMediaSerializer(many=True, read_only=True)
+    likes = serializers.IntegerField(source='likes.count', read_only=True)
+    liked_by_user = serializers.SerializerMethodField()
+    reposted_by_user = serializers.SerializerMethodField()
+    replies_count = serializers.SerializerMethodField()
+    repost_of_detail = RepostOfSerializer(source='repost_of', read_only=True)
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'content', 'created_at', 'media']
+        fields = [
+            'id',
+            'user',
+            'content',
+            'created_at',
+            'media',
+            'likes',
+            'liked_by_user',
+            'reposted_by_user',
+            'replies_count',
+            'repost_of_detail',
+        ]
+
+    def get_liked_by_user(self, obj):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return obj.likes.filter(user=user).exists()
+
+    def get_reposted_by_user(self, obj):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return Post.objects.filter(repost_of=obj, user=user).exists()
+
+    def get_replies_count(self, obj):
+        return obj.replies.count()
+
     
 class PostSerializer(serializers.ModelSerializer):
     likes = serializers.IntegerField(source='likes.count', read_only=True)

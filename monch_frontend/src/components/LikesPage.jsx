@@ -37,7 +37,7 @@ return (
       {loading ? (
         <Spinner />
       ) : (
-        <Feed posts={likedPosts} />
+        <Feed posts={likedPosts} noTopBorder={true} />
       )}
     </div>
   </div>

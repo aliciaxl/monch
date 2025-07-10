@@ -7,6 +7,8 @@ export default function Feed({
   isOwner = false,
   onPostDeleted,
   isLoading = false,
+  noTopBorder,
+  showRepliesWithParents = false,
 }) {
   const { postsNeedRefresh, setPostsNeedRefresh } = usePostContext();
   const [fadeIn, setFadeIn] = useState(false);
@@ -16,13 +18,14 @@ export default function Feed({
       setPostsNeedRefresh(false);
     }
   }, [postsNeedRefresh, setPostsNeedRefresh]);
+
   useEffect(() => {
-  if (!isLoading) {
-  setTimeout(() => setFadeIn(true), 50);
-} else {
-  setFadeIn(false);
-}
-}, [isLoading]);
+    if (!isLoading) {
+      setTimeout(() => setFadeIn(true), 50);
+    } else {
+      setFadeIn(false);
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     return (
@@ -48,15 +51,39 @@ export default function Feed({
         fadeIn ? "opacity-100" : "opacity-0"
       }`}
     >
-      <div className="border-t border-neutral-800">
-      {posts.map((post) => (
-        <Post
-          key={post.id}
-          post={post}
-          isOwner={isOwner}
-          onPostDeleted={onPostDeleted}
-        />
-      ))}
+      <div className={`${noTopBorder ? "" : "border-t"} border-neutral-800`}>
+        {showRepliesWithParents ? (
+          // If true, render replies with their parent posts above
+          posts.map((reply) => (
+            <div key={reply.id} className="mb-8">
+              {/* Render parent post */}
+              {reply.parent_post_detail && (
+                <Post
+                  post={reply.parent_post_detail}
+                  isOwner={false} // Parent post is usually someone else's
+                  onPostDeleted={onPostDeleted}
+                />
+              )}
+              {/* Render the reply itself indented or styled differently */}
+              <div className="ml-10 mt-2 p-4 bg-neutral-800 rounded-lg border border-neutral-700">
+                <Post
+                  post={reply}
+                  isOwner={isOwner}
+                  onPostDeleted={onPostDeleted}
+                />
+              </div>
+            </div>
+          ))
+        ) : (
+          posts.map((post) => (
+            <Post
+              key={post.id}
+              post={post}
+              isOwner={isOwner}
+              onPostDeleted={onPostDeleted}
+            />
+          ))
+        )}
       </div>
     </div>
   );
