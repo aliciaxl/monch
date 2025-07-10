@@ -4,7 +4,7 @@ export function MyEmojiPicker({ onEmojiClick }) {
   return (
     <EmojiPicker.Root className="isolate flex h-[280px] w-[320px] rounded-2xl flex-col bg-white dark:bg-black p-2">
       <EmojiPicker.Search className="z-10 mx-2 mt-2 appearance-none rounded-md bg-neutral-100 px-2.5 py-2 text-sm dark:bg-neutral-800 focus:outline-none" />
-      <EmojiPicker.Viewport className="relative flex-1 outline-hidden">
+      <EmojiPicker.Viewport className="relative flex-1 overflow-auto scrollbar-hidden">
         <EmojiPicker.Loading className="absolute inset-0 flex items-center justify-center text-neutral-400 text-sm dark:text-neutral-500">
           Loading…
         </EmojiPicker.Loading>
@@ -23,7 +23,7 @@ export function MyEmojiPicker({ onEmojiClick }) {
               </div>
             ),
             Row: ({ children, ...props }) => (
-              <div className="scroll-my-1.5 px-1.5 flex" {...props}>
+              <div className="scroll-my-1.5 pl-1.5 flex" {...props}>
                 {children}
               </div>
             ),

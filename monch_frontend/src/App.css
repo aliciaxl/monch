@@ -53,3 +53,25 @@ html, body #root {
 .wiggle-zoom:hover {
   animation: wiggleZoom 0.5s ease-in-out;
 }
+
+/* Always show scrollbar */
+.scrollbar-hidden::-webkit-scrollbar {
+  width: 8px; /* or your preferred width */
+  height: 8px;
+}
+
+.scrollbar-hidden::-webkit-scrollbar-track {
+  background: transparent; /* keep track invisible */
+}
+
+.scrollbar-hidden::-webkit-scrollbar-thumb {
+  background-color: #3d3c3c; /* Thumb always visible */
+  border-radius: 9999px;     /* Rounded thumb */
+  background-clip: content-box;
+}
+
+/* Firefox */
+.scrollbar-hidden {
+  scrollbar-width: thin;
+  scrollbar-color: #999999 transparent; /* thumb color + transparent track */
+}

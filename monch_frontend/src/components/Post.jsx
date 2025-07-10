@@ -106,7 +106,7 @@ export default function Post({ post, isOwner = false, onPostDeleted }) {
         </button>
       )}
       {/* Original Post */}
-      <div className="flex flex-col w-full border-t border-neutral-800 px-6 pt-4 py-6 pr-12 bg-neutral-900">
+      <div className="flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 pr-12 bg-neutral-900">
         {/* Repost note */}
         {post.repost_of_detail ? (
           <div className="text-xs text-neutral-400 flex items-center gap-1 -mb-1">

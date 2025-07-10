@@ -12,6 +12,8 @@ export default function UserProfile() {
   const { user } = useAuth();
   const currentUser = user?.username;
   const { username } = useParams();
+  const [showAvatarZoom, setShowAvatarZoom] = useState(false);
+  const [avatarFadeIn, setAvatarFadeIn] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -118,6 +120,14 @@ export default function UserProfile() {
     }
   };
 
+  useEffect(() => {
+    if (showAvatarZoom) {
+      requestAnimationFrame(() => setAvatarFadeIn(true));
+    } else {
+      setAvatarFadeIn(false);
+    }
+  }, [showAvatarZoom]);
+
   const handleSave = async (formData) => {
     try {
       const res = await apiClient.patch(`/users/${user.username}/`, formData, {
@@ -140,117 +150,145 @@ export default function UserProfile() {
         <span className="w-32 py-4 text-center text-white">Profile</span>
       </div>
       <div className="flex-1 flex-col h-screen justify-center w-160 items-center pt-8 rounded-t-3xl border-neutral-800 bg-neutral-900">
-          
-          {/* Profile info section */}
-          <div
-            className={`transition-opacity duration-500 ${fadeIn ? "opacity-100" : "opacity-0"}`}
-          >
-            <div className="px-6">
-              <div className="flex items-start justify-between mb-4 w-full">
-                <div className="text-left">
-                  <h2 className="text-2xl font-bold text-white">
-                    {userData?.display_name.toUpperCase() ||
-                      username.toUpperCase()}
-                  </h2>
-                  <p className="text-neutral-400 mb-4">@{username}</p>
-                  <p className="text-white mb-4">{userData?.bio || ""}</p>
-                  <p className="text-neutral-500 mt-1">
-                    {userData?.follower_count !== undefined
-                      ? `${userData.follower_count} follower${userData.follower_count === 1 ? "" : "s"}`
-                      : ""}
-                  </p>
-                </div>
-                {/* Avatar Circle */}
-                <div className="self-start flex-none w-16 h-16 rounded-full bg-neutral-700 flex items-center justify-center text-white text-xl font-semibold">
-                  {userData?.avatar ? (
-                    <img
-                      src={userData.avatar}
-                      alt="Avatar"
-                      className="w-full h-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <span>
-                      {userData?.display_name?.[0]?.toUpperCase() ||
-                        username[0]?.toUpperCase()}
-                    </span>
-                  )}
-                </div>
+        {/* Profile info section */}
+        <div
+          className={`transition-opacity duration-500 ${fadeIn ? "opacity-100" : "opacity-0"}`}
+        >
+          <div className="px-6">
+            <div className="flex items-start justify-between mb-4 w-full">
+              <div className="text-left">
+                <h2 className="text-2xl font-bold text-white">
+                  {userData?.display_name.toUpperCase() ||
+                    username.toUpperCase()}
+                </h2>
+                <p className="text-neutral-400 mb-4">@{username}</p>
+                <p className="text-white mb-4">{userData?.bio || ""}</p>
+                <p className="text-neutral-500 mt-1">
+                  {userData?.follower_count !== undefined
+                    ? `${userData.follower_count} follower${userData.follower_count === 1 ? "" : "s"}`
+                    : ""}
+                </p>
               </div>
+              {/* Avatar Circle */}
+              <div
+                onClick={() => userData?.avatar && setShowAvatarZoom(true)}
+                className="self-start flex-none w-16 h-16 rounded-full bg-neutral-700 flex items-center justify-center text-white text-xl font-semibold cursor-pointer"
+              >
+                {userData?.avatar ? (
+                  <img
+                    src={userData.avatar}
+                    alt="Avatar"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <span>
+                    {userData?.display_name?.[0]?.toUpperCase() ||
+                      username[0]?.toUpperCase()}
+                  </span>
+                )}
+              </div>
+            </div>
 
-              {currentUser === username ? (
+            {currentUser === username ? (
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="transform transition-transform active:scale-[.95] duration-150 w-full h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white"
+              >
+                Edit Profile
+              </button>
+            ) : (
+              currentUser !== username && (
                 <button
-                  onClick={() => setShowEditModal(true)}
-                  className="transform transition-transform active:scale-[.95] duration-150 w-full h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white"
-                >
-                  Edit Profile
-                </button>
-              ) : (
-                currentUser !== username && (
-                  <button
-                    onClick={handleFollowToggle}
-                    disabled={loadingFollow}
-                    className={`w-full h-10 px-4 border rounded-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
+                  onClick={handleFollowToggle}
+                  disabled={loadingFollow}
+                  className={`w-full h-10 px-4 border rounded-xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
                       ${
                         isFollowing
                           ? "bg-neutral-900 hover:bg-neutral-700 border-neutral-700 text-white"
                           : "bg-white text-black border-neutral-300 hover:bg-neutral-200"
                       }`}
-                  >
-                    {isFollowing ? "Unfollow" : "Follow"}
-                  </button>
-                )
-              )}
+                >
+                  {isFollowing ? "Unfollow" : "Follow"}
+                </button>
+              )
+            )}
 
-              {showEditModal && userData && (
-                <EditProfile
-                  user={userData}
-                  onSave={handleSave}
-                  onClose={() => setShowEditModal(false)}
-                />
-              )}
-            </div>
-          </div>
-
-
-          <div className="flex text-m font-semibold justify-center text-neutral-500 border-b border-neutral-700 mt-3">
-            <button
-              onClick={() => setTab("bites")}
-              className={`flex-1 w-32 py-4 text-center border-b cursor-pointer ${
-                tab === "bites"
-                  ? "text-white border-neutral-300"
-                  : "border-transparent hover:text-white"
-              }`}
-            >
-              Bites
-            </button>
-            <button
-              onClick={() => setTab("replies")}
-              className={`flex-1 w-32 py-4 text-center border-b cursor-pointer ${
-                tab === "replies"
-                  ? "text-white border-neutral-300"
-                  : "border-transparent hover:text-white"
-              }`}
-            >
-              Replies
-            </button>
-          </div>
-          {loading ? (
-              <Spinner />
-          ) : (
-            <div
-              className={`transition-opacity duration-500 ease-in-out ${
-                fadeIn ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <Feed
-                posts={posts}
-                isOwner={currentUser === username}
-                onPostDeleted={fetchUserAndPosts}
-                isLoading={loading}
+            {showEditModal && userData && (
+              <EditProfile
+                user={userData}
+                onSave={handleSave}
+                onClose={() => setShowEditModal(false)}
               />
-            </div>
-          )}
+            )}
+          </div>
+        </div>
+
+        <div className="flex text-m font-semibold justify-center text-neutral-500 mt-3">
+          <button
+            onClick={() => setTab("bites")}
+            className={`flex-1 w-32 py-4 text-center border-b cursor-pointer ${
+              tab === "bites"
+                ? "text-white border-neutral-300"
+                : "border-transparent hover:text-white"
+            }`}
+          >
+            Bites
+          </button>
+          <button
+            onClick={() => setTab("replies")}
+            className={`flex-1 w-32 py-4 text-center border-b cursor-pointer ${
+              tab === "replies"
+                ? "text-white border-neutral-300"
+                : "border-transparent hover:text-white"
+            }`}
+          >
+            Replies
+          </button>
+        </div>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <div
+            className={`transition-opacity duration-500 ease-in-out ${
+              fadeIn ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <Feed
+              posts={posts}
+              isOwner={currentUser === username}
+              onPostDeleted={fetchUserAndPosts}
+              isLoading={loading}
+            />
+          </div>
+        )}
       </div>
+      {showAvatarZoom && (
+        <div
+          onClick={() => setShowAvatarZoom(false)}
+          className={`fixed inset-0 z-50 bg-neutral-900/80 backdrop-blur-xl flex items-center justify-center
+    transition-opacity duration-500 ${avatarFadeIn ? "opacity-100" : "opacity-0"}`}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setShowAvatarZoom(false)}
+            className="absolute top-4 right-6 text-neutral-200 text-3xl font-extralight hover:opacity-50 transition-opacity cursor-pointer"
+            aria-label="Close"
+          >
+            ×
+          </button>
+
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-[90vw] max-h-[90vh]"
+          >
+            <img
+              src={userData.avatar}
+              alt="Zoomed avatar"
+              className="w-80 h-full object-contain rounded-full shadow-xl"
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

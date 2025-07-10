@@ -48,6 +48,7 @@ export default function Feed({
         fadeIn ? "opacity-100" : "opacity-0"
       }`}
     >
+      <div className="border-t border-neutral-800">
       {posts.map((post) => (
         <Post
           key={post.id}
@@ -56,6 +57,7 @@ export default function Feed({
           onPostDeleted={onPostDeleted}
         />
       ))}
+      </div>
     </div>
   );
 }
