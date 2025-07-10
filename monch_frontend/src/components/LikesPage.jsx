@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import apiClient from "../api/apiClient";
 import Feed from "../components/Feed";
+import Spinner from "./Spinner";
 
 export default function LikesPage() {
   const [likedPosts, setLikedPosts] = useState([]);
@@ -34,7 +35,7 @@ return (
     {/* Main Content */}
     <div className="flex-1 flex-col justify-center w-160 items-center pt-4 rounded-t-3xl border-neutral-800 bg-neutral-900 mx-auto">
       {loading ? (
-        <p className="text-neutral-400 text-center">Loading...</p>
+        <Spinner />
       ) : (
         <Feed posts={likedPosts} />
       )}

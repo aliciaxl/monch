@@ -140,6 +140,8 @@ export default function UserProfile() {
         <span className="w-32 py-4 text-center text-white">Profile</span>
       </div>
       <div className="flex-1 flex-col h-screen justify-center w-160 items-center pt-8 rounded-t-3xl border-neutral-800 bg-neutral-900">
+          
+          {/* Profile info section */}
           <div
             className={`transition-opacity duration-500 ${fadeIn ? "opacity-100" : "opacity-0"}`}
           >
@@ -208,6 +210,8 @@ export default function UserProfile() {
               )}
             </div>
           </div>
+
+
           <div className="flex text-m font-semibold justify-center text-neutral-500 border-b border-neutral-700 mt-3">
             <button
               onClick={() => setTab("bites")}

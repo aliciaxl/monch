@@ -86,7 +86,7 @@ export default function SignUpModal({ isOpen, onClose }) {
 
   return (
      <div
-    className="fixed inset-0 bg-neutral-900/10 backdrop-blur-lg flex justify-center items-center "
+    className="fixed inset-0 bg-black flex justify-center items-center "
     onMouseDown={onClose}
   >
       <div
