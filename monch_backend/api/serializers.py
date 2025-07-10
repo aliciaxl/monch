@@ -47,15 +47,28 @@ class PostMediaSerializer(serializers.ModelSerializer):
         model = PostMedia
         fields = ['id', 'media_file', 'media_type', 'uploaded_at']
         read_only_fields = ['id', 'uploaded_at']
+
+class ParentPostSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    media = PostMediaSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'user', 'content', 'created_at', 'media']
     
 class PostSerializer(serializers.ModelSerializer):
     likes = serializers.IntegerField(source='likes.count', read_only=True)
     user = UserSerializer(read_only=True)
+
     parent_post = serializers.PrimaryKeyRelatedField(
-    queryset=Post.objects.all(),  # allow setting parent_post by ID
-    required=False,               # optional field
-    allow_null=True
+        queryset=Post.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True
     )
+    # Nested parent post info for output
+    parent_post_detail = ParentPostSerializer(source='parent_post', read_only=True)
+
     repost_of = serializers.PrimaryKeyRelatedField(
         queryset=Post.objects.all(),
         required=False,
@@ -71,7 +84,7 @@ class PostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'repost_of', 'repost_of_detail', 'replies', 'likes', 'liked_by_user', 'reposted_by_user', 'replies_count', 'media']
+        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'parent_post_detail', 'repost_of', 'repost_of_detail', 'replies', 'likes', 'liked_by_user', 'reposted_by_user', 'replies_count', 'media']
 
     def get_likes(self, obj):
         return obj.likes.count()

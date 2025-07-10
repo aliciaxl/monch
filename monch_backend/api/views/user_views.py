@@ -50,7 +50,12 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], url_path='replies')
     def replies(self, request, username=None):
         user = self.get_object()
-        replies = Post.objects.filter(user=user, parent_post__isnull=False).order_by('-created_at')
+
+        replies = Post.objects.filter(user=user, parent_post__isnull=False)\
+                              .select_related('parent_post', 'parent_post__user')\
+                              .prefetch_related('media')\
+                              .order_by('-created_at')
+
         serializer = PostSerializer(replies, many=True, context={'request': request})
         return Response(serializer.data)
     

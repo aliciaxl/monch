@@ -112,7 +112,7 @@ export default function SignUpModal({ isOpen, onClose }) {
             value={formData.username}
             onChange={handleChange}
             onBlur={(e) => checkUsername(e.target.value)}
-            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none border-[.5px] border-neutral-800 focus:ring-1 focus:ring-neutral-700"
+            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none border border-neutral-800 focus:ring-1 focus:ring-neutral-700"
             required
           />
           {usernameAvailable === false && (
@@ -125,7 +125,7 @@ export default function SignUpModal({ isOpen, onClose }) {
             placeholder="Display Name"
             value={formData.displayName}
             onChange={handleChange}
-            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none border-[.5px] border-neutral-800 focus:ring-1 focus:ring-neutral-700"
+            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none border border-neutral-800 focus:ring-1 focus:ring-neutral-700"
             required
           />
           <input
@@ -134,7 +134,7 @@ export default function SignUpModal({ isOpen, onClose }) {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none border-[.5px] border-neutral-800 focus:ring-1 focus:ring-neutral-700"
+            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none border border-neutral-800 focus:ring-1 focus:ring-neutral-700"
             required
           />
           <input
@@ -143,7 +143,7 @@ export default function SignUpModal({ isOpen, onClose }) {
             placeholder="Confirm Password"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 border-[.5px] border-neutral-800 focus:ring-neutral-700"
+            className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 border border-neutral-800 focus:ring-neutral-700"
             required
           />
           <button
