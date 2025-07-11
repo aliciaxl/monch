@@ -313,7 +313,7 @@ export default function UserProfile() {
             <img
               src={userData.avatar}
               alt="Zoomed avatar"
-              className="w-80 h-full object-contain rounded-full shadow-xl"
+              className="w-80 h-80 object-cover rounded-full shadow-xl"
             />
           </div>
         </div>

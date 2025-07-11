@@ -82,17 +82,20 @@ export default function SignUpModal({ isOpen, onClose }) {
     }
   };
 
+  const isValid =
+    isFormFilled && usernameAvailable !== false && password === confirmPassword;
+
   if (!isOpen) return null;
 
   return (
-     <div
-    className="fixed inset-0 bg-black flex justify-center items-center "
-    onMouseDown={onClose}
-  >
-      <div
-      className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col"
-      onMouseDown={(e) => e.stopPropagation()}
+    <div
+      className="fixed inset-0 bg-black flex justify-center items-center "
+      onMouseDown={onClose}
     >
+      <div
+        className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <button
           type="button"
           onClick={onClose}
@@ -146,15 +149,17 @@ export default function SignUpModal({ isOpen, onClose }) {
             className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 border border-neutral-800 focus:ring-neutral-700"
             required
           />
+          {confirmPassword && password !== confirmPassword && (
+            <p className="text-red-500 text-xs">Passwords must match</p>
+          )}
           <button
             type="submit"
-            className={`text-[15px] bg-white font-semibold p-4 rounded-xl mt-4 
-                            ${
-                              isFormFilled && usernameAvailable !== false
-                                ? "bg-white text-black cursor-pointer rounded-xl"
-                                : "bg-white text-neutral-400 cursor-not-allowed rounded-xl"
-                            }`}
-            disabled={!isFormFilled || usernameAvailable === false}
+            className={`text-[15px] font-semibold p-4 rounded-xl mt-4 ${
+              isValid
+                ? "bg-white text-black cursor-pointer"
+                : "bg-white text-neutral-400 cursor-not-allowed"
+            }`}
+            disabled={!isValid}
           >
             Join Monch &#10047;
           </button>
