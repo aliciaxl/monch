@@ -34,14 +34,11 @@ export default function Layout() {
         },
       });
 
-      // Optionally emit the new post somehow to Home via a context or trigger a refetch
-      // For now, just clear form and close modal
       setNewPost("");
       setMedia(null);
       setMediaPreview(null);
       setIsModalOpen(false);
 
-      // Let Home page refetch — see optional note below
     } catch (err) {
       alert(err.message || "Failed to post");
     } finally {
@@ -52,7 +49,7 @@ export default function Layout() {
   return (
     <div className="flex h-screen w-full text-white">
       <Sidebar onOpenPostModal={() => setIsModalOpen(true)} />
-      <div>
+      <div className="flex-1 sm:ml-20 pt-12 md:ml-20">
         <Outlet context={{
           newPost,
           setNewPost,
@@ -62,7 +59,7 @@ export default function Layout() {
           setMedia,
           mediaPreview,
           setMediaPreview,
-          handlePost, // provide handlePost to Home or any child
+          handlePost,
         }} />
       </div>
 
