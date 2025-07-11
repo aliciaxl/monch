@@ -102,7 +102,7 @@ export default function Post({
   };
 
   const postContainerClass = isReplyWithParent
-  ? "flex flex-col w-full pl-16 px-6 pt-2 py-6 pr-12 bg-[#1d1d1d] relative border-l border-neutral-700"
+  ? "flex flex-col w-full pl-18 px-6 pt-2 py-6 pr-12 bg-[#1d1d1d] relative border-l border-neutral-700"
   : "flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 pr-12 bg-neutral-900";
 
   return (
@@ -120,7 +120,7 @@ export default function Post({
         {isOwner && isReplyWithParent && (
         <button
           onClick={() => setIsDialogOpen(true)}
-          className="absolute top-2 right-4 text-neutral-700 text-sm hover:text-white cursor-pointer"
+          className="absolute top-3 right-5 text-neutral-700 text-sm hover:text-white cursor-pointer"
           aria-label="Delete post"
         >
           <FontAwesomeIcon icon={faXmark} className="text-xs" />
