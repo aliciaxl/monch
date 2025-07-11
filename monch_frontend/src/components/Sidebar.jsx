@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -15,7 +15,11 @@ import {
 
 function SidebarButton({ icon, label, onClick }) {
   return (
-    <button onClick={onClick} className="hover:text-white cursor-pointer" aria-label={label}>
+    <button
+      onClick={onClick}
+      className="hover:text-white cursor-pointer"
+      aria-label={label}
+    >
       <FontAwesomeIcon icon={icon} />
     </button>
   );
@@ -25,6 +29,7 @@ export default function Sidebar({ onOpenPostModal }) {
   const [showMenu, setShowMenu] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const menuRef = useRef();
 
   const toggleMenu = () => setShowMenu((prev) => !prev);
 
@@ -36,6 +41,16 @@ export default function Sidebar({ onOpenPostModal }) {
       alert(err.response?.data?.detail || err.message || "Logout failed");
     }
   };
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (!menuRef.current?.contains(e.target)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   return (
     <div className="fixed top-0 left-0 h-full w-12 text-2xl flex flex-col justify-between items-center mx-4 py-4 text-neutral-600">
@@ -49,10 +64,10 @@ export default function Sidebar({ onOpenPostModal }) {
           aria-label="Home Refresh"
         >
           <img
-    src="/icons/grump.png"
-    alt="Grump Icon"
-    className="w-8 h-8 object-contain"
-  />
+            src="/icons/grump.png"
+            alt="Grump Icon"
+            className="w-8 h-8 object-contain"
+          />
         </button>
       </div>
       <div className="flex flex-col space-y-8">
