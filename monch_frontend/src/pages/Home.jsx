@@ -8,6 +8,7 @@ import Spinner from "../components/Spinner.jsx";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
   const [newPost, setNewPost] = useState("");
   const [posts, setPosts] = useState([]);
@@ -26,6 +27,10 @@ export default function Home() {
       const res = await apiClient.get(endpoint, { withCredentials: true });
 
       setPosts(res.data);
+
+    if (!hasLoadedOnce) {
+  setHasLoadedOnce(true);
+}
     } catch (error) {
       console.error("Error fetching posts:", error);
       setPosts([]);
@@ -65,7 +70,7 @@ export default function Home() {
 
   return (
     <div className="flex h-screen w-full text-white">
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-1">
         {/* Tabs */}
         <div className="flex text-m font-semibold justify-center text-neutral-500">
           <button
@@ -91,7 +96,7 @@ export default function Home() {
         </div>
 
         {/* Post Input and Feed */}
-        <div className="flex-1 flex-col justify-center w-160 items-center pt-8 rounded-t-3xl border-neutral-800 bg-neutral-900">
+        <div className="relative min-h-screen w-160 items-center pt-8 rounded-t-3xl border-neutral-800 bg-neutral-900">
           <PostInput
             newPost={newPost}
             setNewPost={setNewPost}
@@ -103,7 +108,7 @@ export default function Home() {
             setMediaPreview={setMediaPreview}
           />
           {/* Loading / Fade Container */}
-          {isLoading ? (
+          {isLoading && !hasLoadedOnce ? (
             <Spinner />
           ) : (
             <div
