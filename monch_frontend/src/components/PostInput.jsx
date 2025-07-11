@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFaceSmile } from "@fortawesome/free-solid-svg-icons";
-import { useRef, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { MyEmojiPicker } from "./EmojiPicker";
 
 const MAX_FILE_SIZE_MB = 5;
@@ -20,6 +20,32 @@ export default function PostInput({
   const [showPicker, setShowPicker] = useState(false);
   const fileInputRef = useRef();
   const textareaRef = useRef();
+
+  const pickerRef = useRef(null);
+  const emojiButtonRef = useRef(null);
+
+    useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        pickerRef.current &&
+        !pickerRef.current.contains(event.target) &&
+        emojiButtonRef.current &&
+        !emojiButtonRef.current.contains(event.target)
+      ) {
+        setShowPicker(false);
+      }
+    }
+
+    if (showPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPicker]);
 
   const handleTextareaChange = (e) => {
     setNewPost(e.target.value);
@@ -124,10 +150,11 @@ export default function PostInput({
               icon={faFaceSmile}
               className="text-neutral-400 hover:text-white text-lg cursor-pointer"
               onClick={() => setShowPicker((prev) => !prev)}
+              ref={emojiButtonRef} // Attach ref here
             />
 
             {showPicker && (
-              <div className="picker-container absolute left-0 mt-2">
+              <div ref={pickerRef} className="picker-container absolute left-0 mt-2">
                 <MyEmojiPicker onEmojiClick={onEmojiClick} />
               </div>
             )}
