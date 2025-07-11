@@ -14,7 +14,12 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 
-export default function Post({ post, isOwner = false, onPostDeleted }) {
+export default function Post({
+  post,
+  isOwner = false,
+  onPostDeleted,
+  isReplyWithParent = false,
+}) {
   const [liked, setLiked] = useState(post.liked_by_user || false);
   const [likesCount, setLikesCount] = useState(post.likes || 0);
   const [reposted, setReposted] = useState(post.reposted_by_user || false);
@@ -78,7 +83,9 @@ export default function Post({ post, isOwner = false, onPostDeleted }) {
 
       setPostsNeedRefresh(true);
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Failed to repost. Please try again.");
+      toast.error(
+        err.response?.data?.detail || "Failed to repost. Please try again."
+      );
     }
   };
 
@@ -87,26 +94,46 @@ export default function Post({ post, isOwner = false, onPostDeleted }) {
       await apiClient.delete(`/posts/${post.id}/`, {
         withCredentials: true,
       });
-      toast.success("Post deleted");
-      if (onPostDeleted) onPostDeleted(); // refresh feed
+      if (onPostDeleted) onPostDeleted();
     } catch (error) {
       console.error("Delete failed:", error);
       toast.error("Failed to delete post.");
     }
   };
 
+  const postContainerClass = isReplyWithParent
+  ? "flex flex-col w-full pl-16 px-6 pt-2 py-6 pr-12 bg-[#1d1d1d] relative border-l border-neutral-700"
+  : "flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 pr-12 bg-neutral-900";
+
   return (
     <>
-            {isOwner && (
+      {isOwner && !isReplyWithParent && (
+      <button
+        onClick={() => setIsDialogOpen(true)}
+        className="flex flex-col w-full text-neutral-700 text-sm items-end hover:text-white cursor-pointer pt-5 pr-5 -mb-8"
+      >
+        <FontAwesomeIcon icon={faXmark} className="text-xs" />
+      </button>
+    )}
+      {/* Original Post */}
+      <div className={postContainerClass}>
+        {isOwner && isReplyWithParent && (
         <button
           onClick={() => setIsDialogOpen(true)}
-          className="flex flex-col w-full text-neutral-700 text-sm items-end hover:text-white cursor-pointer pt-5 pr-5 -mb-8"
+          className="absolute top-2 right-4 text-neutral-700 text-sm hover:text-white cursor-pointer"
+          aria-label="Delete post"
         >
           <FontAwesomeIcon icon={faXmark} className="text-xs" />
         </button>
       )}
-      {/* Original Post */}
-      <div className="flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 pr-12 bg-neutral-900">
+
+        {isReplyWithParent && (
+        <img
+          src="/icons/reply.png"
+          alt="Reply arrow"
+          className="absolute left-8 top-6 transform w-5 h-4"
+        />
+      )}
         {/* Repost note */}
         {post.repost_of_detail ? (
           <div className="text-xs text-neutral-400 flex items-center gap-1 -mb-1">

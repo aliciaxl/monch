@@ -53,23 +53,23 @@ export default function Feed({
     >
       <div className={`${noTopBorder ? "" : "border-t"} border-neutral-800`}>
         {showRepliesWithParents ? (
-          // If true, render replies with their parent posts above
           posts.map((reply) => (
-            <div key={reply.id} className="mb-8">
+            <div key={reply.id} className=" border-b border-neutral-800">
               {/* Render parent post */}
               {reply.parent_post_detail && (
                 <Post
                   post={reply.parent_post_detail}
-                  isOwner={false} // Parent post is usually someone else's
+                  isOwner={false}
                   onPostDeleted={onPostDeleted}
                 />
               )}
-              {/* Render the reply itself indented or styled differently */}
-              <div className="ml-10 mt-2 p-4 bg-neutral-800 rounded-lg border border-neutral-700">
+              {/* Render reply*/}
+              <div className="">
                 <Post
                   post={reply}
                   isOwner={isOwner}
                   onPostDeleted={onPostDeleted}
+                  isReplyWithParent={true}
                 />
               </div>
             </div>
