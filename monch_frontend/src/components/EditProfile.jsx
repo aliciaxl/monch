@@ -13,6 +13,7 @@ export default function EditProfile({ user, onClose, onSave }) {
   const fileInputRef = useRef(null);
   const [media, setMedia] = useState(null);
   const [mediaError, setMediaError] = useState("");
+  const [displayNameError, setDisplayNameError] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -27,6 +28,12 @@ export default function EditProfile({ user, onClose, onSave }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "displayName") {
+      if (value.trim() !== "") {
+        setDisplayNameError("");
+      }
+    }
     setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -45,7 +52,7 @@ export default function EditProfile({ user, onClose, onSave }) {
     if (!allowedTypes.includes(file.type)) {
       setMedia(null);
       setPreviewUrl(null);
-      setMediaError("Only JPEG, PNG, and GIF files are allowed.");
+      setMediaError("Only JPEG, PNG, and GIF files are allowed");
       return;
     }
 
@@ -53,7 +60,7 @@ export default function EditProfile({ user, onClose, onSave }) {
     if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
       setMedia(null);
       setPreviewUrl(null);
-      setMediaError("File exceeds 5MB size limit.");
+      setMediaError("File exceeds 5MB size limit");
       return;
     }
 
@@ -73,6 +80,13 @@ export default function EditProfile({ user, onClose, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!profileData.displayName.trim()) {
+      setDisplayNameError("Display name is required");
+      return;
+    }
+
+    setDisplayNameError("");
 
     const formData = new FormData();
     formData.append("display_name", profileData.displayName);
@@ -108,7 +122,7 @@ export default function EditProfile({ user, onClose, onSave }) {
       onMouseDown={handleClose}
     >
       <div
-        className="relative pt-8 px-8 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col"
+        className="relative pt-8 px-10 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col"
         onMouseDown={(e) => e.stopPropagation()} //Stops clicks inside modal from closing it
       >
         <button
@@ -122,7 +136,7 @@ export default function EditProfile({ user, onClose, onSave }) {
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col items-center p-2"
+          className="flex flex-col items-center"
         >
           <div
             className="relative w-24 h-24 mb-6 cursor-pointer rounded-full overflow-hidden"
@@ -172,7 +186,6 @@ export default function EditProfile({ user, onClose, onSave }) {
               maxLength={30}
               value={profileData.displayName}
               onChange={handleChange}
-              required
               className="px-3 pb-2.5 py-4 w-full text-sm text-white bg-transparent border border-neutral-800 rounded-lg appearance-none focus:outline-none focus:ring-1 focus:ring-neutral-700 peer"
               placeholder=" "
             />
@@ -221,6 +234,12 @@ export default function EditProfile({ user, onClose, onSave }) {
           >
             Save Changes
           </button>
+
+          <p
+            className={`text-red-500 text-xs mt-2 ${displayNameError ? "" : "invisible"}`}
+          >
+            {displayNameError || " "}
+          </p>
         </form>
       </div>
     </div>

@@ -26,8 +26,7 @@ export default function UserProfile() {
   const [toggleTrigger, setToggleTrigger] = useState(false);
   const [tab, setTab] = useState("bites");
 
-  useEffect(() => {
-    const fetchUserData = async () => {
+  const fetchUserData = async () => {
       try {
         setLoading(true);
         const res = await apiClient.get(`/users/${username}/`, {
@@ -42,8 +41,9 @@ export default function UserProfile() {
       }
     };
 
-    fetchUserData();
-  }, [username]);
+  useEffect(() => {
+  fetchUserData();
+}, [username]);
 
   const fetchPosts = async () => {
     try {
@@ -110,6 +110,10 @@ export default function UserProfile() {
     }
   }, [postsNeedRefresh]);
 
+  const fetchUserAndPosts = async () => {
+  await Promise.all([fetchUserData(), fetchPosts()]);
+};
+
   const handleFollowToggle = async () => {
     if (loadingFollow) return;
 
@@ -156,7 +160,8 @@ export default function UserProfile() {
       });
 
       setUserData(res.data);
-      fetchUserAndPosts();
+      await fetchUserAndPosts(); // Refresh both user and post data
+    setShowEditModal(false);
     } catch (error) {
       alert("Failed to update profile. Please try again.");
     }
