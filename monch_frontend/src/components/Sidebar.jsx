@@ -48,7 +48,11 @@ export default function Sidebar({ onOpenPostModal }) {
           className="text-white text-4xl cursor-pointer transform transition-transform hover:scale-105 active:scale-[.95] duration-150"
           aria-label="Home Refresh"
         >
-          <FontAwesomeIcon icon={faCookie} />
+          <img
+    src="/icons/grump.png"
+    alt="Grump Icon"
+    className="w-8 h-8 object-contain"
+  />
         </button>
       </div>
       <div className="flex flex-col space-y-8">

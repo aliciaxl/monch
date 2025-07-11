@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import ScrollRestore from "../components/ScrollRestore.jsx";
 import PostModal from "../components/PostModal";
 import { useState } from "react";
 import apiClient from "../api/apiClient.js";
@@ -54,7 +53,6 @@ export default function Layout() {
     <div className="flex h-screen w-full text-white">
       <Sidebar onOpenPostModal={() => setIsModalOpen(true)} />
       <div>
-        <ScrollRestore />
         <Outlet context={{
           newPost,
           setNewPost,

@@ -42,7 +42,7 @@ export default function Feed({
   }
 
   if (!posts || posts.length === 0) {
-    return <div className="text-neutral-500 px-8 pt-4">No posts yet.</div>;
+    return <div className="text-neutral-500 px-8 pt-6">No posts yet.</div>;
   }
 
   return (

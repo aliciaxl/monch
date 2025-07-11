@@ -15,7 +15,8 @@ export default function UserProfile() {
   const [showAvatarZoom, setShowAvatarZoom] = useState(false);
   const [avatarFadeIn, setAvatarFadeIn] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [fadeIn, setFadeIn] = useState(false);
+  const [profileFadeIn, setProfileFadeIn] = useState(false);
+  const [feedFadeIn, setFeedFadeIn] = useState(false);
   const [posts, setPosts] = useState([]);
   const { postsNeedRefresh, setPostsNeedRefresh } = usePostContext();
   const [loading, setLoading] = useState(true);
@@ -25,30 +26,41 @@ export default function UserProfile() {
   const [toggleTrigger, setToggleTrigger] = useState(false);
   const [tab, setTab] = useState("bites");
 
-  const fetchUserAndPosts = async () => {
-    try {
-      setLoading(true);
-
-      const userRes = await apiClient.get(`/users/${username}/`, {
-        withCredentials: true,
-      });
-
-      let postsRes;
-      if (tab === "bites") {
-        postsRes = await apiClient.get(`/users/${username}/posts/`, {
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        const res = await apiClient.get(`/users/${username}/`, {
           withCredentials: true,
         });
-      } else if (tab === "replies") {
-        postsRes = await apiClient.get(`/users/${username}/replies/`, {
+        setUserData(res.data);
+      } catch (error) {
+        console.error("Failed to load user data:", error);
+        setUserData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [username]);
+
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      let res;
+      if (tab === "bites") {
+        res = await apiClient.get(`/users/${username}/posts/`, {
+          withCredentials: true,
+        });
+      } else {
+        res = await apiClient.get(`/users/${username}/replies/`, {
           withCredentials: true,
         });
       }
-
-      setUserData(userRes.data);
-      setPosts(postsRes.data);
+      setPosts(res.data);
     } catch (error) {
-      console.error("Failed to load user profile:", error);
-      setUserData(null);
+      console.error("Failed to load posts:", error);
       setPosts([]);
     } finally {
       setLoading(false);
@@ -56,8 +68,22 @@ export default function UserProfile() {
   };
 
   useEffect(() => {
-    fetchUserAndPosts();
+    fetchPosts();
   }, [username, tab]);
+
+  useEffect(() => {
+    if (userData) {
+      requestAnimationFrame(() => setProfileFadeIn(true));
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (!loading) {
+      requestAnimationFrame(() => setFeedFadeIn(true));
+    } else {
+      setFeedFadeIn(false);
+    }
+  }, [loading]);
 
   useEffect(() => {
     async function checkFollowing() {
@@ -83,14 +109,6 @@ export default function UserProfile() {
       setPostsNeedRefresh(false);
     }
   }, [postsNeedRefresh]);
-
-  useEffect(() => {
-    if (!loading) {
-      requestAnimationFrame(() => setFadeIn(true));
-    } else {
-      setFadeIn(false);
-    }
-  }, [loading]);
 
   const handleFollowToggle = async () => {
     if (loadingFollow) return;
@@ -149,10 +167,12 @@ export default function UserProfile() {
       <div className="flex text-m font-semibold justify-center text-neutral-500 ">
         <span className="w-32 py-4 text-center text-white">Profile</span>
       </div>
-      <div className="flex-1 flex-col justify-center w-160 items-center pt-8 rounded-t-3xl border-neutral-800 bg-neutral-900">
+      <div className="flex-1 flex-col min-h-screen w-160 pt-8 rounded-t-3xl border-neutral-800 bg-neutral-900">
         {/* Profile info section */}
         <div
-          className={`transition-opacity duration-500 ${fadeIn ? "opacity-100" : "opacity-0"}`}
+          className={`transition-opacity duration-500 ${
+            profileFadeIn ? "opacity-100" : "opacity-0"
+          }`}
         >
           <div className="px-6">
             <div className="flex items-start justify-between mb-4 w-full">
@@ -223,7 +243,7 @@ export default function UserProfile() {
           </div>
         </div>
 
-        <div className="flex text-m font-semibold justify-center text-neutral-500 mt-3">
+        <div className="flex text-m font-semibold justify-center text-neutral-500 mt-3 border-b border-neutral-800">
           <button
             onClick={() => setTab("bites")}
             className={`flex-1 w-32 py-4 text-center border-b cursor-pointer ${
@@ -246,18 +266,21 @@ export default function UserProfile() {
           </button>
         </div>
         {loading ? (
-          <Spinner />
+          <div className="flex justify-center items-center h-full w-full pt-60">
+            <Spinner />
+          </div>
         ) : (
           <div
             className={`transition-opacity duration-500 ease-in-out ${
-              fadeIn ? "opacity-100" : "opacity-0"
+              feedFadeIn ? "opacity-100" : "opacity-0"
             }`}
           >
             <Feed
               posts={posts}
               isOwner={currentUser === username}
-              onPostDeleted={fetchUserAndPosts}
+              onPostDeleted={fetchPosts}
               isLoading={loading}
+              noTopBorder={true}
               showRepliesWithParents={tab === "replies"}
             />
           </div>
