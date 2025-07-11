@@ -69,8 +69,8 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen w-full text-white">
-      <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 max-w-160 w-full text-white sm:px-0">
+  <div className="flex flex-col flex-1 w-full mx-auto">
         {/* Tabs */}
         <div className="flex text-m font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
           <button
@@ -96,7 +96,8 @@ export default function Home() {
         </div>
 
         {/* Post Input and Feed */}
-        <div className="relative flex-grow w-screen sm:w-auto max-w-160 sm:min-w-160 items-center pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
+       <div className="flex flex-col w-full pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
+
           <PostInput
             newPost={newPost}
             setNewPost={setNewPost}

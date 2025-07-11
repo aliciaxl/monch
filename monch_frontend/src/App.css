@@ -1,10 +1,12 @@
 html, body #root {
-  max-width: 1280px;
   height: 100%;
   background-color: #0a0a0a;
   margin: 0 auto;
   text-align: center;
   scrollbar-gutter: stable;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 @font-face {
