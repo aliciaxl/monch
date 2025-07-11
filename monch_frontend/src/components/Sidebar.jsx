@@ -126,7 +126,7 @@ export default function Sidebar({ onOpenPostModal }) {
       </div>
 
       {/* Sm screen top bar */}
-      <div className="sm:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 pt-4 bg-[rgb(16,16,16)]">
+      <div className="sm:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[rgb(16,16,16)]">
         {/* Spacer or hidden left item to balance layout */}
         <div className="w-8" />
 
@@ -148,11 +148,11 @@ export default function Sidebar({ onOpenPostModal }) {
           </button>
         </div>
 
-        {/* faBars - Top Right */}
+        {/* faBars */}
         <div className="relative w-8 flex justify-end">
           <button
             onClick={toggleMenu}
-            className="hover:text-white text-neutral-600 text-2xl cursor-pointer"
+            className="hover:text-white text-neutral-600 text-xl cursor-pointer"
             aria-label="Menu"
           >
             <FontAwesomeIcon icon={faBars} />
@@ -187,7 +187,7 @@ export default function Sidebar({ onOpenPostModal }) {
       </div>
 
       {/* Mobile nav bar */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-[rgb(16,16,16)] py-2 px-16 flex justify-between items-center text-neutral-600 text-2xl z-50">
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-[rgb(16,16,16)] py-3 flex justify-around items-center text-neutral-600 text-xl z-50">
         <Link to="/home/bites">
           <SidebarButton icon={faHouse} label="Home" />
         </Link>

@@ -103,7 +103,7 @@ export default function Post({
 
   const postContainerClass = isReplyWithParent
   ? "flex flex-col w-full pl-18 px-6 pt-2 py-6 pr-12 bg-[#1d1d1d] relative border-l border-neutral-700"
-  : "flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 pr-12 bg-neutral-900";
+  : "flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 bg-neutral-900";
 
   return (
     <>

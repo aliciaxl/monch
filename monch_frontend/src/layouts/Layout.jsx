@@ -49,7 +49,7 @@ export default function Layout() {
   return (
     <div className="flex h-screen w-full text-white">
       <Sidebar onOpenPostModal={() => setIsModalOpen(true)} />
-      <div className="flex-1 sm:ml-20 pt-12 md:ml-20">
+      <div className="flex-1 pt-16 sm:ml-20 sm:pt-0 md:ml-20">
         <Outlet context={{
           newPost,
           setNewPost,

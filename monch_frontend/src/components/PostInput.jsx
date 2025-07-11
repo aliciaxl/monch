@@ -97,7 +97,7 @@ export default function PostInput({
   };
 
   return (
-    <div className="flex flex-col items-start rounded-xl border-neutral-800 bg-neutral-900 px-8 pb-4">
+    <div className="flex flex-col w-full items-start rounded-xl border-neutral-800 bg-neutral-900 px-8 pb-4">
       <textarea
         ref={textareaRef}
         value={newPost}
