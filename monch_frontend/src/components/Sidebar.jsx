@@ -87,7 +87,7 @@ export default function Sidebar({ onOpenPostModal }) {
           </Link>
         )}
       </div>
-      <div>
+      <div ref={menuRef} className="relative">
         <button
           onClick={toggleMenu}
           className="hover:text-white cursor-pointer mb-4"
