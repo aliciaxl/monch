@@ -15,15 +15,32 @@ html, body #root {
   justify-content: center;
 }
 
-.spinner-wrapper {
-  width: 100%;             /* w-full */
-  display: flex;           /* flex */
-  justify-content: center; /* justify-center */
-  align-items: center;     /* items-center */
+.scroll-container {
+  overflow-y: scroll;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+}
+
+/* The entire scrollbar */
+::-webkit-scrollbar {
+  width: 8px; /* super thin */
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(81, 81, 81);
+  border-radius: 12px;
+  /* border: 3px solid transparent; */
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-track {
+  /* background: transparent; */
+  background-color: rgb(16, 16, 16);
 }
 
 .home {
-  width: 100%;             /* w-full */
+  width: 100%;
 }
 
 @font-face {
