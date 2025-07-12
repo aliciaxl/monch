@@ -49,7 +49,7 @@ export default function Layout() {
     <div className="flex min-h-screen w-full max-w-200">
       <Sidebar onOpenPostModal={() => setIsModalOpen(true)} />
       <div className="outlet flex flex-grow w-full justify-center sm:pt-0 pt-16 sm:mx-20 md:mx-20">
-        <div className="w-full max-w-[40rem]">
+        <div className="w-full">
           <Outlet
             context={{
               newPost,

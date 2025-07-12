@@ -26,20 +26,22 @@ export default function LikesPage() {
     fetchLikedPosts();
   }, []);
 return (
-  <div className="flex h-screen w-full text-white flex-col">
+  <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
+    <div className="flex flex-col flex-1 w-full mx-auto">
 
-    <div className="flex text-m font-semibold justify-center text-neutral-500">
+    <div className="flex font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
       <span className="w-32 py-4 text-center text-white">Liked</span>
     </div>
 
     {/* Main Content */}
-    <div className="flex-1 flex-col justify-center w-160 items-center pt-4 rounded-t-3xl border-neutral-800 bg-neutral-900 mx-auto">
+    <div className="flex flex-grow flex-col w-full min-w-full pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
       {loading ? (
         <Spinner />
       ) : (
         <Feed posts={likedPosts} noTopBorder={true} />
       )}
     </div>
+  </div>
   </div>
 );
 }

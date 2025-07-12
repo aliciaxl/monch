@@ -69,12 +69,12 @@ export default function Home() {
   };
 
   return (
-    <div className="home flex flex-col flex-grow w-full text-whitesm:px-0">
+    <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
       <div className="flex flex-col flex-1 w-full mx-auto">
 
 
         {/* TITLE---------Tabs */}
-        <div className="flex text-m font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
+        <div className="flex font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
           <button
             onClick={() => navigate("/home/bites")}
             className={`py-4 text-center cursor-pointer border-b w-1/2 sm:w-32 ${
@@ -98,7 +98,7 @@ export default function Home() {
         </div>
 
         {/* FEED------------Post Input and Feed */}
-        <div className="flex flex-grow flex-col w-full min-w-full min-h-screen pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
+        <div className="flex flex-grow flex-col w-full min-w-full pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
           <PostInput
             newPost={newPost}
             setNewPost={setNewPost}

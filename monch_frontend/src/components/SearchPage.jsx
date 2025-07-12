@@ -95,12 +95,14 @@ useEffect(() => {
   };
 
   return (
-    <>
-      <div className="flex text-m font-semibold justify-center text-neutral-500">
+    <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
+      <div className="flex flex-col flex-1 w-full mx-auto">
+
+      <div className="flex font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
         <span className="w-32 py-4 text-center text-white">Search</span>
       </div>
 
-      <div className="flex flex-col flex-1 h-screen w-160 items-center pt-7 rounded-t-3xl border-neutral-800 bg-neutral-900">
+      <div className="flex flex-grow items-center flex-col w-full min-w-full pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
         <div className="relative flex w-[calc(100%-4rem)] mx-4 mb-4">
           {/* Search Icon */}
           <FontAwesomeIcon
@@ -186,6 +188,7 @@ useEffect(() => {
           )}
         </div>
       </div>
-    </>
+    </div>
+    </div>
   );
 }

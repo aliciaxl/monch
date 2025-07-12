@@ -168,7 +168,8 @@ export default function UserProfile() {
   };
 
   return (
-    <>
+    <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
+      <div className="flex flex-col flex-1 w-full mx-auto">
 
       {/* TITLE */}
       <div className="flex text-m font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
@@ -176,7 +177,7 @@ export default function UserProfile() {
       </div>
 
       {/* FEED */}
-      <div className="flex-1 flex-col min-h-screen w-screen sm:w-auto max-w-160 sm:min-w-160 items-center pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900 overflow-hidden">
+      <div className="flex flex-grow flex-col w-full min-w-full pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
         {/* Profile info section */}
         <div
           className={`transition-opacity duration-500 ${
@@ -324,6 +325,7 @@ export default function UserProfile() {
 
 
       )}
-    </>
+      </div>
+      </div>
   );
 }
