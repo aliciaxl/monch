@@ -11,10 +11,10 @@ import {
 import Login from "./pages/Login.jsx";
 import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
-import UserProfile from "./components/UserProfile.jsx";
-import PostDetail from "./components/PostDetail.jsx";
-import SearchPage from "./components/SearchPage.jsx";
-import LikesPage from "./components/LikesPage";
+import UserProfile from "./pages/UserProfile.jsx";
+import PostDetail from "./pages/PostDetail.jsx";
+import SearchPage from "./pages/SearchPage.jsx";
+import LikesPage from "./pages/LikesPage.jsx";
 
 function PrivateRoute({ element }) {
   const { user, loading } = useAuth();

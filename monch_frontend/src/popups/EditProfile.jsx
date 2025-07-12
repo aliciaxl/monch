@@ -122,7 +122,7 @@ export default function EditProfile({ user, onClose, onSave }) {
       onMouseDown={handleClose}
     >
       <div
-        className="relative pt-8 px-10 pb-16 rounded-xl w-full max-w-md shadow-lg border border-neutral-900 bg-neutral-900 flex flex-col"
+        className="relative pt-8 px-10 pb-16 rounded-xl w-full max-w-md border-[0.5px] border-neutral-700 bg-neutral-900 flex flex-col"
         onMouseDown={(e) => e.stopPropagation()} //Stops clicks inside modal from closing it
       >
         <button

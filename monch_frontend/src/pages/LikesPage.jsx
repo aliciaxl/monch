@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import apiClient from "../api/apiClient";
 import Feed from "../components/Feed";
-import Spinner from "./Spinner";
+import Spinner from "../components/Spinner";
 
 export default function LikesPage() {
   const [likedPosts, setLikedPosts] = useState([]);

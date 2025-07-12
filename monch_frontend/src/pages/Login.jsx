@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import SignUpModal from "./SignUpModal";
+import SignUpModal from "../popups/SignUpModal";
 
 export default function Login({ user, setUser }) {
   const { login } = useAuth();

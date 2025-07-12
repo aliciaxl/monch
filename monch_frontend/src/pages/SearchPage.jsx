@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
-import Spinner from "./Spinner";
+import Spinner from "../components/Spinner";
 
 export default function SearchPage() {
   const { user } = useAuth();

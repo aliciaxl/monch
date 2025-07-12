@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import PostModal from "../components/PostModal";
+import PostModal from "../popups/PostModal.jsx";
 import { useState } from "react";
 import apiClient from "../api/apiClient.js";
 

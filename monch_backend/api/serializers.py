@@ -6,10 +6,11 @@ from .models import User, Post, PostMedia, Follow, Like
 class UserSerializer(serializers.ModelSerializer):
     posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     follower_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'display_name', 'bio', 'avatar', 'posts', 'follower_count']
+        fields = ['id', 'username', 'display_name', 'bio', 'avatar', 'posts', 'follower_count', 'following_count']
     
     def update(self, instance, validated_data):
         avatar = validated_data.pop('avatar', None)
@@ -22,6 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_follower_count(self, obj):
         return obj.followers.count()
+
+    def get_following_count(self, obj):
+        return obj.following.count()
     
     def get_is_following(self, obj):
         request = self.context.get('request', None)

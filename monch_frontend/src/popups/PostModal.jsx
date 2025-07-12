@@ -1,5 +1,5 @@
 import { useState } from "react";
-import PostInput from "./PostInput";
+import PostInput from "../components/PostInput";
 import { useAuth } from "../context/AuthContext";
 import { usePostContext } from "../context/PostContext";
 
@@ -41,10 +41,10 @@ export default function PostModal({ isOpen, onClose }) {
       onMouseDown={handleClose}
     >
       <div
-        className="w-148 rounded-xl border-[0.5px] border-neutral-700 bg-neutral-900 text-white shadow-lg"
+        className="w-148 rounded-xl border-[0.5px] border-neutral-700 bg-neutral-900 text-white shadow-lg overflow-hidden"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="relative flex items-center p-5 border-b-[0.5px] border-neutral-700">
+        <div className="relative flex items-center p-5 border-b-[0.5px] border-neutral-700 ">
           <button
             onClick={handleClose}
             className="ml-auto text-neutral-700 hover:text-white text-sm cursor-pointer"

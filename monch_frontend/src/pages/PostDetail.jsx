@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient.js";
-import Post from "./Post.jsx";
+import Post from "../components/Post.jsx";
 import { format } from "date-fns";
 import { useAuth } from "../context/AuthContext.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,9 +14,9 @@ import {
   faRetweet,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { MyEmojiPicker } from "./EmojiPicker";
+import { MyEmojiPicker } from "../components/EmojiPicker.jsx";
 import toast from "react-hot-toast";
-import ConfirmDialog from "../components/ConfirmDialog.jsx";
+import ConfirmDialog from "../popups/ConfirmDialog.jsx";
 
 export default function PostDetail() {
   const { user } = useAuth();

@@ -12,7 +12,7 @@ import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import { formatDistanceToNow, format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import ConfirmDialog from "./ConfirmDialog.jsx";
+import ConfirmDialog from "../popups/ConfirmDialog.jsx";
 
 export default function Post({
   post,
