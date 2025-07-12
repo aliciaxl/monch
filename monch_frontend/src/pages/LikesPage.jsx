@@ -9,22 +9,26 @@ export default function LikesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLikedPosts = async () => {
-      try {
-        const res = await apiClient.get("/likes/liked-posts/", {
-          withCredentials: true,
-        });
-        setLikedPosts(res.data);
-      } catch (error) {
-        console.error("Error fetching liked posts:", error);
-        setLikedPosts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchLikedPosts = async () => {
+    try {
+      const res = await apiClient.get("/likes/liked-posts/", {
+        withCredentials: true,
+      });
 
-    fetchLikedPosts();
-  }, []);
+      const parentPostsOnly = res.data.filter(post => !post.parent_post_detail);
+
+      setLikedPosts(parentPostsOnly);
+    } catch (error) {
+      console.error("Error fetching liked posts:", error);
+      setLikedPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchLikedPosts();
+}, []);
+
 return (
   <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
     <div className="flex flex-col flex-1 w-full mx-auto">
@@ -34,7 +38,7 @@ return (
     </div>
 
     {/* Main Content */}
-    <div className="flex flex-grow flex-col w-full min-w-full pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
+    <div className="flex flex-grow flex-col w-full min-w-full sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900 overflow-hidden">
       {loading ? (
         <Spinner />
       ) : (

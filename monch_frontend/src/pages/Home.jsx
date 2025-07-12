@@ -74,10 +74,10 @@ export default function Home() {
 
 
         {/* TITLE---------Tabs */}
-        <div className="flex font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
+        <div className="flex w-full font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
           <button
             onClick={() => navigate("/home/bites")}
-            className={`py-4 text-center cursor-pointer border-b w-1/2 sm:w-32 ${
+            className={`py-4 text-center cursor-pointer border-b w-1/2 sm:w-52 ${
               tab === "bites"
                 ? "text-white border-neutral-300"
                 : "border-transparent hover:text-white"
@@ -87,7 +87,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => navigate("/home/following")}
-            className={`py-4 text-center cursor-pointer border-b w-1/2 sm:w-32 ${
+            className={`py-4 text-center cursor-pointer border-b w-1/2 sm:w-52 ${
               tab === "following"
                 ? "text-white border-neutral-300"
                 : "border-transparent hover:text-white"
