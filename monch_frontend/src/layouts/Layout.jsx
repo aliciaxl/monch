@@ -38,7 +38,6 @@ export default function Layout() {
       setMedia(null);
       setMediaPreview(null);
       setIsModalOpen(false);
-
     } catch (err) {
       alert(err.message || "Failed to post");
     } finally {
@@ -47,20 +46,24 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex h-screen w-full text-white">
+    <div className="flex min-h-screen w-full max-w-200">
       <Sidebar onOpenPostModal={() => setIsModalOpen(true)} />
-      <div className="flex flex-1 flex-col pt-16 sm:mx-20 sm:pt-0 md:mx-20">
-        <Outlet context={{
-          newPost,
-          setNewPost,
-          loading,
-          setLoading,
-          media,
-          setMedia,
-          mediaPreview,
-          setMediaPreview,
-          handlePost,
-        }} />
+      <div className="outlet flex flex-grow w-full justify-center sm:pt-0 pt-16 sm:mx-20 md:mx-20">
+        <div className="w-full max-w-[40rem]">
+          <Outlet
+            context={{
+              newPost,
+              setNewPost,
+              loading,
+              setLoading,
+              media,
+              setMedia,
+              mediaPreview,
+              setMediaPreview,
+              handlePost,
+            }}
+          />
+        </div>
       </div>
 
       <PostModal

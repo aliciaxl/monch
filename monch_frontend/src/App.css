@@ -1,12 +1,29 @@
+* {
+    box-sizing: border-box;
+}
+
 html, body #root {
   height: 100%;
+  width: 100%;
+  max-width: 800px;
   background-color: #0a0a0a;
   margin: 0 auto;
   text-align: center;
   scrollbar-gutter: stable;
   display: flex;
+  flex-grow: 1;
   justify-content: center;
-  box-sizing: border-box;
+}
+
+.spinner-wrapper {
+  width: 100%;             /* w-full */
+  display: flex;           /* flex */
+  justify-content: center; /* justify-center */
+  align-items: center;     /* items-center */
+}
+
+.home {
+  width: 100%;             /* w-full */
 }
 
 @font-face {

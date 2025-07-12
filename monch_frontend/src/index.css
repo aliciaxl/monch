@@ -2,11 +2,26 @@
 
 @tailwind utilities;
 
-html,
-body {
-  @apply bg-black text-white;
+html, body {
   height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0a0a0a; /* or your bg color */
+  color: white;
 }
+
+#root {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* or flex-start, depending on design */
+  align-items: center;
+}
+
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -32,7 +47,6 @@ body {
   background-color: rgb(10, 10, 10);
   display: flex;
   place-items: center;
-  min-width: 320px;
 }
 
 h1 {

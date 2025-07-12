@@ -169,10 +169,14 @@ export default function UserProfile() {
 
   return (
     <>
-      <div className="flex text-m font-semibold justify-center text-neutral-500 ">
+
+      {/* TITLE */}
+      <div className="flex text-m font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
         <span className="w-32 py-4 text-center text-white">Profile</span>
       </div>
-      <div className="flex-1 flex-col min-h-screen w-160 pt-8 rounded-t-3xl border-neutral-800 bg-neutral-900">
+
+      {/* FEED */}
+      <div className="flex-1 flex-col min-h-screen w-screen sm:w-auto max-w-160 sm:min-w-160 items-center pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900 overflow-hidden">
         {/* Profile info section */}
         <div
           className={`transition-opacity duration-500 ${
@@ -247,7 +251,7 @@ export default function UserProfile() {
             )}
           </div>
         </div>
-
+        {/* Tabs */}
         <div className="flex text-m font-semibold justify-center text-neutral-500 mt-3 border-b border-neutral-800">
           <button
             onClick={() => setTab("bites")}
@@ -317,6 +321,8 @@ export default function UserProfile() {
             />
           </div>
         </div>
+
+
       )}
     </>
   );

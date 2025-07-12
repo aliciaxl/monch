@@ -10,7 +10,6 @@ import {
   faUser,
   faPlus,
   faBars,
-  faCookie,
 } from "@fortawesome/free-solid-svg-icons";
 
 function SidebarButton({ icon, label, onClick }) {
@@ -29,7 +28,8 @@ export default function Sidebar({ onOpenPostModal }) {
   const [showMenu, setShowMenu] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const menuRef = useRef();
+  const desktopMenuRef = useRef();
+const mobileMenuRef = useRef();
 
   const toggleMenu = () => setShowMenu((prev) => !prev);
 
@@ -42,15 +42,18 @@ export default function Sidebar({ onOpenPostModal }) {
     }
   };
 
-  useEffect(() => {
-    const handleClick = (e) => {
-      if (!menuRef.current?.contains(e.target)) {
-        setShowMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+useEffect(() => {
+  const handleClick = (e) => {
+    if (
+      !desktopMenuRef.current?.contains(e.target) &&
+      !mobileMenuRef.current?.contains(e.target)
+    ) {
+      setShowMenu(false);
+    }
+  };
+  document.addEventListener("mousedown", handleClick);
+  return () => document.removeEventListener("mousedown", handleClick);
+}, []);
 
   return (
     <>
@@ -89,7 +92,7 @@ export default function Sidebar({ onOpenPostModal }) {
             </Link>
           )}
         </div>
-        <div ref={menuRef} className="relative">
+        <div ref={desktopMenuRef} className="relative">
           <button
             onClick={toggleMenu}
             className="hover:text-white cursor-pointer mb-4"
@@ -160,7 +163,7 @@ export default function Sidebar({ onOpenPostModal }) {
 
           {/* Dropdown Menu */}
           <div
-            ref={menuRef}
+            ref={mobileMenuRef}
             className={`
         absolute right-0 mt-10 w-40 bg-neutral-800 text-white rounded-xl p-2 z-50
         origin-top-right transition-transform duration-100 ease-in-out
