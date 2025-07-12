@@ -117,16 +117,6 @@ export default function Post({
     )}
       {/* Original Post */}
       <div className={postContainerClass}>
-        {isOwner && isReplyWithParent && (
-        <button
-          onClick={() => setIsDialogOpen(true)}
-          className="absolute top-3 right-5 text-neutral-700 text-sm hover:text-white cursor-pointer"
-          aria-label="Delete post"
-        >
-          <FontAwesomeIcon icon={faXmark} className="text-xs" />
-        </button>
-      )}
-
         {isReplyWithParent && (
         <img
           src="/icons/reply.png"

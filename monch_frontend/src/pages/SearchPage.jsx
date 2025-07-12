@@ -116,7 +116,7 @@ useEffect(() => {
             placeholder="Search..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-12 py-3 rounded-2xl bg-black focus:outline-none text-white border border-neutral-800"
+            className="w-full pl-12 py-3 rounded-2xl bg-[rgb(20,20,20)] focus:outline-none text-white border border-neutral-800"
           />
         </div>
 

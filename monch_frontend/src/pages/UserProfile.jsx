@@ -196,7 +196,7 @@ export default function UserProfile() {
                   <p className="text-white mb-4">{userData?.bio || ""}</p>
 
                   {/* Follow Info  */}
-                  <div className="flex gap-4 text-neutral-500 mt-1">
+                  <div className="flex gap-4 text-neutral-600 mt-1">
                     <button
                       onClick={() => setFollowModalTab("followers")}
                       className="hover:text-white transition-colors cursor-pointer"
@@ -240,7 +240,7 @@ export default function UserProfile() {
               {currentUser === username ? (
                 <button
                   onClick={() => setShowEditModal(true)}
-                  className="transform transition-transform active:scale-[.95] duration-150 w-full h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white"
+                  className="transform transition-transform active:scale-[.95] duration-150 w-full h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border-[0.5px] border-neutral-700 rounded-xl text-white"
                 >
                   Edit Profile
                 </button>

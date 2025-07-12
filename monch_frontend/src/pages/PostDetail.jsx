@@ -296,17 +296,18 @@ export default function PostDetail() {
               </div>
             </div>
 
+            {/* Like and Reply counts */}
             <div className="w-full text text-neutral-600 py-4 text-left flex space-x-6 border-b border-neutral-800">
               <span>
-                <strong className="font-semibold text-white">
+                <span className="font text-neutral-300">
                   {likesCount}
-                </strong>{" "}
+                </span>{" "}
                 {likesCount === 1 ? "Like" : "Likes"}
               </span>
               <span>
-                <strong className="font-semibold text-white">
+                <span className="font text-neutral-300">
                   {post.replies_count}
-                </strong>{" "}
+                </span>{" "}
                 {post.replies_count === 1 ? "Reply" : "Replies"}
               </span>
             </div>
