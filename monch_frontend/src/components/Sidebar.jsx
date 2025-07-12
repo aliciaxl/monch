@@ -190,7 +190,7 @@ useEffect(() => {
       </div>
 
       {/* Mobile nav bar */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-[rgb(16,16,16)] py-3 flex justify-around items-center text-neutral-600 text-xl z-50">
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-[rgb(16,16,16)] py-4 flex justify-around items-center text-neutral-600 text-[22px] z-50">
         <Link to="/home/bites">
           <SidebarButton icon={faHouse} label="Home" />
         </Link>

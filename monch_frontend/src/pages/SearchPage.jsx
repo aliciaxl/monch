@@ -103,11 +103,11 @@ useEffect(() => {
       </div>
 
       <div className="flex flex-grow items-center flex-col w-full min-w-full pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
-        <div className="relative flex w-[calc(100%-4rem)] mx-4 mb-4">
+        <div className="relative flex w-[calc(100%-4rem)] mx-4">
           {/* Search Icon */}
           <FontAwesomeIcon
             icon={faSearch}
-            className="absolute left-5 top-1/2 transform -translate-y-1/2 text-neutral-500"
+            className="absolute left-5 top-4 transform -translate-y-1/2 text-neutral-500"
           />
 
           {/* Input Field */}
@@ -116,7 +116,7 @@ useEffect(() => {
             placeholder="Search..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-12 py-3 rounded-2xl bg-[rgb(20,20,20)] focus:outline-none text-white border border-neutral-800"
+            className="w-full pl-12 py-3 -mt-2 rounded-2xl bg-[rgb(20,20,20)] focus:outline-none text-white border border-neutral-800"
           />
         </div>
 
