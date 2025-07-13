@@ -69,9 +69,9 @@ useEffect(() => {
             aria-label="Home Refresh"
           >
             <img
-              src="/icons/grump.png"
-              alt="Grump Icon"
-              className="w-8 h-8 object-contain"
+              src="/icons/logo.png"
+              alt="Logo Icon"
+              className="w-9 h-9 object-contain"
             />
           </button>
         </div>
@@ -129,7 +129,7 @@ useEffect(() => {
       </div>
 
       {/* Sm screen top bar */}
-      <div className="sm:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[rgb(16,16,16)]">
+      <div className="sm:hidden fixed top-0 left-0 right-0 z-50 flex items-start justify-between px-6 py-4 bg-[rgb(16,16,16)]">
         {/* Spacer or hidden left item to balance layout */}
         <div className="w-8" />
 
@@ -144,9 +144,9 @@ useEffect(() => {
             aria-label="Home Refresh"
           >
             <img
-              src="/icons/grump.png"
-              alt="Grump Icon"
-              className="w-8 h-8 object-contain"
+              src="/icons/logo.png"
+              alt="Logo Icon"
+              className="w-12 h-12 object-contain"
             />
           </button>
         </div>
