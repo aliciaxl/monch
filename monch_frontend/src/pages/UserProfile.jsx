@@ -230,8 +230,7 @@ export default function UserProfile() {
                     />
                   ) : (
                     <span>
-                      {userData?.display_name?.[0]?.toUpperCase() ||
-                        username[0]?.toUpperCase()}
+                      {username[0]?.toUpperCase() || userData?.display_name?.[0]?.toUpperCase()}
                     </span>
                   )}
                 </div>

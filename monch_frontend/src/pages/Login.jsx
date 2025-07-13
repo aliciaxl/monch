@@ -26,7 +26,7 @@ export default function Login({ user, setUser }) {
   const loginAsGuest = async (e) => {
     e.preventDefault();
     try {
-      await login("admin", "strongPassword");
+      await login("guest", "Bun");
       navigate("/home");
     } catch (err) {
       alert("Guest login failed");

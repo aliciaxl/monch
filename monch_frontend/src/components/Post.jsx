@@ -153,8 +153,7 @@ export default function Post({
               />
             ) : (
               <span>
-                {post.user.display_name?.[0]?.toUpperCase() ||
-                  post.user.username[0]?.toUpperCase()}
+                {post.user.username[0]?.toUpperCase() || post.user.display_name?.[0]?.toUpperCase()}
               </span>
             )}
           </div>

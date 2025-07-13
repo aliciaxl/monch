@@ -145,8 +145,7 @@ useEffect(() => {
                       />
                     ) : (
                       <span>
-                        {user.display_name?.[0]?.toUpperCase() ||
-                          user.username[0]?.toUpperCase()}
+                        {user.username[0]?.toUpperCase() || user.display_name?.[0]?.toUpperCase()}
                       </span>
                     )}
                   </div>
