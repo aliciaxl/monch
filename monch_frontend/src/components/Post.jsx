@@ -170,7 +170,7 @@ export default function Post({
             </div>
 
             {/* Text Content */}
-            <div className="text-white font-thin text-left mt-1 mb-2">
+            <div className="text-white text-left mt-1 mb-2">
               <Link to={`/post/${post.id}`} className="post-textcontent">
                 {post.content.trim()}
               </Link>
