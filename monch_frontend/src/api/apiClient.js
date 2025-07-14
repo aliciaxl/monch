@@ -1,8 +1,7 @@
 import axios from 'axios';
-import toast from 'react-hot-toast';
 
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
   withCredentials: true,
 });
 
@@ -31,7 +30,7 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshResponse = await axios.post(
-          'http://127.0.0.1:8000/api/token/refresh/',
+          `${process.env.REACT_APP_BACKEND_URL}/api/token/refresh/`,
           null,
           { withCredentials: true }
         );
