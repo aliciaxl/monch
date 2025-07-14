@@ -12,6 +12,3 @@ build/
 .env
 .env.*
 env/
-
-
-**/settings.py
