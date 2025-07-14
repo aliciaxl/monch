@@ -264,7 +264,7 @@ export default function PostDetail() {
             
 
             {/* Post content */}
-            <div className="text-white font-thin my-3 text-left">
+            <div className="text-white my-3 text-left">
               {post.content.trim()}
             </div>
 

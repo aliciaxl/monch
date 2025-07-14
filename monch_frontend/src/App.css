@@ -13,12 +13,12 @@ html, body #root {
   display: flex;
   flex-grow: 1;
   justify-content: center;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
 }
 
 .post-textcontent {
   font-family: 15px; 
-  font-weight: 100;
+  font-weight: 300;
 }
 
 .scroll-container {
