@@ -16,11 +16,6 @@ html, body #root {
   font-family: -apple-system, system-ui, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
 }
 
-.post-textcontent {
-  font-family: 15px; 
-  font-weight: 300;
-}
-
 .scroll-container {
   overflow-y: scroll;
   -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
