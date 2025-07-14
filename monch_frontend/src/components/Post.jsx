@@ -171,7 +171,7 @@ export default function Post({
 
             {/* Text Content */}
             <div className="text-white font-thin text-left mt-1 mb-2">
-              <Link to={`/post/${post.id}`} className="hover:underline">
+              <Link to={`/post/${post.id}`} className="post-textcontent">
                 {post.content.trim()}
               </Link>
             </div>
