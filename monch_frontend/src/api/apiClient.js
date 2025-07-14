@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-console.log('Backend URL:', process.env.REACT_APP_BACKEND_URL);
-
 const apiClient = axios.create({
-  baseURL: `${process.env.REACT_APP_BACKEND_URL}/api`,
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
   withCredentials: true,
 });
 
@@ -32,7 +30,7 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshResponse = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/token/refresh/`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/token/refresh/`,
           null,
           { withCredentials: true }
         );
