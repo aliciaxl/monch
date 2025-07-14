@@ -1,20 +1,28 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import apiClient from '../api/apiClient';
+import toast from 'react-hot-toast';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  let hasForcedLogout = false;
 
   useEffect(() => {
-    // Listen for token refresh failure
     const handleForceLogout = () => {
-      setUser(null);
-      setLoading(false);
+    if (!hasForcedLogout) {
+      hasForcedLogout = true;
+      toast.error("Session expired. Please log in again.");
+    }
+
+    setUser(null);
+    setLoading(false);
+    navigate('/login');
     };
 
     window.addEventListener('force-logout', handleForceLogout);

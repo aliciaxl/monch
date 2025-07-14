@@ -2,7 +2,6 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from .models import User, Post, PostMedia, Follow, Like
 
-# Model serializer converts data to JSON. Auto generate fields corresponding to model, generate validators
 class UserSerializer(serializers.ModelSerializer):
     posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     follower_count = serializers.SerializerMethodField()
@@ -30,7 +29,6 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_following(self, obj):
         request = self.context.get('request', None)
         if request and request.user.is_authenticated:
-            # Check if the current logged-in user follows 'obj'
             return Follow.objects.filter(follower=request.user, following=obj).exists()
         return False
     

@@ -107,7 +107,7 @@ class CookieTokenRefreshView(TokenRefreshView):
         if response.status_code == 200:
             access_token = response.data.get('access')
 
-            secure_cookie = True  # True in production HTTPS
+            secure_cookie = True  #True in production HTTPS
             samesite = "None"       
 
             # Set access token as HttpOnly cookie
@@ -115,12 +115,12 @@ class CookieTokenRefreshView(TokenRefreshView):
                 key="access_token",
                 value=access_token,
                 httponly=True,
-                secure=secure_cookie,  # Change to True in production!
+                secure=secure_cookie,
                 samesite=samesite,
                 path="/",
             )
 
-            # Optional: Refresh refresh token if returned
+            # Refresh refresh token if returned
             refresh = response.data.get('refresh')
             if refresh:
                 response.set_cookie(
@@ -132,7 +132,6 @@ class CookieTokenRefreshView(TokenRefreshView):
                     path="/",
                 )
 
-            # Optionally remove tokens from body
             response.data = {"detail": "Token refreshed"}
 
         return response

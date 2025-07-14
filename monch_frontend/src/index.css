@@ -1,13 +1,11 @@
 @import "tailwindcss";
 
-@tailwind utilities;
-
 html, body {
   height: 100vh;
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #0a0a0a; /* or your bg color */
+  background-color: #0a0a0a;
   color: white;
 }
 
@@ -18,7 +16,7 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* or flex-start, depending on design */
+  justify-content: center;
   align-items: center;
 }
 
@@ -52,17 +50,4 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }

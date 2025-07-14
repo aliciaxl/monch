@@ -150,7 +150,7 @@ export default function PostInput({
               icon={faFaceSmile}
               className="text-neutral-400 hover:text-white text-lg cursor-pointer"
               onClick={() => setShowPicker((prev) => !prev)}
-              ref={emojiButtonRef} // Attach ref here
+              ref={emojiButtonRef}
             />
 
             {showPicker && (

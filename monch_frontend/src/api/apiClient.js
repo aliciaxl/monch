@@ -21,7 +21,7 @@ apiClient.interceptors.response.use(
       originalRequest.url.includes(path)
     );
 
-    // Only try refresh if it's a 401 and it's not a login/register route
+    // Try refresh if 401 error
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -37,22 +37,19 @@ apiClient.interceptors.response.use(
         );
 
         if (refreshResponse.status === 200) {
-          return apiClient(originalRequest); // Retry the original request
+          return apiClient(originalRequest);
         }
       } catch (refreshError) {
         console.error("Token refresh failed", refreshError);
 
-        // Optional toast for user feedback
-        toast.error("Session expired. Please log in again.");
-
         // Dispatch a logout event to your AuthContext
         window.dispatchEvent(new Event("force-logout"));
 
-        return Promise.reject(refreshError); // Let components handle the error
+        return Promise.reject(refreshError);
       }
     }
 
-    // If it's not eligible for retry or fails, just reject
+    // If cannot retry, just reject
     return Promise.reject(error);
   }
 );

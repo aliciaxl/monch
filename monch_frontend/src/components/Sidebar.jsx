@@ -123,17 +123,16 @@ useEffect(() => {
             >
               Log out
             </button>
-            {/* Add more options here */}
           </div>
         </div>
       </div>
 
       {/* Sm screen top bar */}
       <div className="sm:hidden fixed top-0 left-0 right-0 z-50 flex items-start justify-between px-6 py-4 bg-[rgb(16,16,16)]">
-        {/* Spacer or hidden left item to balance layout */}
+        
         <div className="w-8" />
 
-        {/* Centered app icon */}
+        {/* App Icon */}
         <div className="flex justify-center flex-1">
           <button
             onClick={() => {
@@ -189,7 +188,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Mobile nav bar */}
+      {/* Sm screen nav bar */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-[rgb(16,16,16)] py-4 flex justify-around items-center text-neutral-600 text-[22px] z-50">
         <Link to="/home/bites">
           <SidebarButton icon={faHouse} label="Home" />
