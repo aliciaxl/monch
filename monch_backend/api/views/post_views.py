@@ -1,10 +1,15 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets, permissions, filters, status
 from ..models import Post, Follow, Like, PostMedia
 from ..serializers import PostSerializer
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 50
     
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -13,6 +18,8 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['content', 'user__username']
     parser_classes = [MultiPartParser, FormParser]
+
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         if self.action == 'list':
@@ -52,8 +59,12 @@ class PostViewSet(viewsets.ModelViewSet):
 
         # Get posts from those users
         posts = Post.objects.filter(user__id__in=followed_user_ids, parent_post__isnull=True).order_by("-created_at")
+        
+        # Paginate results
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(posts, request)
+        
         serializer = PostSerializer(posts, many=True, context={'request': request})
-        print("Serialized posts data:", serializer.data)
         return Response(serializer.data)
     
     @action(detail=True, methods=['post', 'delete'], permission_classes=[permissions.IsAuthenticated])

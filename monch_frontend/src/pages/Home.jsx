@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { usePostContext } from "../context/PostContext";
 import apiClient from "../api/apiClient.js";
 import PostInput from "../components/PostInput";
 import Feed from "../components/Feed";
 import { useParams, useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner.jsx";
+import SmallSpinner from "../components/SmallSpinner.jsx";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
   const [newPost, setNewPost] = useState("");
   const [posts, setPosts] = useState([]);
+  const [nextPageUrl, setNextPageUrl] = useState(null);
+  const loadingMoreRef = useRef(false);
   const { postsNeedRefresh, setPostsNeedRefresh, handlePost, loading } =
     usePostContext();
   const [media, setMedia] = useState(null);
@@ -20,35 +23,52 @@ export default function Home() {
   const tab = paramTab === "following" ? "following" : "bites";
   const navigate = useNavigate();
 
-  const fetchPosts = async () => {
-    const endpoint = tab === "following" ? "/posts/following/" : "/posts/";
-    try {
-      setIsLoading(true);
-      const res = await apiClient.get(endpoint, { withCredentials: true });
+  // Base endpoint based on tab
+  const baseEndpoint = tab === "following" ? "/posts/following/" : "/posts/";
 
-      setPosts(res.data);
+  const fetchPosts = useCallback(
+    async (url) => {
+      if (loadingMoreRef.current) return;
+      loadingMoreRef.current = true;
 
-      if (!hasLoadedOnce) {
-        setHasLoadedOnce(true);
+      try {
+
+        setIsLoading(true);
+        const res = await apiClient.get(url || baseEndpoint, {
+          withCredentials: true,
+        });
+
+        if (url) {
+          // append posts for infinite scroll
+          setPosts((prev) => [...prev, ...res.data.results]);
+        } else {
+          // initial load or tab change
+          setPosts(res.data.results);
+          if (!hasLoadedOnce) setHasLoadedOnce(true);
+        }
+
+        setNextPageUrl(res.data.next); // will be null if no more pages
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        if (!url) setPosts([]);
+      } finally {
+        setIsLoading(false);
+        loadingMoreRef.current = false;
       }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-      setPosts([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [baseEndpoint, hasLoadedOnce]
+  );
 
   useEffect(() => {
     fetchPosts();
-  }, [tab]);
+  }, [fetchPosts, tab]);
 
   useEffect(() => {
     if (postsNeedRefresh) {
       fetchPosts();
       setPostsNeedRefresh(false);
     }
-  }, [postsNeedRefresh]);
+  }, [postsNeedRefresh, fetchPosts, setPostsNeedRefresh]);
 
   useEffect(() => {
     if (!loading) {
@@ -57,6 +77,23 @@ export default function Home() {
       setFadeIn(false);
     }
   }, [loading]);
+
+  // Infinite scroll handler
+  useEffect(() => {
+    const onScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight - 300 &&
+        !isLoading &&
+        nextPageUrl
+      ) {
+        fetchPosts(nextPageUrl);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isLoading, nextPageUrl, fetchPosts]);
 
   const onSubmit = async () => {
     if (!newPost.trim()) return;
@@ -71,8 +108,6 @@ export default function Home() {
   return (
     <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
       <div className="flex flex-col flex-1 w-full mx-auto">
-
-
         {/* TITLE---------Tabs */}
         <div className="flex w-full font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
           <button
@@ -110,7 +145,7 @@ export default function Home() {
             setMediaPreview={setMediaPreview}
           />
           {/* Loading / Fade Container */}
-          {isLoading && !hasLoadedOnce ? (
+          {!hasLoadedOnce && isLoading ? (
             <div className="spinner-wrapper">
               <Spinner />
             </div>
@@ -123,9 +158,13 @@ export default function Home() {
               <Feed posts={posts} isLoading={false} />
             </div>
           )}
+          {/* Show spinner at bottom while loading more */}
+          {isLoading && hasLoadedOnce && (
+            <div className="my-4">
+              <SmallSpinner />
+            </div>
+          )}
         </div>
-
-
       </div>
     </div>
   );
