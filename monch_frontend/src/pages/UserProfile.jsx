@@ -6,8 +6,8 @@ import { usePostContext } from "../context/PostContext.jsx";
 import apiClient from "../api/apiClient.js";
 import Feed from "../components/Feed.jsx";
 import EditProfile from "../popups/EditProfile.jsx";
-import Spinner from "../components/Spinner.jsx";
 import FollowList from "../popups/FollowList.jsx";
+import SmallSpinner from "../components/SmallSpinner.jsx";
 
 export default function UserProfile() {
   const { user } = useAuth();
@@ -20,7 +20,8 @@ export default function UserProfile() {
   const [feedFadeIn, setFeedFadeIn] = useState(false);
   const [posts, setPosts] = useState([]);
   const { postsNeedRefresh, setPostsNeedRefresh } = usePostContext();
-  const [loading, setLoading] = useState(true);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [loadingPosts, setLoadingPosts] = useState(true);
   const [userData, setUserData] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loadingFollow, setLoadingFollow] = useState(false);
@@ -29,45 +30,45 @@ export default function UserProfile() {
   const [followModalTab, setFollowModalTab] = useState(null);
 
   const fetchUserData = async () => {
-    try {
-      setLoading(true);
-      const res = await apiClient.get(`/users/${username}/`, {
-        withCredentials: true,
-      });
-      setUserData(res.data);
-    } catch (error) {
-      console.error("Failed to load user data:", error);
-      setUserData(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoadingUser(true);
+    const res = await apiClient.get(`/users/${username}/`, {
+      withCredentials: true,
+    });
+    setUserData(res.data);
+  } catch (error) {
+    console.error("Failed to load user data:", error);
+    setUserData(null);
+  } finally {
+    setLoadingUser(false);
+  }
+};
 
   useEffect(() => {
     fetchUserData();
   }, [username]);
 
   const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      let res;
-      if (tab === "bites") {
-        res = await apiClient.get(`/users/${username}/posts/`, {
-          withCredentials: true,
-        });
-      } else {
-        res = await apiClient.get(`/users/${username}/replies/`, {
-          withCredentials: true,
-        });
-      }
-      setPosts(res.data);
-    } catch (error) {
-      console.error("Failed to load posts:", error);
-      setPosts([]);
-    } finally {
-      setLoading(false);
+  try {
+    setLoadingPosts(true);
+    let res;
+    if (tab === "bites") {
+      res = await apiClient.get(`/users/${username}/posts/`, {
+        withCredentials: true,
+      });
+    } else {
+      res = await apiClient.get(`/users/${username}/replies/`, {
+        withCredentials: true,
+      });
     }
-  };
+    setPosts(res.data);
+  } catch (error) {
+    console.error("Failed to load posts:", error);
+    setPosts([]);
+  } finally {
+    setLoadingPosts(false);
+  }
+};
 
   useEffect(() => {
     fetchPosts();
@@ -80,12 +81,20 @@ export default function UserProfile() {
   }, [userData]);
 
   useEffect(() => {
-    if (!loading) {
+    if (!loadingUser) {
       requestAnimationFrame(() => setFeedFadeIn(true));
     } else {
       setFeedFadeIn(false);
     }
-  }, [loading]);
+  }, [loadingUser]);
+
+    useEffect(() => {
+    if (!loadingPosts) {
+      requestAnimationFrame(() => setFeedFadeIn(true));
+    } else {
+      setFeedFadeIn(false);
+    }
+  }, [loadingPosts]);
 
   useEffect(() => {
     async function checkFollowing() {
@@ -230,7 +239,8 @@ export default function UserProfile() {
                     />
                   ) : (
                     <span>
-                      {username[0]?.toUpperCase() || userData?.display_name?.[0]?.toUpperCase()}
+                      {username[0]?.toUpperCase() ||
+                        userData?.display_name?.[0]?.toUpperCase()}
                     </span>
                   )}
                 </div>
@@ -259,7 +269,6 @@ export default function UserProfile() {
                   </button>
                 )
               )}
-
             </div>
           </div>
           {/* Tabs */}
@@ -285,55 +294,55 @@ export default function UserProfile() {
               Replies
             </button>
           </div>
-          {loading ? (
-            <div className="flex justify-center items-center h-full w-full pt-60">
-              <Spinner />
-            </div>
-          ) : (
-            <div
-              className={`transition-opacity duration-500 ease-in-out ${
-                feedFadeIn ? "opacity-100" : "opacity-0"
-              }`}
-            >
+          <div
+            className={`transition-opacity duration-500 ease-in-out ${
+              feedFadeIn ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {loadingPosts ? (
+              <div className="flex justify-center items-center py-60">
+                <SmallSpinner />
+              </div>
+            ) : (
               <Feed
                 posts={posts}
                 isOwner={currentUser === username}
                 onPostDeleted={fetchPosts}
-                isLoading={loading}
+                isLoading={false} 
                 noTopBorder={true}
                 showRepliesWithParents={tab === "replies"}
               />
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
       {showAvatarZoom && (
-          <div
-            onClick={() => setShowAvatarZoom(false)}
-            className={`fixed inset-0 z-50 bg-neutral-900/80 backdrop-blur-xl flex items-center justify-center
+        <div
+          onClick={() => setShowAvatarZoom(false)}
+          className={`fixed inset-0 z-50 bg-neutral-900/80 backdrop-blur-xl flex items-center justify-center
     transition-opacity duration-500 ${avatarFadeIn ? "opacity-100" : "opacity-0"}`}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setShowAvatarZoom(false)}
+            className="absolute top-4 right-6 text-neutral-200 text-3xl font-extralight hover:opacity-50 transition-opacity cursor-pointer"
+            aria-label="Close"
           >
-            {/* Close button */}
-            <button
-              onClick={() => setShowAvatarZoom(false)}
-              className="absolute top-4 right-6 text-neutral-200 text-3xl font-extralight hover:opacity-50 transition-opacity cursor-pointer"
-              aria-label="Close"
-            >
-              ×
-            </button>
+            ×
+          </button>
 
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="max-w-[90vw] max-h-[90vh]"
-            >
-              <img
-                src={userData.avatar}
-                alt="Zoomed avatar"
-                className="w-80 h-80 object-cover rounded-full shadow-xl"
-              />
-            </div>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-[90vw] max-h-[90vh]"
+          >
+            <img
+              src={userData.avatar}
+              alt="Zoomed avatar"
+              className="w-80 h-80 object-cover rounded-full shadow-xl"
+            />
           </div>
-        )}
+        </div>
+      )}
       {followModalTab && (
         <FollowList
           username={username}
@@ -342,12 +351,12 @@ export default function UserProfile() {
         />
       )}
       {showEditModal && userData && (
-                <EditProfile
-                  user={userData}
-                  onSave={handleSave}
-                  onClose={() => setShowEditModal(false)}
-                />
-              )}
+        <EditProfile
+          user={userData}
+          onSave={handleSave}
+          onClose={() => setShowEditModal(false)}
+        />
+      )}
     </div>
   );
 }
