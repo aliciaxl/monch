@@ -119,7 +119,7 @@ useEffect(() => {
           >
             <button
               onClick={handleLogout}
-              className="w-full text-left font-semibold text-sm px-4 py-2 cursor-pointer border-none"
+              className="w-full text-left font-semibold text-sm px-4 py-2 cursor-pointer border-none transform transition-transform active:scale-[.98] duration-150"
             >
               Log out
             </button>
@@ -180,7 +180,7 @@ useEffect(() => {
           >
             <button
               onClick={handleLogout}
-              className="w-full text-left font-semibold text-sm px-4 py-2 cursor-pointer border-none"
+              className="w-full text-left font-semibold text-sm px-4 py-2 cursor-pointer border-none transform transition-transform active:scale-[.98] duration-150"
             >
               Log out
             </button>

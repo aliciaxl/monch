@@ -14,14 +14,14 @@ export default function Login({ user, setUser }) {
   const isFormFilled = username.trim() !== "" && password.trim() !== "";
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    await login(username, password);
-    navigate("/home");
-  } catch (err) {
-    toast.error("Invalid login credentials"); 
-  }
-};
+    e.preventDefault();
+    try {
+      await login(username, password);
+      navigate("/home");
+    } catch (err) {
+      toast.error("Invalid login credentials");
+    }
+  };
 
   const loginAsGuest = async (e) => {
     e.preventDefault();
@@ -65,12 +65,13 @@ export default function Login({ user, setUser }) {
               />
               <button
                 type="submit"
-                className={`text-[15px] bg-white font-semibold p-4 rounded-xl" 
-                                ${
-                                  isFormFilled
-                                    ? "bg-white text-black cursor-pointer rounded-xl"
-                                    : "bg-white text-neutral-400 cursor-not-allowed rounded-xl"
-                                }`}
+                className={`text-[15px] font-semibold p-4 rounded-xl
+    ${
+      isFormFilled
+        ? "bg-white text-black cursor-pointer"
+        : "bg-white text-neutral-400 cursor-not-allowed"
+    }
+    transform transition-transform active:scale-[.98] duration-150`}
                 disabled={!isFormFilled}
               >
                 Log in
@@ -86,7 +87,7 @@ export default function Login({ user, setUser }) {
             <div className="flex flex-col px-2">
               <button
                 type="submit"
-                className="group relative flex items-center justify-center text-[15px] bg-white text-black font-semibold p-4 rounded-xl cursor-pointer"
+                className="group relative flex items-center justify-center text-[15px] bg-white text-black font-semibold p-4 rounded-xl cursor-pointer transform transition-transform active:scale-[.98] duration-150"
               >
                 <span>Log in as a Guest</span>
                 <div className="w-0 translate-x-[100%] pl-0 opacity-0 transition-all duration-200 group-hover:w-5 group-hover:translate-x-0 group-hover:pl-1 group-hover:opacity-100">
@@ -114,7 +115,7 @@ export default function Login({ user, setUser }) {
               <button
                 onClick={() => setShowModal(true)}
                 type="button"
-                className="group relative flex items-center justify-center text-[15px] bg-indigo-500 text-white font-semibold p-4 rounded-xl cursor-pointer"
+                className="group relative flex items-center justify-center text-[15px] bg-indigo-500 text-white font-semibold p-4 rounded-xl cursor-pointer transform transition-transform active:scale-[.98] duration-150"
               >
                 <span>Sign up</span>
               </button>
