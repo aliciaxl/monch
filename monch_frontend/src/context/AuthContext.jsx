@@ -39,8 +39,6 @@ export const AuthProvider = ({ children }) => {
     }
     const checkAuth = async () => {
       try {
-        await apiClient.post("/token/refresh/", {}, { withCredentials: true });
-
         const res = await apiClient.get("/whoami/", { withCredentials: true });
         setUser(res.data);
       } catch (error) {
