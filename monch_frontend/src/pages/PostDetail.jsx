@@ -17,6 +17,7 @@ import {
 import { MyEmojiPicker } from "../components/EmojiPicker.jsx";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../popups/ConfirmDialog.jsx";
+import Spinner from "../components/Spinner.jsx";
 
 export default function PostDetail() {
   const { user } = useAuth();
@@ -44,6 +45,8 @@ export default function PostDetail() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const isOwner = currentUser === post?.user?.username;
 
+  const [fadeIn, setFadeIn] = useState(false);
+
   const MAX_FILE_SIZE_MB = 5;
 
   useEffect(() => {
@@ -66,6 +69,15 @@ export default function PostDetail() {
     }
     fetchPost();
   }, [postId]);
+
+  useEffect(() => {
+  if (!loading) {
+    const timer = setTimeout(() => setFadeIn(true), 50);
+    return () => clearTimeout(timer);
+  } else {
+    setFadeIn(false);
+  }
+}, [loading]);
 
   const toggleLike = async () => {
     if (loading) return;
@@ -197,22 +209,32 @@ export default function PostDetail() {
     setShowPicker(false);
   };
 
-  if (loading) return <div className="text-white p-6">Loading...</div>;
-  if (!post) return <div className="text-white p-6">Post not found.</div>;
-
   return (
     <div className="flex-1 flex-col justify-center w-160 items-center border-neutral-800 bg-neutral-900">
-      <div className="bg-neutral-900 min-h-screen text-white">
-        <div className="py-6 px-8 border-b border-neutral-800">
-          <button
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-            className="text-white hover:text-gray-300 cursor-pointer flex items-center space-x-2"
-          >
-            <FontAwesomeIcon icon={faArrowLeft} />
-          </button>
-        </div>
+    <div className="bg-neutral-900 min-h-screen text-white relative">
+      {/* Always render this outer container, even while loading */}
+      <div className="py-6 px-8 border-b border-neutral-800">
+        <button
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+          className="text-white hover:text-gray-300 cursor-pointer flex items-center space-x-2"
+        >
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </button>
+      </div>
 
+      {loading ? (
+        // Spinner in the center
+        <div className="flex justify-center items-center h-[60vh]">
+          <Spinner />
+        </div>
+      ) : post ? (
+         <div
+    className={`transition-opacity duration-700 ease-in-out ${
+      fadeIn ? "opacity-100" : "opacity-0"
+    }`}
+  >
+        <>
         {/* Original Post */}
         <div className="parent-post">
           <div className="relative z-10 flex flex-col w-full border-b border-neutral-800 px-6 py-6 bg-neutral-900">
@@ -484,6 +506,13 @@ export default function PostDetail() {
             </div>
           )}
         </div>
+        </>
+        </div>
+      ) : (
+        <div className="text-white p-6">Post not found.</div>
+      )}
+
+
         <ConfirmDialog
           open={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
