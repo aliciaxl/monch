@@ -13,7 +13,7 @@ const isAuthPage = () => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config; 
 
     const nonRefreshablePaths = ["/login/", "/token/refresh/", "/register/"];
 
