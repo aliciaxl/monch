@@ -5,6 +5,11 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
+const isAuthPage = () => {
+  const path = window.location.pathname;
+  return path === '/login' || path === '/register';
+};
+
 apiClient.interceptors.response.use(
   response => response,
   async error => {
@@ -24,7 +29,8 @@ apiClient.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !isNonRefreshable
+      !isNonRefreshable &&
+      !isAuthPage()
     ) {
       originalRequest._retry = true;
 
