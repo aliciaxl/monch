@@ -74,6 +74,7 @@ function App() {
             />
           }
         >
+          <Route index element={<Navigate to="/home" />} />
           <Route path="/home/:tab?" element={<Home />} />
           <Route path="/home/search" element={<SearchPage />} />
           <Route path="/home/likes" element={<LikesPage />} />
