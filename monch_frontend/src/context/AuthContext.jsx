@@ -1,8 +1,8 @@
 // src/context/AuthContext.jsx
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import apiClient from '../api/apiClient';
-import toast from 'react-hot-toast';
+import { createContext, useContext, useEffect, useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import apiClient from "../api/apiClient";
+import toast from "react-hot-toast";
 
 export const AuthContext = createContext();
 
@@ -11,36 +11,36 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  let hasForcedLogout = false;
+  const hasForcedLogout = useRef(false);
 
   useEffect(() => {
     const handleForceLogout = () => {
-    if (!hasForcedLogout) {
-      hasForcedLogout = true;
-      toast.error("Session expired. Please log in again.");
-    }
+      if (!hasForcedLogout.current && location.pathname !== "/login") {
+        hasForcedLogout.current = true;
+        toast.error("Session expired. Please log in again.");
+      }
 
-    setUser(null);
-    setLoading(false);
-    navigate('/login');
+      setUser(null);
+      setLoading(false);
+      navigate("/login");
     };
 
-    window.addEventListener('force-logout', handleForceLogout);
+    window.addEventListener("force-logout", handleForceLogout);
 
     return () => {
-      window.removeEventListener('force-logout', handleForceLogout);
+      window.removeEventListener("force-logout", handleForceLogout);
     };
   }, []);
 
   useEffect(() => {
-    if (location.pathname === '/login' || location.pathname === '/register') {
+    if (location.pathname === "/login" || location.pathname === "/register") {
       setLoading(false);
       return;
     }
 
     const checkAuth = async () => {
       try {
-        const res = await apiClient.get('/whoami/', { withCredentials: true });
+        const res = await apiClient.get("/whoami/", { withCredentials: true });
         setUser(res.data);
       } catch (error) {
         setUser(null);
@@ -54,16 +54,16 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     await apiClient.post(
-      '/login/',
+      "/login/",
       { username, password },
       { withCredentials: true }
     );
-    const res = await apiClient.get('/whoami/', { withCredentials: true });
+    const res = await apiClient.get("/whoami/", { withCredentials: true });
     setUser(res.data);
   };
 
   const logout = async () => {
-    await apiClient.post('/logout/', {}, { withCredentials: true });
+    await apiClient.post("/logout/", {}, { withCredentials: true });
     setUser(null);
   };
 
