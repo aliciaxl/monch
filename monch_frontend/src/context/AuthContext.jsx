@@ -32,25 +32,28 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (location.pathname === "/login" || location.pathname === "/register") {
+useEffect(() => {
+
+  const isPublicRoute = ["/", "/login", "/register"].includes(location.pathname);
+  
+  if (isPublicRoute) {
+    setLoading(false);
+    return;
+  }
+
+  const checkAuth = async () => {
+    try {
+      const res = await apiClient.get("/whoami/", { withCredentials: true });
+      setUser(res.data);
+    } catch (error) {
+      setUser(null);
+    } finally {
       setLoading(false);
-      return;
     }
+  };
 
-    const checkAuth = async () => {
-      try {
-        const res = await apiClient.get("/whoami/", { withCredentials: true });
-        setUser(res.data);
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [location.pathname]);
+  checkAuth();
+}, [location.pathname]);
 
   const login = async (username, password) => {
     await apiClient.post(

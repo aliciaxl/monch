@@ -62,6 +62,9 @@ function App() {
       />
       <Routes>
         <Route path="/login" element={<Login />} />
+
+        <Route path="/" element={<Navigate to={user ? "/home" : "/login"} />} />
+        
         <Route
           path="/"
           element={

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const apiClient = axios.create({
   baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
@@ -7,21 +7,17 @@ const apiClient = axios.create({
 
 const isAuthPage = () => {
   const path = window.location.pathname;
-  return path === '/login' || path === '/register';
+  return path === "/login" || path === "/register";
 };
 
 apiClient.interceptors.response.use(
-  response => response,
-  async error => {
+  (response) => response,
+  async (error) => {
     const originalRequest = error.config;
 
-    const nonRefreshablePaths = [
-      '/login/',
-      '/token/refresh/',
-      '/register/',
-    ];
+    const nonRefreshablePaths = ["/login/", "/token/refresh/", "/register/"];
 
-    const isNonRefreshable = nonRefreshablePaths.some(path =>
+    const isNonRefreshable = nonRefreshablePaths.some((path) =>
       originalRequest.url.includes(path)
     );
 
@@ -47,8 +43,11 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         console.error("Token refresh failed", refreshError);
 
-        // Dispatch a logout event to your AuthContext
-        window.dispatchEvent(new Event("force-logout"));
+        const hadSession = document.cookie.includes('access_token');
+
+        if (hadSession) {
+          window.dispatchEvent(new Event("force-logout"));
+        }
 
         return Promise.reject(refreshError);
       }
