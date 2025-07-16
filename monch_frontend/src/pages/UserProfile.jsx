@@ -30,45 +30,45 @@ export default function UserProfile() {
   const [followModalTab, setFollowModalTab] = useState(null);
 
   const fetchUserData = async () => {
-  try {
-    setLoadingUser(true);
-    const res = await apiClient.get(`/users/${username}/`, {
-      withCredentials: true,
-    });
-    setUserData(res.data);
-  } catch (error) {
-    console.error("Failed to load user data:", error);
-    setUserData(null);
-  } finally {
-    setLoadingUser(false);
-  }
-};
+    try {
+      setLoadingUser(true);
+      const res = await apiClient.get(`/users/${username}/`, {
+        withCredentials: true,
+      });
+      setUserData(res.data);
+    } catch (error) {
+      console.error("Failed to load user data:", error);
+      setUserData(null);
+    } finally {
+      setLoadingUser(false);
+    }
+  };
 
   useEffect(() => {
     fetchUserData();
   }, [username]);
 
   const fetchPosts = async () => {
-  try {
-    setLoadingPosts(true);
-    let res;
-    if (tab === "bites") {
-      res = await apiClient.get(`/users/${username}/posts/`, {
-        withCredentials: true,
-      });
-    } else {
-      res = await apiClient.get(`/users/${username}/replies/`, {
-        withCredentials: true,
-      });
+    try {
+      setLoadingPosts(true);
+      let res;
+      if (tab === "bites") {
+        res = await apiClient.get(`/users/${username}/posts/`, {
+          withCredentials: true,
+        });
+      } else {
+        res = await apiClient.get(`/users/${username}/replies/`, {
+          withCredentials: true,
+        });
+      }
+      setPosts(res.data);
+    } catch (error) {
+      console.error("Failed to load posts:", error);
+      setPosts([]);
+    } finally {
+      setLoadingPosts(false);
     }
-    setPosts(res.data);
-  } catch (error) {
-    console.error("Failed to load posts:", error);
-    setPosts([]);
-  } finally {
-    setLoadingPosts(false);
-  }
-};
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -88,7 +88,7 @@ export default function UserProfile() {
     }
   }, [loadingUser]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!loadingPosts) {
       requestAnimationFrame(() => setFeedFadeIn(true));
     } else {
@@ -171,7 +171,6 @@ export default function UserProfile() {
       });
 
       setUserData(res.data);
-      await fetchUserAndPosts(); // Refresh both user and post data
       setShowEditModal(false);
     } catch (error) {
       alert("Failed to update profile. Please try again.");
@@ -294,24 +293,27 @@ export default function UserProfile() {
               Replies
             </button>
           </div>
-          <div
-            className={`transition-opacity duration-500 ease-in-out ${
-              feedFadeIn ? "opacity-100" : "opacity-0"
-            }`}
-          >
+          <div className="relative">
+            {/* Spinner will remain visible while loadingPosts is true */}
             {loadingPosts ? (
               <div className="flex justify-center items-center py-60">
                 <SmallSpinner />
               </div>
             ) : (
-              <Feed
-                posts={posts}
-                isOwner={currentUser === username}
-                onPostDeleted={fetchPosts}
-                isLoading={false} 
-                noTopBorder={true}
-                showRepliesWithParents={tab === "replies"}
-              />
+              <div
+                className={`transition-opacity duration-500 ease-in-out ${
+                  feedFadeIn ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <Feed
+                  posts={posts}
+                  isOwner={currentUser === username}
+                  onPostDeleted={fetchPosts}
+                  isLoading={false}
+                  noTopBorder={true}
+                  showRepliesWithParents={tab === "replies"}
+                />
+              </div>
             )}
           </div>
         </div>
