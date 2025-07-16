@@ -32,37 +32,39 @@ export default function Home() {
       loadingMoreRef.current = true;
 
       try {
-
-        setIsLoading(true);
+        setIsLoading(true); // Set loading state
         const res = await apiClient.get(url || baseEndpoint, {
           withCredentials: true,
         });
 
         if (url) {
-          // append posts for infinite scroll
+          // Append posts for infinite scroll
           setPosts((prev) => [...prev, ...res.data.results]);
         } else {
-          // initial load or tab change
+          // Initial load or tab change
           setPosts(res.data.results);
-          if (!hasLoadedOnce) setHasLoadedOnce(true);
+          setHasLoadedOnce(true); // Mark that posts have been loaded
         }
 
-        setNextPageUrl(res.data.next); // will be null if no more pages
+        setNextPageUrl(res.data.next); // Update the next page URL
       } catch (error) {
         console.error("Error fetching posts:", error);
-        if (!url) setPosts([]);
+        if (!url) setPosts([]); // Handle error
       } finally {
         setIsLoading(false);
         loadingMoreRef.current = false;
       }
     },
-    [baseEndpoint, hasLoadedOnce]
+    [baseEndpoint]
   );
 
   useEffect(() => {
+    // Only reset state when switching tabs
     setIsLoading(true); // Show spinner when switching tabs
-    setHasLoadedOnce(false); // Reset loaded state when switching tabs
-    fetchPosts();
+    setPosts([]); // Clear posts
+    setHasLoadedOnce(false); // Reset loaded state
+    setNextPageUrl(null); // Reset nextPageUrl
+    fetchPosts(); // Fetch initial posts for the new tab
   }, [fetchPosts, tab]);
 
   useEffect(() => {
@@ -89,7 +91,7 @@ export default function Home() {
         !isLoading &&
         nextPageUrl
       ) {
-        fetchPosts(nextPageUrl);
+        fetchPosts(nextPageUrl); // Fetch more posts if available
       }
     };
 
@@ -160,8 +162,9 @@ export default function Home() {
               <Feed posts={posts} isLoading={false} />
             </div>
           )}
+
           {/* Show spinner at bottom while loading more */}
-          {isLoading && hasLoadedOnce && (
+          {isLoading && hasLoadedOnce && nextPageUrl && (
             <div className="my-4">
               <SmallSpinner />
             </div>
