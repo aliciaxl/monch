@@ -60,6 +60,8 @@ export default function Home() {
   );
 
   useEffect(() => {
+    setIsLoading(true); // Show spinner when switching tabs
+    setHasLoadedOnce(false); // Reset loaded state when switching tabs
     fetchPosts();
   }, [fetchPosts, tab]);
 

@@ -205,7 +205,7 @@ export default function Post({
                 onClick={toggleLike}
                 disabled={loading}
                 className={`cursor-pointer flex items-center space-x-1 ${
-                  liked ? "text-red-400" : "hover:text-white"
+                  liked ? "text-red-500" : "hover:text-white"
                 }`}
                 aria-label={liked ? "Unlike post" : "Like post"}
               >
