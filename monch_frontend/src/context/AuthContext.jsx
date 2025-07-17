@@ -49,7 +49,6 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = async () => {
       try {
-        // Attempt to get user info (this request sends access token in headers)
         const res = await apiClient.get("/whoami/");
         setUser(res.data);
       } catch (error) {
@@ -64,13 +63,14 @@ export const AuthProvider = ({ children }) => {
         } else {
           window.dispatchEvent(new Event("force-logout"));
         }
+      } finally {
+        setLoading(false); 
       }
     };
 
     checkAuth();
   }, [location.pathname]);
 
-  // Function to refresh the access token using the refresh token
   const refreshAccessToken = async () => {
     try {
       const refresh = getRefreshToken();
@@ -79,25 +79,24 @@ export const AuthProvider = ({ children }) => {
         refresh,
       });
       const newAccessToken = refreshResponse.data.access;
-      const newRefreshToken = refreshResponse.data.refresh || refresh; // in case the refresh token was also updated
+      const newRefreshToken = refreshResponse.data.refresh || refresh;
 
       // Save the new tokens
       setTokens({ access: newAccessToken, refresh: newRefreshToken });
 
-      // Update the Authorization header for future requests
       apiClient.defaults.headers["Authorization"] = `Bearer ${newAccessToken}`;
     } catch (error) {
-      // If the refresh token is invalid, force logout
+      // If refresh token is invalid, force logout
       window.dispatchEvent(new Event("force-logout"));
     }
   };
 
-  // Login method: calls login endpoint, saves tokens, fetches user info
+  // Log in
   const login = async (username, password) => {
     setLoading(true);
     try {
       const res = await apiClient.post("/login/", { username, password });
-      // Save tokens from login response
+     
       setTokens({ access: res.data.access, refresh: res.data.refresh });
 
       // Fetch and set user info
@@ -108,7 +107,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       clearTokens();
       setUser(null);
-      throw error; // let caller handle error toast, etc.
+      throw error; 
     } finally {
       setLoading(false);
     }
