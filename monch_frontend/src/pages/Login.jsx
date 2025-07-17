@@ -70,7 +70,7 @@ export default function Login({ user, setUser }) {
                 id="username"
                 type="text"
                 maxLength={20}
-                className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700 disabled:text-neutral-500" 
+                className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700 disabled:text-neutral-400" 
                 value={username}
                 placeholder="Username"
                 onChange={(e) => setUsername(e.target.value)}
@@ -80,7 +80,7 @@ export default function Login({ user, setUser }) {
               <input
                 id="password"
                 type="password"
-                className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700  disabled:text-neutral-500"
+                className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700  disabled:text-neutral-400"
                 value={password}
                 placeholder="Password"
                 onChange={(e) => setPassword(e.target.value)}
