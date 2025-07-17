@@ -65,7 +65,7 @@ class PostViewSet(viewsets.ModelViewSet):
         page = paginator.paginate_queryset(posts, request)
         
         serializer = PostSerializer(posts, many=True, context={'request': request})
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
     
     @action(detail=True, methods=['post', 'delete'], permission_classes=[permissions.IsAuthenticated])
     def like(self, request, pk=None):
