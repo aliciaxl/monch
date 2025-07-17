@@ -262,8 +262,7 @@ export default function PostDetail() {
                     />
                   ) : (
                     <span>
-                      {post.user.display_name?.[0]?.toUpperCase() ||
-                        post.user.username[0]?.toUpperCase()}
+                      {post.user.username[0]?.toUpperCase()}
                     </span>
                   )}
                 </div>
