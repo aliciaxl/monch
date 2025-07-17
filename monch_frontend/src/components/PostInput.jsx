@@ -170,7 +170,7 @@ export default function PostInput({
             {showPicker && (
               <div
                 ref={pickerRef}
-                className="picker-container absolute left-0 mt-2"
+                className="picker-container absolute -left-4 mt-2"
               >
                 <MyEmojiPicker onEmojiClick={onEmojiClick} />
               </div>
