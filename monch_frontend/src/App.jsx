@@ -1,5 +1,6 @@
 import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 import { useAuth } from "./context/AuthContext.jsx";
 import { PostProvider } from "./context/PostContext";
 import { Toaster } from "react-hot-toast";
@@ -60,6 +61,9 @@ function App() {
           },
         }}
       />
+
+      <ScrollToTop />
+      
       <Routes>
         <Route path="/login" element={<Login />} />
 
