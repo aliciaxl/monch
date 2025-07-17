@@ -41,7 +41,7 @@ export default function PostModal({ isOpen, onClose }) {
       onMouseDown={handleClose}
     >
       <div
-        className="w-148 rounded-xl border-[0.5px] border-neutral-700 bg-neutral-900 text-white shadow-lg overflow-hidden"
+        className="w-148 rounded-xl border-[0.5px] border-neutral-700 bg-neutral-900 text-white shadow-lg"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="relative flex items-center p-5 border-b-[0.5px] border-neutral-700 ">
