@@ -90,9 +90,7 @@ export default function Home() {
   useEffect(() => {
     if (!loading) {
       requestAnimationFrame(() => setFadeIn(true));
-    } else {
-      setFadeIn(false);
-    }
+    } 
   }, [loading]);
 
   // Infinite scroll handler

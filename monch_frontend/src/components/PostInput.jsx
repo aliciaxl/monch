@@ -24,7 +24,7 @@ export default function PostInput({
   const pickerRef = useRef(null);
   const emojiButtonRef = useRef(null);
 
-    useEffect(() => {
+  useEffect(() => {
     function handleClickOutside(event) {
       if (
         pickerRef.current &&
@@ -96,6 +96,20 @@ export default function PostInput({
     setShowPicker(false);
   };
 
+  function Spinner() {
+    return (
+      <div className="flex justify-center ml-2">
+        <div
+          className="animate-spin inline-block w-4 h-4 border-2 border-neutral-500 border-t-transparent rounded-full"
+          role="status"
+          aria-label="loading"
+        >
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full items-start rounded-xl border-neutral-800 bg-neutral-900 px-8 pb-4">
       <textarea
@@ -154,7 +168,10 @@ export default function PostInput({
             />
 
             {showPicker && (
-              <div ref={pickerRef} className="picker-container absolute left-0 mt-2">
+              <div
+                ref={pickerRef}
+                className="picker-container absolute left-0 mt-2"
+              >
                 <MyEmojiPicker onEmojiClick={onEmojiClick} />
               </div>
             )}
@@ -163,9 +180,16 @@ export default function PostInput({
         <button
           onClick={() => handlePost(null, media)}
           disabled={loading || !newPost.trim()}
-          className="transform transition-transform active:scale-[.95] duration-150 h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white"
+          className="transform transition-transform active:scale-[.95] duration-150 h-10 bg-neutral-900 hover:bg-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 border border-neutral-700 rounded-xl text-white flex justify-center items-center"
         >
-          {loading ? "Posting..." : "Post"}
+          {loading ? (
+            <>
+              Posting...
+              <Spinner />
+            </>
+          ) : (
+            "Post"
+          )}
         </button>
       </div>
     </div>
