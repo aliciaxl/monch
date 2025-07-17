@@ -9,27 +9,34 @@ export default function Login({ user, setUser }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const isFormFilled = username.trim() !== "" && password.trim() !== "";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await login(username, password);
       navigate("/home");
     } catch (err) {
       toast.error("Invalid login credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
   const loginAsGuest = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await login("guest", "Bun");
       navigate("/home");
     } catch (err) {
-      alert("Guest login failed");
+      toast.error("Guest login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,6 +44,21 @@ export default function Login({ user, setUser }) {
     e.preventDefault();
     setShowModal(true);
   };
+
+  function Spinner() {
+  return (
+    <div className="flex justify-center ml-2">
+      <div
+        className="animate-spin inline-block w-4 h-4 border-2 border-neutral-500 border-t-transparent rounded-full"
+        role="status"
+        aria-label="loading"
+      >
+        <span className="sr-only">Loading...</span>
+      </div>
+    </div>
+  );
+}
+
   return (
     <>
       <div className="flex justify-center items-center min-h-screen">
@@ -48,33 +70,43 @@ export default function Login({ user, setUser }) {
                 id="username"
                 type="text"
                 maxLength={20}
-                className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700"
+                className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700 disabled:text-neutral-500" 
                 value={username}
                 placeholder="Username"
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                disabled={loading}
               />
               <input
                 id="password"
                 type="password"
-                className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700"
+                className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700  disabled:text-neutral-500"
                 value={password}
                 placeholder="Password"
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading}
               />
               <button
                 type="submit"
                 className={`text-[15px] font-semibold p-4 rounded-xl
     ${
-      isFormFilled
+      isFormFilled && !loading
         ? "bg-white text-black cursor-pointer"
-        : "bg-white text-neutral-400 cursor-not-allowed"
+        : "bg-white text-neutral-500 cursor-not-allowed"
     }
+    flex items-center justify-center
     transform transition-transform active:scale-[.98] duration-150`}
-                disabled={!isFormFilled}
+                disabled={!isFormFilled || loading}
               >
-                Log in
+                {loading ? (
+                  <>
+                    Logging in...
+                    <Spinner />
+                  </>
+                ) : (
+                  "Log in"
+                )}
               </button>
             </div>
             <div className="flex items-center justify-center my-4">
