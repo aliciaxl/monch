@@ -13,22 +13,38 @@ export default function UserProfile() {
   const { user } = useAuth();
   const currentUser = user?.username;
   const { username } = useParams();
+
   const [showAvatarZoom, setShowAvatarZoom] = useState(false);
   const [avatarFadeIn, setAvatarFadeIn] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [profileFadeIn, setProfileFadeIn] = useState(false);
   const [feedFadeIn, setFeedFadeIn] = useState(false);
-  const [posts, setPosts] = useState([]);
-  const { postsNeedRefresh, setPostsNeedRefresh } = usePostContext();
+
   const [loadingUser, setLoadingUser] = useState(true);
-  const [loadingPosts, setLoadingPosts] = useState(true);
   const [userData, setUserData] = useState(null);
+
+  const [postsByTab, setPostsByTab] = useState({
+    bites: [],
+    replies: [],
+  });
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [hasLoadedOnceByTab, setHasLoadedOnceByTab] = useState({
+    bites: false,
+    replies: false,
+  });
+
+
   const [isFollowing, setIsFollowing] = useState(false);
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [toggleTrigger, setToggleTrigger] = useState(false);
+
+
   const [tab, setTab] = useState("bites");
   const [followModalTab, setFollowModalTab] = useState(null);
 
+  const { postsNeedRefresh, setPostsNeedRefresh } = usePostContext();
+
+  // Fetch user data 
   const fetchUserData = async () => {
     try {
       setLoadingUser(true);
@@ -44,15 +60,12 @@ export default function UserProfile() {
     }
   };
 
-  useEffect(() => {
-    fetchUserData();
-  }, [username]);
-
-  const fetchPosts = async () => {
+  // Fetch posts
+  const fetchPosts = async (tabToFetch = tab) => {
     try {
       setLoadingPosts(true);
       let res;
-      if (tab === "bites") {
+      if (tabToFetch === "bites") {
         res = await apiClient.get(`/users/${username}/posts/`, {
           withCredentials: true,
         });
@@ -61,33 +74,49 @@ export default function UserProfile() {
           withCredentials: true,
         });
       }
-      setPosts(res.data);
+      setPostsByTab((prev) => ({
+        ...prev,
+        [tabToFetch]: res.data,
+      }));
+      setHasLoadedOnceByTab((prev) => ({
+        ...prev,
+        [tabToFetch]: true,
+      }));
     } catch (error) {
       console.error("Failed to load posts:", error);
-      setPosts([]);
+      setPostsByTab((prev) => ({
+        ...prev,
+        [tabToFetch]: [],
+      }));
     } finally {
       setLoadingPosts(false);
     }
   };
 
-  useEffect(() => {
-    fetchPosts();
-  }, [username, tab]);
+  // Combined fetch for user and posts
+  const fetchUserAndPosts = async () => {
+    await Promise.all([fetchUserData(), fetchPosts(tab)]);
+  };
 
+  useEffect(() => {
+    fetchUserData();
+  }, [username]);
+
+  useEffect(() => {
+    if (!hasLoadedOnceByTab[tab] || postsNeedRefresh) {
+      fetchPosts(tab);
+      setPostsNeedRefresh(false);
+    }
+  }, [tab, hasLoadedOnceByTab, postsNeedRefresh]);
+
+  // Profile fade in
   useEffect(() => {
     if (userData) {
       requestAnimationFrame(() => setProfileFadeIn(true));
     }
   }, [userData]);
 
-  useEffect(() => {
-    if (!loadingUser) {
-      requestAnimationFrame(() => setFeedFadeIn(true));
-    } else {
-      setFeedFadeIn(false);
-    }
-  }, [loadingUser]);
-
+  // Feed fade in
   useEffect(() => {
     if (!loadingPosts) {
       requestAnimationFrame(() => setFeedFadeIn(true));
@@ -99,7 +128,6 @@ export default function UserProfile() {
   useEffect(() => {
     async function checkFollowing() {
       if (!currentUser || !username) return;
-
       try {
         const res = await apiClient.get("/follows/is_following/", {
           withCredentials: true,
@@ -110,9 +138,9 @@ export default function UserProfile() {
         console.error(error);
       }
     }
-
     checkFollowing();
   }, [username, currentUser, toggleTrigger]);
+
 
   useEffect(() => {
     if (postsNeedRefresh) {
@@ -121,15 +149,11 @@ export default function UserProfile() {
     }
   }, [postsNeedRefresh]);
 
-  const fetchUserAndPosts = async () => {
-    await Promise.all([fetchUserData(), fetchPosts()]);
-  };
-
+  // Follow/unfollow toggle
   const handleFollowToggle = async () => {
     if (loadingFollow) return;
 
     setLoadingFollow(true);
-
     try {
       await apiClient.post(
         "/follows/toggle/",
@@ -143,7 +167,6 @@ export default function UserProfile() {
 
       setUserData(updatedUser.data);
       setIsFollowing(updatedUser.data.is_following);
-
       setToggleTrigger((prev) => !prev);
     } catch (error) {
       console.error(error);
@@ -153,6 +176,7 @@ export default function UserProfile() {
     }
   };
 
+  // Avatar zoom fade
   useEffect(() => {
     if (showAvatarZoom) {
       requestAnimationFrame(() => setAvatarFadeIn(true));
@@ -169,7 +193,6 @@ export default function UserProfile() {
           "Content-Type": "multipart/form-data",
         },
       });
-
       setUserData(res.data);
       setShowEditModal(false);
     } catch (error) {
@@ -197,8 +220,7 @@ export default function UserProfile() {
               <div className="flex items-start justify-between mb-4 w-full">
                 <div className="text-left">
                   <h2 className="text-2xl font-bold text-white">
-                    {userData?.display_name.toUpperCase() ||
-                      username.toUpperCase()}
+                    {userData?.display_name?.toUpperCase() || username.toUpperCase()}
                   </h2>
                   <p className="text-neutral-400 mb-4">@{username}</p>
                   <p className="text-white mb-4">{userData?.bio || ""}</p>
@@ -245,6 +267,7 @@ export default function UserProfile() {
                 </div>
               </div>
 
+              {/* Edit or Follow button */}
               {currentUser === username ? (
                 <button
                   onClick={() => setShowEditModal(true)}
@@ -270,13 +293,14 @@ export default function UserProfile() {
               )}
             </div>
           </div>
+
           {/* Tabs */}
           <div className="flex text-m font-semibold justify-center text-neutral-500 mt-3 border-b border-neutral-800">
             <button
               onClick={() => setTab("bites")}
               className={`flex-1 w-32 py-4 text-center border-b cursor-pointer ${
                 tab === "bites"
-                  ? "text-white border-neutral-300"
+                  ? "border-white text-white"
                   : "border-transparent hover:text-white"
               }`}
             >
@@ -286,79 +310,71 @@ export default function UserProfile() {
               onClick={() => setTab("replies")}
               className={`flex-1 w-32 py-4 text-center border-b cursor-pointer ${
                 tab === "replies"
-                  ? "text-white border-neutral-300"
+                  ? "border-white text-white"
                   : "border-transparent hover:text-white"
               }`}
             >
               Replies
             </button>
           </div>
-          <div className="relative">
-            {/* Spinner will remain visible while loadingPosts is true */}
-            {loadingPosts ? (
-              <div className="flex justify-center items-center py-60">
-                <SmallSpinner />
-              </div>
-            ) : (
-              <div
-                className={`transition-opacity duration-500 ease-in-out ${
-                  feedFadeIn ? "opacity-100" : "opacity-0"
-                }`}
-              >
-                <Feed
-                  posts={posts}
-                  isOwner={currentUser === username}
-                  onPostDeleted={fetchPosts}
-                  isLoading={false}
-                  noTopBorder={true}
-                  showRepliesWithParents={tab === "replies"}
-                />
-              </div>
-            )}
-          </div>
+
+          {/* Posts Feed */}
+          {loadingPosts && !hasLoadedOnceByTab[tab] ? (
+            <div className="flex justify-center items-center py-60">
+              <SmallSpinner />
+            </div>
+          ) : (
+            <div
+              className={`transition-opacity duration-500 ease-in-out ${
+                feedFadeIn ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Feed
+                posts={postsByTab[tab]}
+                isOwner={currentUser === username}
+                onPostDeleted={() => fetchPosts(tab)}
+                isLoading={false}
+                noTopBorder={true}
+                showRepliesWithParents={tab === "replies"}
+              />
+            </div>
+          )}
+
+          {/* Avatar Zoom Modal */}
+          {showAvatarZoom && (
+            <div
+              className={`fixed top-0 left-0 z-50 w-full h-full bg-black/80 flex justify-center items-center transition-opacity duration-200 ${
+                avatarFadeIn ? "opacity-100" : "opacity-0"
+              }`}
+              onClick={() => setShowAvatarZoom(false)}
+            >
+              <img
+                src={userData.avatar}
+                alt="Avatar Zoom"
+                className="max-w-[90vw] max-h-[90vh] rounded-xl object-contain cursor-zoom-out"
+              />
+            </div>
+          )}
+
+          {/* Edit Profile Modal */}
+          {showEditModal && (
+            <EditProfile
+              onClose={() => setShowEditModal(false)}
+              onSave={handleSave}
+              user={userData}
+            />
+          )}
+
+          {/* Follow List Modal */}
+          {followModalTab && (
+            <FollowList
+              username={username}
+              listType={followModalTab}
+              onClose={() => setFollowModalTab(null)}
+            />
+          )}
         </div>
       </div>
-      {showAvatarZoom && (
-        <div
-          onClick={() => setShowAvatarZoom(false)}
-          className={`fixed inset-0 z-50 bg-neutral-900/80 backdrop-blur-xl flex items-center justify-center
-    transition-opacity duration-500 ${avatarFadeIn ? "opacity-100" : "opacity-0"}`}
-        >
-          {/* Close button */}
-          <button
-            onClick={() => setShowAvatarZoom(false)}
-            className="absolute top-4 right-6 text-neutral-200 text-3xl font-extralight hover:opacity-50 transition-opacity cursor-pointer"
-            aria-label="Close"
-          >
-            ×
-          </button>
-
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="max-w-[90vw] max-h-[90vh]"
-          >
-            <img
-              src={userData.avatar}
-              alt="Zoomed avatar"
-              className="w-80 h-80 object-cover rounded-full shadow-xl"
-            />
-          </div>
-        </div>
-      )}
-      {followModalTab && (
-        <FollowList
-          username={username}
-          initialTab={followModalTab} // "followers" or "following"
-          onClose={() => setFollowModalTab(null)}
-        />
-      )}
-      {showEditModal && userData && (
-        <EditProfile
-          user={userData}
-          onSave={handleSave}
-          onClose={() => setShowEditModal(false)}
-        />
-      )}
     </div>
   );
 }
