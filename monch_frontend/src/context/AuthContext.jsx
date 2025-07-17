@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     setLoading(true);
     try {
-      const res = await apiClient.post("/login/", { username, password });
+      const res = await apiClient.post("/login/", { username, password }, { withCredentials: true });
      
       setTokens({ access: res.data.access, refresh: res.data.refresh });
 
