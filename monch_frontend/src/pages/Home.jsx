@@ -9,11 +9,20 @@ import SmallSpinner from "../components/SmallSpinner.jsx";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
   const [newPost, setNewPost] = useState("");
-  const [posts, setPosts] = useState([]);
-  const [nextPageUrl, setNextPageUrl] = useState(null);
+  const [postsByTab, setPostsByTab] = useState({
+    bites: [],
+    following: [],
+  });
+  const [nextPageByTab, setNextPageByTab] = useState({
+    bites: null,
+    following: null,
+  });
+  const [hasLoadedOnceByTab, setHasLoadedOnceByTab] = useState({
+    bites: false,
+    following: false,
+  });
   const loadingMoreRef = useRef(false);
   const { postsNeedRefresh, setPostsNeedRefresh, handlePost, loading } =
     usePostContext();
@@ -30,49 +39,53 @@ export default function Home() {
     async (url) => {
       if (loadingMoreRef.current) return;
       loadingMoreRef.current = true;
-
       try {
-        setIsLoading(true); // Set loading state
-        const res = await apiClient.get(url || baseEndpoint, {
-          withCredentials: true,
-        });
+        setIsLoading(true);
+        const endpoint = url || baseEndpoint;
+        const res = await apiClient.get(endpoint, { withCredentials: true });
 
         if (url) {
           // Append posts for infinite scroll
-          setPosts((prev) => [...prev, ...res.data.results]);
+          setPostsByTab((prev) => ({
+            ...prev,
+            [tab]: [...prev[tab], ...res.data.results],
+          }));
         } else {
           // Initial load or tab change
-          setPosts(res.data.results);
-          setHasLoadedOnce(true); // Mark that posts have been loaded
+          setPostsByTab((prev) => ({
+            ...prev,
+            [tab]: res.data.results,
+          }));
+          setHasLoadedOnceByTab((prev) => ({ ...prev, [tab]: true }));
         }
-
-        setNextPageUrl(res.data.next); // Update the next page URL
+        setNextPageByTab((prev) => ({ ...prev, [tab]: res.data.next }));
       } catch (error) {
         console.error("Error fetching posts:", error);
-        if (!url) setPosts([]); // Handle error
+        if (!url)
+          setPostsByTab((prev) => ({
+            ...prev,
+            [tab]: [],
+          }));
       } finally {
         setIsLoading(false);
         loadingMoreRef.current = false;
       }
     },
-    [baseEndpoint]
+    [baseEndpoint, tab]
   );
 
   useEffect(() => {
-    // Only reset state when switching tabs
-    setIsLoading(true); // Show spinner when switching tabs
-    setPosts([]); // Clear posts
-    setHasLoadedOnce(false); // Reset loaded state
-    setNextPageUrl(null); // Reset nextPageUrl
-    fetchPosts(); // Fetch initial posts for the new tab
-  }, [fetchPosts, tab]);
-
-  useEffect(() => {
-    if (postsNeedRefresh) {
+    if (!hasLoadedOnceByTab[tab] || postsNeedRefresh) {
       fetchPosts();
       setPostsNeedRefresh(false);
     }
-  }, [postsNeedRefresh, fetchPosts, setPostsNeedRefresh]);
+  }, [
+    tab,
+    hasLoadedOnceByTab,
+    postsNeedRefresh,
+    fetchPosts,
+    setPostsNeedRefresh,
+  ]);
 
   useEffect(() => {
     if (!loading) {
@@ -89,15 +102,15 @@ export default function Home() {
         window.innerHeight + window.scrollY >=
           document.documentElement.scrollHeight - 300 &&
         !isLoading &&
-        nextPageUrl
+        nextPageByTab[tab]
       ) {
-        fetchPosts(nextPageUrl); // Fetch more posts if available
+        fetchPosts(nextPageByTab[tab]); // Fetch more posts if available
       }
     };
 
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isLoading, nextPageUrl, fetchPosts]);
+  }, [isLoading, nextPageByTab, fetchPosts]);
 
   const onSubmit = async () => {
     if (!newPost.trim()) return;
@@ -149,7 +162,7 @@ export default function Home() {
             setMediaPreview={setMediaPreview}
           />
           {/* Loading / Fade Container */}
-          {!hasLoadedOnce && isLoading ? (
+          {!hasLoadedOnceByTab[tab] && isLoading ? (
             <div className="spinner-wrapper">
               <Spinner />
             </div>
@@ -159,12 +172,12 @@ export default function Home() {
                 fadeIn ? "opacity-100" : "opacity-0"
               }`}
             >
-              <Feed posts={posts} isLoading={false} />
+              <Feed posts={postsByTab[tab]} isLoading={false} />
             </div>
           )}
 
           {/* Show spinner at bottom while loading more */}
-          {isLoading && hasLoadedOnce && nextPageUrl && (
+          {isLoading && hasLoadedOnceByTab[tab] && nextPageByTab[tab] && (
             <div className="my-4">
               <SmallSpinner />
             </div>
