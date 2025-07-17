@@ -1,13 +1,9 @@
 #import router and register URLs
 
 from django.urls import path, include
-from django.http import JsonResponse
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import user_views, post_views, follow_views, like_views, auth_views, whoami_view
-
-def health(request):
-    return JsonResponse({"status": "ok"})
 
 router = DefaultRouter()
 router.register(r'users', user_views.UserViewSet, basename='user')
