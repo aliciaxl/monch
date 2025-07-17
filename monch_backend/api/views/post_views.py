@@ -54,18 +54,18 @@ class PostViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return Response({"detail": "Authentication required."}, status=401)
 
-        # Get users current user is following
         followed_user_ids = Follow.objects.filter(follower=user).values_list("following_id", flat=True)
-
-        # Get posts from those users
         posts = Post.objects.filter(user__id__in=followed_user_ids, parent_post__isnull=True).order_by("-created_at")
-        
-        # Paginate results
+
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(posts, request)
-        
-        serializer = PostSerializer(posts, many=True, context={'request': request})
-        return paginator.get_paginated_response(serializer.data)
+        if page is not None:
+            serializer = PostSerializer(page, many=True, context={'request': request})
+            return paginator.get_paginated_response(serializer.data)
+        else:
+            serializer = PostSerializer(posts, many=True, context={'request': request})
+            return Response(serializer.data)
+
     
     @action(detail=True, methods=['post', 'delete'], permission_classes=[permissions.IsAuthenticated])
     def like(self, request, pk=None):
