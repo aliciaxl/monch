@@ -43,13 +43,20 @@ export function getRefreshToken() {
 apiClient.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
-    if (token) {
+
+    if (
+      token &&
+      !config.url.includes("/login") &&
+      !config.url.includes("/register")
+    ) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
+
 
 const nonRefreshablePaths = ["/login", "/register", "/token/refresh"];
 
