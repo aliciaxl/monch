@@ -63,7 +63,6 @@ useEffect(() => {
           <button
             onClick={() => {
               navigate("/home/bites");
-              window.location.reload();
             }}
             className="text-white text-4xl cursor-pointer transform transition-transform hover:scale-105 active:scale-[.95] duration-150"
             aria-label="Home Refresh"
@@ -137,7 +136,6 @@ useEffect(() => {
           <button
             onClick={() => {
               navigate("/home/bites");
-              window.location.reload();
             }}
             className="text-white text-2xl cursor-pointer transform transition-transform hover:scale-105 active:scale-[.95] duration-150"
             aria-label="Home Refresh"
