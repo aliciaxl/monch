@@ -38,7 +38,7 @@ return (
     </div>
 
     {/* Main Content */}
-    <div className="flex flex-grow flex-col w-full min-w-full sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900 overflow-hidden">
+    <div className="flex flex-grow flex-col w-full min-w-full sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900 overflow-hidden pb-[65px] sm:pb-0">
       {loading ? (
         <Spinner />
       ) : (

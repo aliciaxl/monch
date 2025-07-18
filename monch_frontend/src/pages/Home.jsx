@@ -166,7 +166,7 @@ export default function Home() {
             </div>
           ) : (
             <div
-              className={`transition-opacity duration-500 ease-in-out ${
+              className={`transition-opacity duration-500 ease-in-out pb-[65px] sm:pb-0${
                 fadeIn ? "opacity-100" : "opacity-0"
               }`}
             >

@@ -102,7 +102,7 @@ useEffect(() => {
         <span className="w-32 py-4 text-center text-white">Search</span>
       </div>
 
-      <div className="flex flex-grow items-center flex-col w-full min-w-full pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900">
+      <div className="flex flex-grow items-center flex-col w-full min-w-full pt-8 sm:rounded-t-3xl border-t border-neutral-800 bg-neutral-900 pb-[65px] sm:pb-0">
         <div className="relative flex w-[calc(100%-4rem)] mx-4">
           {/* Search Icon */}
           <FontAwesomeIcon
