@@ -1,4 +1,6 @@
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
@@ -6,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 # from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework import status
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
