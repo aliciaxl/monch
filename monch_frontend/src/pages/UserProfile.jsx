@@ -406,7 +406,7 @@ export default function UserProfile() {
               }`}
               onClick={() => setShowAvatarZoom(false)}
             >
-              <div className="w-[90vw] max-w-[400px] aspect-square rounded-full overflow-hidden">
+              <div className="w-[90vw] max-w-[360px] aspect-square rounded-full overflow-hidden">
                 <img
                   src={userData.avatar}
                   alt="Avatar Zoom"
