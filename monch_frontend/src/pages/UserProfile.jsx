@@ -1,6 +1,6 @@
 // pages/UserProfile.jsx
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { usePostContext } from "../context/PostContext.jsx";
 import apiClient from "../api/apiClient.js";
@@ -42,6 +42,8 @@ export default function UserProfile() {
 
   const { postsNeedRefresh, setPostsNeedRefresh } = usePostContext();
 
+  const isFetchingRef = useRef({ bites: false, replies: false });
+
   // Fetch user data
   const fetchUserData = async () => {
     try {
@@ -58,10 +60,19 @@ export default function UserProfile() {
     }
   };
 
-  // Fetch posts
+  ///////////////////////////// FETCH POST ///////////////////////////////////
   const fetchPosts = async (tabToFetch = tab) => {
+    if (
+      loadingPosts ||
+      hasLoadedOnceByTab[tabToFetch] ||
+      isFetchingRef.current[tabToFetch]
+    )
+      return;
+
+    isFetchingRef.current[tabToFetch] = true;
+    setLoadingPosts(true);
+
     try {
-      setLoadingPosts(true);
       let res;
       if (tabToFetch === "bites") {
         res = await apiClient.get(`/users/${username}/posts/`, {
@@ -72,28 +83,27 @@ export default function UserProfile() {
           withCredentials: true,
         });
       }
+
       setPostsByTab((prev) => ({
         ...prev,
         [tabToFetch]: res.data,
       }));
+
       setHasLoadedOnceByTab((prev) => ({
         ...prev,
         [tabToFetch]: true,
       }));
     } catch (error) {
       console.error("Failed to load posts:", error);
-      setPostsByTab((prev) => ({
-        ...prev,
-        [tabToFetch]: [],
-      }));
     } finally {
       setLoadingPosts(false);
+      isFetchingRef.current[tabToFetch] = false;
     }
   };
 
   // Combined fetch for user and posts
   const fetchUserAndPosts = async () => {
-    await Promise.all([fetchUserData(), fetchPosts(tab)]);
+    await fetchUserData();
   };
 
   // Reset data and tab when username changes
@@ -112,15 +122,15 @@ export default function UserProfile() {
     setTab("bites");
 
     // Fetch fresh data
-    fetchUserAndPosts();
+    fetchUserData();
   }, [username]);
 
   useEffect(() => {
-    // Only fetch posts for the current tab
-    if (!hasLoadedOnceByTab[tab]) {
-      fetchPosts(tab); // Fetch posts only if they haven't been loaded before
+    if (!hasLoadedOnceByTab[tab] && username) {
+      fetchPosts(tab);
     }
   }, [tab, username, hasLoadedOnceByTab]);
+
   // Profile fade in
   useEffect(() => {
     if (userData) {
@@ -155,8 +165,8 @@ export default function UserProfile() {
 
   useEffect(() => {
     if (postsNeedRefresh) {
-      fetchUserAndPosts();
       setPostsNeedRefresh(false);
+      setHasLoadedOnceByTab({ bites: false, replies: false });
     }
   }, [postsNeedRefresh]);
 
@@ -197,55 +207,53 @@ export default function UserProfile() {
   }, [showAvatarZoom]);
 
   const handleSave = async (formData) => {
-  try {
-    const res = await apiClient.patch(`/users/${user.username}/`, formData, {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    const updatedUserData = res.data;
-
-    // If avatar has been updated, update posts in both tabs 
-    if (updatedUserData.avatar !== userData.avatar) {
-      const updatedAvatar = updatedUserData.avatar;
-
-      setPostsByTab((prevPosts) => {
-        const updatedBites = prevPosts.bites.map((post) => {
-          if (post.user.username === user.username) {
-            return { ...post, user: { ...post.user, avatar: updatedAvatar } };
-          }
-          return post;
-        });
-
-        const updatedReplies = prevPosts.replies.map((post) => {
-          if (post.user.username === user.username) {
-            return { ...post, user: { ...post.user, avatar: updatedAvatar } };
-          }
-          return post;
-        });
-
-        return {
-          ...prevPosts,
-          bites: updatedBites,
-          replies: updatedReplies,
-        };
+    try {
+      const res = await apiClient.patch(`/users/${user.username}/`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+
+      const updatedUserData = res.data;
+
+      // If avatar has been updated, update posts in both tabs
+      if (updatedUserData.avatar !== userData.avatar) {
+        const updatedAvatar = updatedUserData.avatar;
+
+        setPostsByTab((prevPosts) => {
+          const updatedBites = prevPosts.bites.map((post) => {
+            if (post.user.username === user.username) {
+              return { ...post, user: { ...post.user, avatar: updatedAvatar } };
+            }
+            return post;
+          });
+
+          const updatedReplies = prevPosts.replies.map((post) => {
+            if (post.user.username === user.username) {
+              return { ...post, user: { ...post.user, avatar: updatedAvatar } };
+            }
+            return post;
+          });
+
+          return {
+            ...prevPosts,
+            bites: updatedBites,
+            replies: updatedReplies,
+          };
+        });
+      }
+
+      // Update userData
+      setUserData(updatedUserData);
+
+      // Close edit modal
+      setShowEditModal(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.");
     }
-
-    // Update userData
-    setUserData(updatedUserData);
-
-    // Close edit modal
-    setShowEditModal(false);
-    
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    alert("Failed to update profile. Please try again.");
-  }
-};
-
+  };
 
   return (
     <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
@@ -380,7 +388,9 @@ export default function UserProfile() {
               <Feed
                 posts={postsByTab[tab]}
                 isOwner={currentUser === username}
-                onPostDeleted={() => fetchPosts(tab)}
+                onPostDeleted={() => {
+                  setHasLoadedOnceByTab((prev) => ({ ...prev, [tab]: false }));
+                }}
                 isLoading={false}
                 noTopBorder={true}
                 showRepliesWithParents={tab === "replies"}
