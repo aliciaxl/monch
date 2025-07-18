@@ -96,9 +96,8 @@ export default function UserProfile() {
     await Promise.all([fetchUserData(), fetchPosts(tab)]);
   };
 
-// Reset data and tab when username changes
-useEffect(() => {
-
+  // Reset data and tab when username changes
+  useEffect(() => {
     // Reset the posts and loaded state for both "bites" and "replies" tabs
     setPostsByTab({
       bites: [],
@@ -109,19 +108,19 @@ useEffect(() => {
       replies: false,
     });
 
-     // Reset to the "bites" tab when username changes
+    // Reset to the "bites" tab when username changes
     setTab("bites");
 
     // Fetch fresh data
-    fetchUserData();
-    fetchPosts("bites");
+    fetchUserAndPosts();
   }, [username]);
 
   useEffect(() => {
-  // Only fetch posts for the current tab
-  fetchPosts(tab);
-}, [tab]);
-
+    // Only fetch posts for the current tab
+    if (!hasLoadedOnceByTab[tab]) {
+      fetchPosts(tab); // Fetch posts only if they haven't been loaded before
+    }
+  }, [tab, username, hasLoadedOnceByTab]);
   // Profile fade in
   useEffect(() => {
     if (userData) {
@@ -129,14 +128,14 @@ useEffect(() => {
     }
   }, [userData]);
 
-  // Feed fade in
   useEffect(() => {
-    if (!loadingPosts) {
+    if (hasLoadedOnceByTab[tab]) {
+      // Only trigger fade-in if posts are already loaded (no need for fade when switching between tabs)
       requestAnimationFrame(() => setFeedFadeIn(true));
     } else {
       setFeedFadeIn(false);
     }
-  }, [loadingPosts]);
+  }, [tab, hasLoadedOnceByTab]);
 
   useEffect(() => {
     async function checkFollowing() {
@@ -205,9 +204,44 @@ useEffect(() => {
           "Content-Type": "multipart/form-data",
         },
       });
-      setUserData(res.data);
-      setShowEditModal(false);
+
+      const updatedUserData = res.data;
+
+      // Check if the avatar has been updated
+      if (updatedUserData.avatar !== userData.avatar) {
+        const updatedAvatar = updatedUserData.avatar;
+
+        // Update the posts in both tabs (bites and replies) with the new avatar
+        setPostsByTab((prevPosts) => {
+          const updatedBites = prevPosts.bites.map((post) => {
+            if (post.user.username === user.username) {
+              return { ...post, user: { ...post.user, avatar: updatedAvatar } };
+            }
+            return post;
+          });
+
+          const updatedReplies = prevPosts.replies.map((post) => {
+            if (post.user.username === user.username) {
+              return { ...post, user: { ...post.user, avatar: updatedAvatar } };
+            }
+            return post;
+          });
+
+          // Return the updated state with modified bites and replies
+          return {
+            ...prevPosts,
+            bites: updatedBites,
+            replies: updatedReplies,
+          };
+        });
+        setUserData((prevData) => ({
+          ...prevData,
+          avatar: updatedAvatar, // Update avatar here
+        }));
+      }
     } catch (error) {
+      // Handle errors
+      console.error("Error updating profile:", error);
       alert("Failed to update profile. Please try again.");
     }
   };
