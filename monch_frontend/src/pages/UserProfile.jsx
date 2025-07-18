@@ -33,18 +33,16 @@ export default function UserProfile() {
     replies: false,
   });
 
-
   const [isFollowing, setIsFollowing] = useState(false);
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [toggleTrigger, setToggleTrigger] = useState(false);
-
 
   const [tab, setTab] = useState("bites");
   const [followModalTab, setFollowModalTab] = useState(null);
 
   const { postsNeedRefresh, setPostsNeedRefresh } = usePostContext();
 
-  // Fetch user data 
+  // Fetch user data
   const fetchUserData = async () => {
     try {
       setLoadingUser(true);
@@ -141,7 +139,6 @@ export default function UserProfile() {
     checkFollowing();
   }, [username, currentUser, toggleTrigger]);
 
-
   useEffect(() => {
     if (postsNeedRefresh) {
       fetchUserAndPosts();
@@ -220,7 +217,8 @@ export default function UserProfile() {
               <div className="flex items-start justify-between mb-4 w-full">
                 <div className="text-left">
                   <h2 className="text-2xl font-bold text-white">
-                    {userData?.display_name?.toUpperCase() || username.toUpperCase()}
+                    {userData?.display_name?.toUpperCase() ||
+                      username.toUpperCase()}
                   </h2>
                   <p className="text-neutral-400 mb-4">@{username}</p>
                   <p className="text-white mb-4">{userData?.bio || ""}</p>
@@ -250,7 +248,7 @@ export default function UserProfile() {
                 {/* Avatar Circle */}
                 <div
                   onClick={() => userData?.avatar && setShowAvatarZoom(true)}
-                  className="self-start flex-none w-16 h-16 rounded-full bg-neutral-700 flex items-center justify-center text-white text-xl font-semibold cursor-pointer"
+                  className="self-start flex-none w-16 h-16 rounded-full overflow-hidden bg-neutral-700 flex items-center justify-center text-white text-xl font-semibold cursor-pointer"
                 >
                   {userData?.avatar ? (
                     <img
@@ -348,11 +346,13 @@ export default function UserProfile() {
               }`}
               onClick={() => setShowAvatarZoom(false)}
             >
-              <img
-                src={userData.avatar}
-                alt="Avatar Zoom"
-                className="max-w-[90vw] max-h-[90vh] rounded-xl object-contain cursor-zoom-out"
-              />
+              <div className="w-[90vw] max-w-[400px] aspect-square rounded-full overflow-hidden">
+                <img
+                  src={userData.avatar}
+                  alt="Avatar Zoom"
+                  className="w-full h-full object-cover cursor-zoom-out"
+                />
+              </div>
             </div>
           )}
 
