@@ -103,13 +103,10 @@ export const AuthProvider = ({ children }) => {
       setTokens({ access: res.data.access, refresh: res.data.refresh });
       console.log("Tokens set:", { access: res.data.access, refresh: res.data.refresh });
 
-
-      apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access}`;
-
       // Fetch and set user info
       const userRes = await apiClient.get("/whoami/");
       console.log("User info fetched:", userRes.data);
-      
+
       setUser(userRes.data);
 
       navigate("/"); // Redirect after login
