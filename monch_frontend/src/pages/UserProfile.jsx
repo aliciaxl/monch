@@ -96,16 +96,31 @@ export default function UserProfile() {
     await Promise.all([fetchUserData(), fetchPosts(tab)]);
   };
 
-  useEffect(() => {
+// Reset data and tab when username changes
+useEffect(() => {
+
+    // Reset the posts and loaded state for both "bites" and "replies" tabs
+    setPostsByTab({
+      bites: [],
+      replies: [],
+    });
+    setHasLoadedOnceByTab({
+      bites: false,
+      replies: false,
+    });
+
+     // Reset to the "bites" tab when username changes
+    setTab("bites");
+
+    // Fetch fresh data
     fetchUserData();
+    fetchPosts("bites");
   }, [username]);
 
   useEffect(() => {
-    if (!hasLoadedOnceByTab[tab] || postsNeedRefresh) {
-      fetchPosts(tab);
-      setPostsNeedRefresh(false);
-    }
-  }, [tab, hasLoadedOnceByTab, postsNeedRefresh]);
+  // Only fetch posts for the current tab
+  fetchPosts(tab);
+}, [tab]);
 
   // Profile fade in
   useEffect(() => {
