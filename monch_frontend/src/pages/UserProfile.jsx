@@ -197,54 +197,55 @@ export default function UserProfile() {
   }, [showAvatarZoom]);
 
   const handleSave = async (formData) => {
-    try {
-      const res = await apiClient.patch(`/users/${user.username}/`, formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+  try {
+    const res = await apiClient.patch(`/users/${user.username}/`, formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-      const updatedUserData = res.data;
+    const updatedUserData = res.data;
 
-      // Check if the avatar has been updated
-      if (updatedUserData.avatar !== userData.avatar) {
-        const updatedAvatar = updatedUserData.avatar;
+    // If avatar has been updated, update posts in both tabs 
+    if (updatedUserData.avatar !== userData.avatar) {
+      const updatedAvatar = updatedUserData.avatar;
 
-        // Update the posts in both tabs (bites and replies) with the new avatar
-        setPostsByTab((prevPosts) => {
-          const updatedBites = prevPosts.bites.map((post) => {
-            if (post.user.username === user.username) {
-              return { ...post, user: { ...post.user, avatar: updatedAvatar } };
-            }
-            return post;
-          });
-
-          const updatedReplies = prevPosts.replies.map((post) => {
-            if (post.user.username === user.username) {
-              return { ...post, user: { ...post.user, avatar: updatedAvatar } };
-            }
-            return post;
-          });
-
-          // Return the updated state with modified bites and replies
-          return {
-            ...prevPosts,
-            bites: updatedBites,
-            replies: updatedReplies,
-          };
+      setPostsByTab((prevPosts) => {
+        const updatedBites = prevPosts.bites.map((post) => {
+          if (post.user.username === user.username) {
+            return { ...post, user: { ...post.user, avatar: updatedAvatar } };
+          }
+          return post;
         });
-        setUserData((prevData) => ({
-          ...prevData,
-          avatar: updatedAvatar, // Update avatar here
-        }));
-      }
-    } catch (error) {
-      // Handle errors
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+
+        const updatedReplies = prevPosts.replies.map((post) => {
+          if (post.user.username === user.username) {
+            return { ...post, user: { ...post.user, avatar: updatedAvatar } };
+          }
+          return post;
+        });
+
+        return {
+          ...prevPosts,
+          bites: updatedBites,
+          replies: updatedReplies,
+        };
+      });
     }
-  };
+
+    // Update userData
+    setUserData(updatedUserData);
+
+    // Close edit modal
+    setShowEditModal(false);
+    
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    alert("Failed to update profile. Please try again.");
+  }
+};
+
 
   return (
     <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
