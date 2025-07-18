@@ -95,20 +95,13 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     setLoading(true);
     try {
-      delete apiClient.defaults.headers.common['Authorization'];
-      console.log("Auth header before login:", apiClient.defaults.headers.common['Authorization']); // should be undefined
-      
-      console.log("Attempting login for:", username);
-      const res = await apiClient.post("/login/", { username, password }, { withCredentials: true });
-      console.log("Login response:", res.data);
-
+    
+      const res = await apiClient.post("/login/", { username, password }, { withCredentials: true })
      
       setTokens({ access: res.data.access, refresh: res.data.refresh });
-      console.log("Tokens set:", { access: res.data.access, refresh: res.data.refresh });
 
       // Fetch and set user info
       const userRes = await apiClient.get("/whoami/");
-      console.log("User info fetched:", userRes.data);
 
       setUser(userRes.data);
 
