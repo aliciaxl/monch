@@ -61,7 +61,7 @@ export default function PostDetail() {
         setLiked(res.data.liked_by_user || false);
         setLikesCount(res.data.likes || 0);
       } catch (error) {
-        alert("Failed to load post");
+        toast.error("Failed to load post");
         setPost(null);
       } finally {
         setLoading(false);
