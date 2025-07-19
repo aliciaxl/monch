@@ -93,6 +93,7 @@ class ParentPostSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     likes = serializers.IntegerField(source='likes.count', read_only=True)
     user = UserSerializer(read_only=True)
+    user_repost_id = serializers.SerializerMethodField()
 
     parent_post = serializers.PrimaryKeyRelatedField(
         queryset=Post.objects.all(),
@@ -115,10 +116,11 @@ class PostSerializer(serializers.ModelSerializer):
     reposted_by_user = serializers.SerializerMethodField()
     replies_count = serializers.SerializerMethodField()
     media = PostMediaSerializer(many=True, required=False)
+    user_repost_id = serializers.SerializerMethodField()
     
     class Meta:
         model = Post
-        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'parent_post_detail', 'repost_of', 'repost_of_detail', 'replies', 'likes', 'liked_by_user', 'reposted_by_user', 'replies_count', 'media']
+        fields = ['id', 'user', 'content', 'created_at', 'parent_post', 'parent_post_detail', 'repost_of', 'repost_of_detail', 'replies', 'likes', 'liked_by_user', 'reposted_by_user', 'replies_count', 'media', 'user_repost_id']
 
     def get_likes(self, obj):
         return obj.likes.count()
@@ -141,6 +143,16 @@ class PostSerializer(serializers.ModelSerializer):
     
     def get_replies_count(self, obj):
         return obj.replies.count()
+    
+    def get_user_repost_id(self, obj):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return None
+
+        repost = Post.objects.filter(repost_of=obj, user=user).first()
+        return repost.id if repost else None
+
+    
 
 class FollowSerializer(serializers.ModelSerializer):
     follower = UserSerializer(read_only=True)

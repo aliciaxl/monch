@@ -135,3 +135,37 @@ class PostViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(post)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    from rest_framework.decorators import action
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def toggle_repost(self, request, pk=None):
+        user = request.user
+        try:
+            original_post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if user already reposted this post
+        existing_repost = Post.objects.filter(user=user, repost_of=original_post).first()
+
+        if existing_repost:
+            existing_repost.delete()
+            return Response({"reposted": False}, status=status.HTTP_200_OK)
+
+        # Otherwise, create a new repost
+        repost = Post.objects.create(
+            user=user,
+            content="",  # Optional: leave empty or copy original content
+            repost_of=original_post
+        )
+
+        # Optional: copy media from original post
+        for media in original_post.media.all():
+            PostMedia.objects.create(
+                post=repost,
+                media_file=media.media_file,
+                media_type=media.media_type
+            )
+
+        return Response({"reposted": True, "id": repost.id}, status=status.HTTP_201_CREATED)
