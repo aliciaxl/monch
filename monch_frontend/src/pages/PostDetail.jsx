@@ -210,10 +210,10 @@ export default function PostDetail() {
   };
 
   return (
-    <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
+    <div className="home flex flex-col flex-grow w-full h-full text-white sm:px-0">
       <div className="flex flex-col flex-1 w-full mx-auto">
         <div className="flex flex-grow flex-col w-full min-w-full border-neutral-800 bg-neutral-900">
-          <div className="bg-neutral-900 min-h-screen text-white relative">
+          <div className="bg-neutral-900 min-h-screen text-white relative pb-[65px] sm:pb-0">
             {/* Always render this outer container, even while loading */}
             <div className="py-6 px-8 border-b border-neutral-800">
               <button
