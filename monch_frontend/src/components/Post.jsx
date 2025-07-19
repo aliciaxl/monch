@@ -22,7 +22,7 @@ export default function Post({
 }) {
   const [liked, setLiked] = useState(post.liked_by_user || false);
   const [likesCount, setLikesCount] = useState(post.likes || 0);
-  const [reposted, setReposted] = useState(post.reposted_by_user || false);
+  const [reposted, setReposted] = useState(!!post.user_repost_id);
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { setPostsNeedRefresh } = usePostContext();
@@ -68,26 +68,31 @@ export default function Post({
     }
   };
 
-  const repost = async () => {
-    const formData = new FormData();
-    formData.append("repost_of", post.id);
-    formData.append("content", post.content);
+  const toggleRepost = async () => {
+  if (loading) return;
+  setLoading(true);
 
-    try {
-      await apiClient.post("/posts/", formData, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("Successfully reposted!");
+  try {
+    const res = await apiClient.post(`/posts/${post.id}/toggle_repost/`, null, {
+      withCredentials: true,
+    });
+
+    if (res.data.reposted) {
+      toast.success("Reposted!");
       setReposted(true);
-
-      setPostsNeedRefresh(true);
-    } catch (err) {
-      toast.error(
-        err.response?.data?.detail || "Failed to repost. Please try again."
-      );
+    } else {
+      toast.success("Repost removed.");
+      setReposted(false);
     }
-  };
+
+    setPostsNeedRefresh(true);
+  } catch (err) {
+    toast.error(err.response?.data?.detail || "Repost failed.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDelete = async () => {
     try {
@@ -229,7 +234,7 @@ export default function Post({
 
               {/* Repost */}
               <button
-                onClick={repost}
+                onClick={toggleRepost}
                 className={`hover:text-white cursor-pointer flex items-center space-x-1 ${
                   reposted ? "text-indigo-300" : "text-neutral-400"
                 }`}

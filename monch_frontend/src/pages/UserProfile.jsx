@@ -256,7 +256,7 @@ export default function UserProfile() {
   };
 
   return (
-    <div className="home flex flex-col flex-grow w-full h-full text-whitesm:px-0">
+    <div className="home flex flex-col flex-grow w-full h-full text-white sm:px-0">
       <div className="flex flex-col flex-1 w-full mx-auto">
         {/* TITLE */}
         <div className="flex text-m font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
