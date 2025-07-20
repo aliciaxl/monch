@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.utils.timezone import now
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, UnidentifiedImageError, ImageOps
 from io import BytesIO
 from django.core.files.base import ContentFile
 import uuid
@@ -61,6 +61,9 @@ class PostMedia(models.Model):
         if self.media_file:
             try:
                 img = Image.open(self.media_file)
+
+                img = ImageOps.exif_transpose(img)
+
                 img_format = img.format
 
                 if img_format == "GIF":
