@@ -3,7 +3,7 @@ import { EmojiPicker } from "frimousse";
 export function MyEmojiPicker({ onEmojiClick }) {
   return (
     <EmojiPicker.Root
-      className="isolate flex h-[220px] w-[250px] sm:h-[280px] sm:w-[300px] rounded-2xl flex-col bg-[rgb(16,16,16)] p-2 "
+      className="isolate flex h-[220px] w-[250px] sm:h-[268px] sm:w-[270px] rounded-2xl flex-col bg-[rgb(16,16,16)] p-2 "
     >
       <EmojiPicker.Search
         className="z-10 mx-2 mt-2 sm:mb-0 -mb-1 appearance-none rounded-md px-2.5 py-2 text-sm sm:text-base bg-neutral-800 focus:outline-none flex"
@@ -38,7 +38,7 @@ export function MyEmojiPicker({ onEmojiClick }) {
                   e.preventDefault();
                   if (onEmojiClick) onEmojiClick(emoji);
                 }}
-                className="flex sm:size-8 items-center justify-center rounded-md sm:text-2xl data-[active]:bg-neutral-800 cursor-pointer size-6.5 text-xl"
+                className="flex sm:size-7 items-center justify-center rounded-md sm:text-[1.375rem] data-[active]:bg-neutral-800 cursor-pointer size-6.5 text-xl"
               >
                 {emoji.emoji}
               </button>
