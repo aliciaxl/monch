@@ -152,6 +152,14 @@ class PostSerializer(serializers.ModelSerializer):
         repost = Post.objects.filter(repost_of=obj, user=user).first()
         return repost.id if repost else None
 
+    def validate(self, data):
+        request = self.context.get('request')
+        media_files = request.FILES.getlist('media') if request and hasattr(request.FILES, 'getlist') else []
+
+        if not data.get('content') and not media_files:
+            raise serializers.ValidationError("Post must have either content or media.")
+        
+        return data
     
 
 class FollowSerializer(serializers.ModelSerializer):

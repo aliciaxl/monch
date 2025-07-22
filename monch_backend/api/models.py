@@ -41,7 +41,7 @@ class Follow(models.Model):
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
-    content = models.CharField(max_length=500)
+    content = models.CharField(max_length=500, blank=True, null=True)
     parent_post = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
     repost_of = models.ForeignKey('self', null=True, blank=True, related_name='reposts', on_delete=models.SET_NULL) 
     created_at = models.DateTimeField(auto_now_add=True)
