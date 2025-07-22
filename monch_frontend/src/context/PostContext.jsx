@@ -9,11 +9,12 @@ export const PostProvider = ({ children }) => {
 
   // handlePost function moved here
   const handlePost = async ({ content, parentPostId = null, media = null }) => {
-    if (!content.trim()) return;
+    const hasContent = content && content.trim().length > 0;
+    if (!hasContent && !media) return;
 
     setLoading(true);
     const formData = new FormData();
-    formData.append("content", content);
+    if (content) formData.append("content", content); // Only append content if it's not empty
     if (parentPostId) formData.append("parent_post_id", parentPostId);
     if (media) formData.append("media", media);
 

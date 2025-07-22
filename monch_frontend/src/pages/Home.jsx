@@ -111,7 +111,8 @@ export default function Home() {
   }, [isLoading, nextPageByTab, fetchPosts]);
 
   const onSubmit = async () => {
-    if (!newPost.trim()) return;
+    if (!newPost.trim() && !media) return;
+    
     try {
       await handlePost({ content: newPost, media });
       setNewPost("");

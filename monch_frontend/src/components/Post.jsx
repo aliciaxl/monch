@@ -69,30 +69,33 @@ export default function Post({
   };
 
   const toggleRepost = async () => {
-  if (loading) return;
-  setLoading(true);
+    if (loading) return;
+    setLoading(true);
 
-  try {
-    const res = await apiClient.post(`/posts/${post.id}/toggle_repost/`, null, {
-      withCredentials: true,
-    });
+    try {
+      const res = await apiClient.post(
+        `/posts/${post.id}/toggle_repost/`,
+        null,
+        {
+          withCredentials: true,
+        }
+      );
 
-    if (res.data.reposted) {
-      toast.success("Reposted!");
-      setReposted(true);
-    } else {
-      toast.success("Repost removed.");
-      setReposted(false);
+      if (res.data.reposted) {
+        toast.success("Reposted!");
+        setReposted(true);
+      } else {
+        toast.success("Repost removed.");
+        setReposted(false);
+      }
+
+      setPostsNeedRefresh(true);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Repost failed.");
+    } finally {
+      setLoading(false);
     }
-
-    setPostsNeedRefresh(true);
-  } catch (err) {
-    toast.error(err.response?.data?.detail || "Repost failed.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const handleDelete = async () => {
     try {
@@ -107,28 +110,28 @@ export default function Post({
   };
 
   const postContainerClass = isReplyWithParent
-  ? "flex flex-col w-full pl-18 px-6 pt-2 py-6 pr-12 bg-[#1d1d1d] relative border-l border-neutral-700"
-  : "flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 bg-neutral-900";
+    ? "flex flex-col w-full pl-18 px-6 pt-2 py-6 pr-12 bg-[#1d1d1d] relative border-l border-neutral-700"
+    : "flex flex-col w-full border-b border-neutral-800 px-6 pt-4 py-6 bg-neutral-900";
 
   return (
     <>
       {isOwner && !isReplyWithParent && (
-      <button
-        onClick={() => setIsDialogOpen(true)}
-        className="flex flex-col w-full text-neutral-700 text-sm items-end hover:text-white cursor-pointer pt-5 pr-5 -mb-8"
-      >
-        <FontAwesomeIcon icon={faXmark} className="text-xs" />
-      </button>
-    )}
+        <button
+          onClick={() => setIsDialogOpen(true)}
+          className="flex flex-col w-full text-neutral-700 text-sm items-end hover:text-white cursor-pointer pt-5 pr-5 -mb-8"
+        >
+          <FontAwesomeIcon icon={faXmark} className="text-xs" />
+        </button>
+      )}
       {/* Original Post */}
       <div className={postContainerClass}>
         {isReplyWithParent && (
-        <img
-          src="/icons/reply.png"
-          alt="Reply arrow"
-          className="absolute left-8 top-6 transform w-5 h-4"
-        />
-      )}
+          <img
+            src="/icons/reply.png"
+            alt="Reply arrow"
+            className="absolute left-8 top-6 transform w-5 h-4"
+          />
+        )}
         {/* Repost note */}
         {post.repost_of_detail ? (
           <div className="text-xs text-neutral-400 flex items-center gap-1 -mb-1">
@@ -158,7 +161,8 @@ export default function Post({
               />
             ) : (
               <span>
-                {post.user.username[0]?.toUpperCase() || post.user.display_name?.[0]?.toUpperCase()}
+                {post.user.username[0]?.toUpperCase() ||
+                  post.user.display_name?.[0]?.toUpperCase()}
               </span>
             )}
           </div>
@@ -176,9 +180,11 @@ export default function Post({
 
             {/* Text Content */}
             <div className="text-white text-left mt-1 mb-2">
-              <Link to={`/post/${post.id}`} className="post-textcontent">
-                {post.content.trim()}
-              </Link>
+              {post.content?.trim() && (
+                <Link to={`/post/${post.id}`} className="post-textcontent">
+                  {post.content.trim()}
+                </Link>
+              )}
             </div>
 
             {/* Post Media */}
