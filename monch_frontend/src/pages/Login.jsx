@@ -73,7 +73,7 @@ export default function Login({ user, setUser }) {
                 className="text-[15px] bg-neutral-900 p-4 rounded-xl outline-none focus:ring-1 focus:ring-neutral-700 disabled:text-neutral-400" 
                 value={username}
                 placeholder="Username"
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value.toLowerCase())}
                 required
                 disabled={loading}
               />
