@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFaceSmile } from "@fortawesome/free-solid-svg-icons";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useId } from "react";
 import { MyEmojiPicker } from "./EmojiPicker";
 
 const MAX_FILE_SIZE_MB = 5;
@@ -96,6 +96,8 @@ export default function PostInput({
     setShowPicker(false);
   };
 
+  const fileInputId = useId();
+
   function Spinner() {
     return (
       <div className="flex justify-center ml-2">
@@ -144,14 +146,14 @@ export default function PostInput({
       <div className="flex justify-between w-full pb-2 mt-1">
         <div className="flex items-center gap-12 pl-2">
           <div className="relative">
-            <label htmlFor="file-upload" className="cursor-pointer">
+            <label htmlFor={fileInputId} className="cursor-pointer">
               <FontAwesomeIcon
                 icon={faImage}
                 className="text-neutral-400 hover:text-white text-lg"
               />
             </label>
             <input
-              id="file-upload"
+              id={fileInputId}
               ref={fileInputRef}
               type="file"
               accept="image/*,.gif"
