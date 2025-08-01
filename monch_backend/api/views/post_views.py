@@ -153,14 +153,14 @@ class PostViewSet(viewsets.ModelViewSet):
             existing_repost.delete()
             return Response({"reposted": False}, status=status.HTTP_200_OK)
 
-        # Otherwise, create a new repost
+        # Create a new repost
         repost = Post.objects.create(
             user=user,
-            content="",  # Optional: leave empty or copy original content
+            content=original_post.content, 
             repost_of=original_post
         )
 
-        # Optional: copy media from original post
+        # Copy media from original post
         for media in original_post.media.all():
             PostMedia.objects.create(
                 post=repost,
