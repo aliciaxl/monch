@@ -4,7 +4,7 @@ A full-featured, comprehensive clone of Threads/X built with **Django** (Python)
 
 **🔗 [Live Preview](https://monch-app.vercel.app/login)**  
 <p align="center">
-  <img src="assets/Monch-Feed.png" alt="Feed Screenshot" width="600"/>
+  <img src="assets/Monch-Feed.png" alt="Feed Screenshot" style="width: 100%; max-width: 100%; height: auto;"/>
 </p>
 
 ---
