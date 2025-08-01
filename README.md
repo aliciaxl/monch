@@ -84,8 +84,11 @@ A full-featured, comprehensive clone of Threads/X built with **Django** (Python)
 
 ### Mobile search page, create post modal, likes
 
-| ![Search Screenshot](assets/Monch-Search.png) | ![Create Post Screenshot](assets/Monch-CreatePost.png) | ![Likes Screenshot](assets/Monch-Likes.png) |
-|----------------------------------------------|--------------------------------------------------------|---------------------------------------------|
+<p align="center">
+  <img src="assets/Monch-Search.png" alt="Search" width="30%" />&nbsp;&nbsp;&nbsp;
+  <img src="assets/Monch-CreatePost.png" alt="Create Post" width="30%" />&nbsp;&nbsp;&nbsp;
+  <img src="assets/Monch-Likes.png" alt="Likes" width="30%" />
+</p>
 
 <!-- <div style="
   display: flex;
