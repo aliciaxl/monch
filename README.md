@@ -82,12 +82,12 @@ A full-featured, comprehensive social media application built with **Django** (P
   <img src="assets/Monch-Feed.png" alt="Feed Screenshot" style="width: 100%; max-width: 100%; height: auto;"/>
 </p>
 
-### Mobile search page, create post modal, likes
+### Mobile Search Page, Create Post Modal, Follow List
 
 <p align="center">
   <img src="assets/Monch-Search.png" alt="Search" width="30%" />&nbsp;&nbsp;&nbsp;
   <img src="assets/Monch-CreatePost.png" alt="Create Post" width="30%" />&nbsp;&nbsp;&nbsp;
-  <img src="assets/Monch-Likes.png" alt="Likes" width="30%" />
+  <img src="assets/Monch-Follow.png" alt="Follows" width="30%" />
 </p>
 
 
