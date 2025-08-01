@@ -34,7 +34,7 @@ return (
     <div className="flex flex-col flex-1 w-full mx-auto">
 
     <div className="flex font-semibold justify-center text-neutral-500 sm:bg-transparent bg-[rgb(16,16,16)]">
-      <span className="w-32 py-4 text-center text-white">Liked</span>
+      <span className="w-32 py-4 text-center text-white">Likes</span>
     </div>
 
     {/* Main Content */}
