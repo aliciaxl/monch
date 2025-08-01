@@ -1,6 +1,6 @@
-# 🧵 Threads/X Clone (Full-Stack Social Media App)
+# MONCH - A Threads/X Clone (Full-Stack Social Media App)
 
-A full-featured, comprehensive clone of Threads/X built with **Django** (Python), **React.js**, and **PostgreSQL** — designed to emulate the core functionality of modern social media platforms with responsive UI and robust backend architecture.
+A full-featured, comprehensive social media application built with **Django** (Python), **React.js**, and **PostgreSQL** — designed to emulate the core functionality of modern social media platforms with responsive UI and robust backend architecture.
 
 **🔗 [Live Preview](https://monch-app.vercel.app/login)**  
 <p align="center">
@@ -24,19 +24,19 @@ A full-featured, comprehensive clone of Threads/X built with **Django** (Python)
 - AWS S3 (media storage)
 - Vercel (frontend deployment)
 
----
-
 ## Features
 
 ### User Profiles
-<p align="center">
-  <img src="assets/Monch-Profile.png" alt="Profile Screenshot" style="width: 100%; max-width: 100%; height: auto;"/>
-</p>
 
 - Users can **create and personalize profiles** with:
   - Profile picture
   - Custom bios  
   - Modifiable display name
+
+<p align="center">
+  <img src="assets/Monch-Profile.png" alt="Profile Screenshot" style="width: 100%; max-width: 100%; height: auto;"/>
+</p>
+
     
 ### Bites, Replies, Reposts & Media
 
@@ -76,8 +76,8 @@ A full-featured, comprehensive clone of Threads/X built with **Django** (Python)
 - **Responsive UI** for adapting to mobile, tablet, and desktop screen sizes
 - Built with **React + Vite** for modern routing, fast built time, and optimized frontend performance
 
-## More Previews
-### Post with nested replies
+## More Feature Previews:
+### Posts with nested replies
 <p align="center">
   <img src="assets/Monch-Feed.png" alt="Feed Screenshot" style="width: 100%; max-width: 100%; height: auto;"/>
 </p>
@@ -89,16 +89,5 @@ A full-featured, comprehensive clone of Threads/X built with **Django** (Python)
   <img src="assets/Monch-CreatePost.png" alt="Create Post" width="30%" />&nbsp;&nbsp;&nbsp;
   <img src="assets/Monch-Likes.png" alt="Likes" width="30%" />
 </p>
-
-<!-- <div style="
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px 0;
-">
-  <img src="assets/Monch-Search.png" alt="Search Screenshot" style="width: 30%; height: auto; border-radius: 8px; margin: 0 10px;"/>
-  <img src="assets/Monch-CreatePost.png" alt="Create Post Screenshot" style="width: 30%; height: auto; border-radius: 8px; margin: 0 10px;"/>
-  <img src="assets/Monch-Likes.png" alt="Likes Screenshot" style="width: 30%; height: auto; border-radius: 8px; margin: 0 10px;"/>
-</div> -->
 
 
