@@ -7,8 +7,6 @@ A full-featured, comprehensive clone of Threads/X built with **Django** (Python)
   <img src="assets/Monch-Feed.png" alt="Feed Screenshot" style="width: 100%; max-width: 100%; height: auto;"/>
 </p>
 
----
-
 ## Tech Stack
 
 **Frontend**
@@ -30,7 +28,10 @@ A full-featured, comprehensive clone of Threads/X built with **Django** (Python)
 
 ## Features
 
-#### User Profiles
+### User Profiles
+<p align="center">
+  <img src="assets/Monch-Profile.png" alt="Profile Screenshot" style="width: 100%; max-width: 100%; height: auto;"/>
+</p>
 
 - Users can **create and personalize profiles** with:
   - Profile picture
@@ -74,4 +75,17 @@ A full-featured, comprehensive clone of Threads/X built with **Django** (Python)
 - **Infinite scroll** UX pattern on frontend with **pagination** (Django REST framework) for seamless feed browsing
 - **Responsive UI** for adapting to mobile, tablet, and desktop screen sizes
 - Built with **React + Vite** for modern routing, fast built time, and optimized frontend performance
+
+## More Previews
+### Post with nested replies
+<p align="center">
+  <img src="assets/Monch-Feed.png" alt="Feed Screenshot" style="width: 100%; max-width: 100%; height: auto;"/>
+</p>
+### Mobile search page, create post modal, likes
+<div style="display: flex; justify-content: space-evenly; width: 100vw; align-items: center; gap: 20px;">
+  <img src="assets/Monch-Search.png" alt="Search Screenshot" style="width: 30%; height: auto; border: 1px solid #ccc; border-radius: 8px;"/>
+  <img src="assets/Monch-CreatePost.png" alt="Create Post Screenshot" style="width: 30%; height: auto; border: 1px solid #ccc; border-radius: 8px;"/>
+  <img src="assets/Monch-Likes.png" alt="Likes Screenshot" style="width: 30%; height: auto; border: 1px solid #ccc; border-radius: 8px;"/>
+</div>
+
 
