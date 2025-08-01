@@ -81,11 +81,21 @@ A full-featured, comprehensive clone of Threads/X built with **Django** (Python)
 <p align="center">
   <img src="assets/Monch-Feed.png" alt="Feed Screenshot" style="width: 100%; max-width: 100%; height: auto;"/>
 </p>
+
 ### Mobile search page, create post modal, likes
-<div style="display: flex; justify-content: space-evenly; width: 100vw; align-items: center; gap: 20px;">
-  <img src="assets/Monch-Search.png" alt="Search Screenshot" style="width: 30%; height: auto; border: 1px solid #ccc; border-radius: 8px;"/>
-  <img src="assets/Monch-CreatePost.png" alt="Create Post Screenshot" style="width: 30%; height: auto; border: 1px solid #ccc; border-radius: 8px;"/>
-  <img src="assets/Monch-Likes.png" alt="Likes Screenshot" style="width: 30%; height: auto; border: 1px solid #ccc; border-radius: 8px;"/>
-</div>
+
+| ![Search Screenshot](assets/Monch-Search.png) | ![Create Post Screenshot](assets/Monch-CreatePost.png) | ![Likes Screenshot](assets/Monch-Likes.png) |
+|----------------------------------------------|--------------------------------------------------------|---------------------------------------------|
+
+<!-- <div style="
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+">
+  <img src="assets/Monch-Search.png" alt="Search Screenshot" style="width: 30%; height: auto; border-radius: 8px; margin: 0 10px;"/>
+  <img src="assets/Monch-CreatePost.png" alt="Create Post Screenshot" style="width: 30%; height: auto; border-radius: 8px; margin: 0 10px;"/>
+  <img src="assets/Monch-Likes.png" alt="Likes Screenshot" style="width: 30%; height: auto; border-radius: 8px; margin: 0 10px;"/>
+</div> -->
 
 
