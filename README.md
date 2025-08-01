@@ -3,6 +3,9 @@
 A full-featured, comprehensive clone of Threads/X built with **Django** (Python), **React.js**, and **PostgreSQL** — designed to emulate the core functionality of modern social media platforms with responsive UI and robust backend architecture.
 
 **🔗 [Live Preview](https://monch-app.vercel.app/login)**  
+<p align="center">
+  <img src="assets/Monch-Feed.png" alt="Feed Screenshot" width="600"/>
+</p>
 
 ---
 
