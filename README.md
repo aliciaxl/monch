@@ -20,9 +20,10 @@ A full-featured, comprehensive social media application built with **Django** (P
 - Factory Boy + Faker for testing
 
 **Database & Hosting**
-- PostgreSQL (hosted on [Neon](https://neon.tech))
-- AWS S3 (media storage)
 - Vercel (frontend deployment)
+- Render (backend hosting)
+- Neon (database hosting)
+- AWS S3 (media storage)
 
 ## Features
 
