@@ -1,4 +1,4 @@
-# MONCH - A Threads/X Clone (Full-Stack Social Media App)
+# MONCH - A Full-Stack Social Media App
 
 A full-featured, comprehensive social media application built with **Django** (Python), **React.js**, and **PostgreSQL** — designed to emulate the core functionality of modern social media platforms with responsive UI and robust backend architecture.
 
